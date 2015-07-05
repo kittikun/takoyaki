@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{097e59fb-8a14-44aa-b6f6-be183ff0136d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utility">
+      <UniqueIdentifier>{b4942555-4b39-4ea0-bf91-cb2faa28d4d8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\takoyaki\utility\log.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\takoyaki\utility\log.h">
+      <Filter>Source Files\utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

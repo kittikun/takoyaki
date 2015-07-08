@@ -65,13 +65,12 @@ namespace Takoyaki
 		void Initialize()
 		{
 			logging::add_console_log(std::cout, keywords::format = expr::format("%1%: [%2%] %3%")
-				% expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
-				% severity
-				% expr::message);
+                % expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
+                % severity
+                % expr::message);
 
 			logging::add_common_attributes();
 
-#if defined(_WIN32)
 			boost::shared_ptr<logging::core> core = logging::core::get();
 			boost::shared_ptr<sinks::synchronous_sink< sinks::debug_output_backend>> debugSink(new sinks::synchronous_sink<sinks::debug_output_backend>());
 
@@ -82,7 +81,6 @@ namespace Takoyaki
 				% expr::message);
 
 			core->add_sink(debugSink);
-#endif
 		}
 	} // namespace Log
 } // namespace Takoyaki

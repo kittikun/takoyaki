@@ -18,33 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <memory>
+#pragma once
 
-#include <framework.h>
-
-#include "targetver.h"
-
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
-{
-    std::unique_ptr<Takoyaki::Framework> framework = std::make_unique<Takoyaki::Framework>();
-
-    if (FAILED(framework->Initialize(hInstance)))
-        return 0;
-
-    // Main message loop
-    MSG msg = { 0 };
-
-    while (WM_QUIT != msg.message) {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        } else {
-            //Render();
-        }
-    }
-
-    //CleanupDevice();
-
-    return (int)msg.wParam;
-}
-
+#if defined _EXPORT_TAKOYAKI_API
+#define TAKOYAKI_API __declspec(dllexport)
+#else
+#define TAKOYAKI_API __declspec(dllimport)
+#endif

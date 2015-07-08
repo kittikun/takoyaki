@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "App", "App.vcxproj", "{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}"
+	ProjectSection(ProjectDependencies) = postProject
+		{931E8232-3310-4BAD-A07B-170DCBE5DF47} = {931E8232-3310-4BAD-A07B-170DCBE5DF47}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lib", "Lib.vcxproj", "{931E8232-3310-4BAD-A07B-170DCBE5DF47}"
 EndProject
@@ -19,7 +22,8 @@ Global
 		{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}.Debug|x64.Build.0 = Debug|x64
 		{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}.Debug|x86.ActiveCfg = Debug|Win32
 		{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}.Debug|x86.Build.0 = Debug|Win32
-		{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}.Release|x64.ActiveCfg = Release|Win32
+		{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}.Release|x64.ActiveCfg = Release|x64
+		{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}.Release|x64.Build.0 = Release|x64
 		{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}.Release|x86.ActiveCfg = Release|Win32
 		{9EAA179D-8A7C-43C4-BE97-E310FB4EEF09}.Release|x86.Build.0 = Release|Win32
 		{931E8232-3310-4BAD-A07B-170DCBE5DF47}.Debug|x64.ActiveCfg = Debug|x64

@@ -7,15 +7,54 @@
     <Filter Include="Source Files\utility">
       <UniqueIdentifier>{b4942555-4b39-4ea0-bf91-cb2faa28d4d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{c852542a-72a1-4f0f-a974-f9f99c548f64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\impl">
+      <UniqueIdentifier>{c14f363a-8f95-4584-90be-c1ca2b1fbf6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\takoyaki\utility\log.cpp">
       <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\framework.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\utility\error.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp">
+      <Filter>Source Files\impl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\utility\log.h">
       <Filter>Source Files\utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\takoyaki\framework.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\utility\error.h">
+      <Filter>Source Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\impl\framework_impl.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\utility\platform.h">
+      <Filter>Source Files\utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+    <Image Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

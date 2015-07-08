@@ -18,33 +18,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
+
 #include <memory>
+#include <windows.h>
 
-#include <framework.h>
+#include "utility/platform.h"
 
-#include "targetver.h"
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
+namespace Takoyaki
 {
-    std::unique_ptr<Takoyaki::Framework> framework = std::make_unique<Takoyaki::Framework>();
+    class FrameworkImpl;
 
-    if (FAILED(framework->Initialize(hInstance)))
-        return 0;
+    template class TAKOYAKI_API std::unique_ptr<FrameworkImpl>;
 
-    // Main message loop
-    MSG msg = { 0 };
+    class TAKOYAKI_API Framework
+    {
+    public:
+        Framework();
+        ~Framework();
 
-    while (WM_QUIT != msg.message) {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        } else {
-            //Render();
-        }
-    }
+        HRESULT Initialize(HINSTANCE);
+        void Terminate();
 
-    //CleanupDevice();
-
-    return (int)msg.wParam;
+    private:
+        std::unique_ptr<FrameworkImpl> impl_;
+    };
 }
-
+// namespace Takoyaki

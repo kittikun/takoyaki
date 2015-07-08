@@ -30,3 +30,4 @@ build/out/
 *.sdf
 build/ipch/
 *.opensdf
+bin/

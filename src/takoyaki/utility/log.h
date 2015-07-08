@@ -27,11 +27,11 @@
 #include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 
-#define LOGC BOOST_LOG_SEV(Tonkatsu::Log::boost_log::get(), Tonkatsu::Log::Log_Core)
-#define LOGD BOOST_LOG_SEV(Tonkatsu::Log::boost_log::get(), Tonkatsu::Log::Log_Dominion)
-#define LOGN BOOST_LOG_SEV(Tonkatsu::Log::boost_log::get(), Tonkatsu::Log::Log_Network)
-#define LOGW BOOST_LOG_SEV(Tonkatsu::Log::boost_log::get(), Tonkatsu::Log::Log_Warning)
-#define LOGE BOOST_LOG_SEV(Tonkatsu::Log::boost_log::get(), Tonkatsu::Log::Log_Error)
+#define LOGC BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Core)
+#define LOGD BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Dominion)
+#define LOGN BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Network)
+#define LOGW BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Warning)
+#define LOGE BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Error)
 
 namespace Takoyaki
 {

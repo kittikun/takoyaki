@@ -18,33 +18,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
+
+#include <d3d11_2.h>
 #include <memory>
+#include <windows.h>
 
-#include <framework.h>
-
-#include "targetver.h"
-
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
+namespace Takoyaki
 {
-    std::unique_ptr<Takoyaki::Framework> framework = std::make_unique<Takoyaki::Framework>();
+    class FrameworkImpl
+    {
+    public:
+        FrameworkImpl();
+         ~FrameworkImpl();
 
-    if (FAILED(framework->Initialize(hInstance)))
-        return 0;
+        HRESULT Initialize(HINSTANCE);
+        void Terminate();
 
-    // Main message loop
-    MSG msg = { 0 };
+    private:
+        HRESULT CreateDevice();
+        HRESULT CreateWDAWindow(HINSTANCE);
+        HRESULT CreateSwapChain(const SIZE& size);
 
-    while (WM_QUIT != msg.message) {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        } else {
-            //Render();
-        }
-    }
+        static LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 
-    //CleanupDevice();
+    private:
+        // DX
+        ID3D11Device2* d3dDevice_;
+        ID3D11DeviceContext2* d3dContext_;
+        IDXGISwapChain2* swapChain_;
 
-    return (int)msg.wParam;
-}
+        ID3D11RenderTargetView* rtv_;
+
+        // WDA
+        HINSTANCE hInst_;
+        HWND hWnd_;
+    };
+
+} // namespace Takoyaki
 

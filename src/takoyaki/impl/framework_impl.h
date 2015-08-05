@@ -37,10 +37,7 @@ namespace Takoyaki
 
     private:
         HRESULT CreateDevice();
-        HRESULT CreateWDAWindow(HINSTANCE);
-        HRESULT CreateSwapChain(const SIZE& size);
-
-        static LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
+        HRESULT CreateSwapChain();
 
     private:
         // DX

@@ -18,39 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "pch.h"
 #include "error.h"
 
-#include <array>
-#include <string>
-#include <unordered_map>
+#include <exception>
+
+#include "log.h"
 
 namespace Takoyaki
 {
     namespace Utility
     {
-        std::string GetWDAError()
-        {
-            //Get the error message, if any.
-            DWORD errorMessageID = GetLastError();
-
-            if (errorMessageID == 0)
-                return "No error message has been recorded";
-
-            LPSTR messageBuffer = nullptr;
-            size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, nullptr);
-
-            std::string message(messageBuffer, size);
-
-            //Free the buffer.
-            LocalFree(messageBuffer);
-
-            return message;
-        }
-
-        std::string GetDXGIError(HRESULT code)
+        std::string GetDXError(HRESULT code)
         {
             std::unordered_map<HRESULT, std::string> map = {
+                { D3D11_ERROR_FILE_NOT_FOUND, "D3D11_ERROR_FILE_NOT_FOUND" },
+                { D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS, "D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS" },
+                { D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS, "D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS" },
+                { D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD, "D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD" },
+                { E_FAIL, "E_FAIL" },
+                { E_INVALIDARG, "E_INVALIDARG" },
+                { E_OUTOFMEMORY, "E_OUTOFMEMORY" },
+                { E_NOTIMPL, "E_NOTIMPL" },
+                { S_FALSE, "S_FALSE" },
+
                 { DXGI_ERROR_DEVICE_HUNG, "DXGI_ERROR_DEVICE_HUNG" },
                 { DXGI_ERROR_DEVICE_REMOVED, "DXGI_ERROR_DEVICE_REMOVED" },
                 { DXGI_ERROR_DEVICE_RESET, "DXGI_ERROR_DEVICE_RESET" },
@@ -80,25 +71,15 @@ namespace Takoyaki
             return map[code];
         }
 
-        std::string GetDXError(HRESULT code)
+        void DXGICheckThrow(HRESULT hr)
         {
-            std::unordered_map<HRESULT, std::string> map = {
-                { D3D11_ERROR_FILE_NOT_FOUND, "D3D11_ERROR_FILE_NOT_FOUND" },
-                { D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS, "D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS" },
-                { D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS, "D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS" },
-                { D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD, "D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD" },
-                { DXGI_ERROR_INVALID_CALL, "DXGI_ERROR_INVALID_CALL" },
-                { DXGI_ERROR_WAS_STILL_DRAWING, "DXGI_ERROR_WAS_STILL_DRAWING" },
-                { E_FAIL, "E_FAIL" },
-                { E_INVALIDARG, "E_INVALIDARG" },
-                { E_OUTOFMEMORY, "E_OUTOFMEMORY" },
-                { E_NOTIMPL, "E_NOTIMPL" },
-                { S_FALSE, "S_FALSE" },
-                { S_OK, "S_OK" }
-            };
+            if (FAILED(hr)) {
+                LOGE << GetDXError(hr);
 
-            return map[code];
+                // Set a breakpoint on this line to catch Win32 API errors.
+                throw std::runtime_error(GetDXError(hr));
+
+            }
         }
-
     } // namespace Utility
 } // namespace Takoyaki

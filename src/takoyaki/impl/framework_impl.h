@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <d3d11_2.h>
 #include <memory>
 #include <windows.h>
 
@@ -32,24 +31,16 @@ namespace Takoyaki
         FrameworkImpl();
          ~FrameworkImpl();
 
-        HRESULT Initialize(HINSTANCE);
+        void Initialize();
         void Terminate();
 
     private:
-        HRESULT CreateDevice();
-        HRESULT CreateSwapChain();
+        void CreateDevice();
+        void CreateSwapChain();
 
     private:
-        // DX
-        ID3D11Device2* d3dDevice_;
-        ID3D11DeviceContext2* d3dContext_;
-        IDXGISwapChain2* swapChain_;
-
-        ID3D11RenderTargetView* rtv_;
-
-        // WDA
-        HINSTANCE hInst_;
-        HWND hWnd_;
+        Microsoft::WRL::ComPtr<ID3D12Device>    mD3DDevice;
+        Microsoft::WRL::ComPtr<IDXGIFactory4>   mDXGIFactory;
     };
 
 } // namespace Takoyaki

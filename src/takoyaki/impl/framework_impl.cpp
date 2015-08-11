@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "pch.h"
 #include "framework_impl.h"
 
 #include <boost/format.hpp>
@@ -25,14 +26,11 @@
 #include "../utility/error.h"
 #include "../utility/log.h"
 
+using namespace Microsoft::WRL;
+
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
-        : d3dDevice_(nullptr)
-        , d3dContext_(nullptr)
-        , rtv_(nullptr)
-        , hInst_(nullptr)
-        , hWnd_(nullptr)
     {
         Log::Initialize();
     }
@@ -42,36 +40,48 @@ namespace Takoyaki
 
     }
 
-    HRESULT FrameworkImpl::CreateDevice()
+    void FrameworkImpl::CreateDevice()
     {
         LOGC << "- Creating D3D Device";
 
-        HRESULT hr = S_OK;
+#if defined(_DEBUG)
+        // If the project is in a debug build, enable debugging via SDK Layers.
+        {
+            ComPtr<ID3D12Debug> debugController;
+            if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+                debugController->EnableDebugLayer();
+            }
+        }
+#endif
 
+        Utility::DXGICheckThrow(CreateDXGIFactory1(IID_PPV_ARGS(&mDXGIFactory)));
 
-        return S_OK;
+        // Create the Direct3D 12 API device object
+        HRESULT hr = D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mD3DDevice));
+
+        if (FAILED(hr)) {
+            LOGW << "ID3D12Device initialization fails, falling back to the WARP device.";
+
+            ComPtr<IDXGIAdapter> warpAdapter;
+
+            mDXGIFactory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter));
+            Utility::DXGICheckThrow(D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mD3DDevice)));
+        }
+
     }
 
-    HRESULT FrameworkImpl::CreateSwapChain()
+    void FrameworkImpl::CreateSwapChain()
     {
         LOGC << "- Creating D3D SwapChain";
-
-        HRESULT hr = S_OK;
-
-        return S_OK;
     }
 
-    HRESULT FrameworkImpl::Initialize(HINSTANCE hInstance)
+    void FrameworkImpl::Initialize()
     {
         LOGC << "Initializing Takoyaki FrameworkImpl..";
 
-        HRESULT hr = S_OK;
-
-
+        CreateDevice();
 
         LOGC << "Initialization complete.";
-
-        return S_OK;
     }
 
     void FrameworkImpl::Terminate()

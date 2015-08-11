@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "pch.h"
 #include "framework.h"
 
 #include "impl/framework_impl.h"
@@ -33,9 +34,9 @@ namespace Takoyaki
     {
     }
 
-    HRESULT Framework::Initialize(HINSTANCE hInstance)
+    void Framework::Initialize()
     {
-        return impl_->Initialize(hInstance);
+        impl_->Initialize();
     }
 
     void Framework::Terminate()

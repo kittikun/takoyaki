@@ -12,15 +12,9 @@
     <ClCompile Include="..\src\app\App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\app\pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\app\App.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\app\pch.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -52,7 +46,11 @@
     <Image Include="assets\Wide310x150Logo.scale-200.png">
       <Filter>assets</Filter>
     </Image>
-    <Image Include="assets\SplashScreen.scale-200.jpg" />
-    <Image Include="Assets\Square44x44Logo.scale-100.png" />
+    <Image Include="assets\SplashScreen.scale-200.jpg">
+      <Filter>assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-100.png">
+      <Filter>assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

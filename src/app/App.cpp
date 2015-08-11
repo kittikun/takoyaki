@@ -15,7 +15,6 @@ using namespace Windows::Graphics::Display;
 
 // The DirectX 12 Application template is documented at http://go.microsoft.com/fwlink/?LinkID=613670&clcid=0x409
 
-// The main function is only used to initialize our IFrameworkView class.
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
@@ -34,8 +33,8 @@ int main(Platform::Array<Platform::String^>^)
 
 
     App::App() :
-        m_windowClosed(false),
-        m_windowVisible(true)
+        mWindowClosed(false),
+        mWindowVisible(true)
     {
     }
 
@@ -44,54 +43,38 @@ int main(Platform::Array<Platform::String^>^)
     {
         // Register event handlers for app lifecycle. This example includes Activated, so that we
         // can make the CoreWindow active and start rendering on the window.
-        applicationView->Activated +=
-            ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &App::OnActivated);
-
-        CoreApplication::Suspending +=
-            ref new EventHandler<SuspendingEventArgs^>(this, &App::OnSuspending);
-
-        CoreApplication::Resuming +=
-            ref new EventHandler<Platform::Object^>(this, &App::OnResuming);
+        applicationView->Activated += ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &App::OnActivated);
+        CoreApplication::Suspending += ref new EventHandler<SuspendingEventArgs^>(this, &App::OnSuspending);
+        CoreApplication::Resuming += ref new EventHandler<Platform::Object^>(this, &App::OnResuming);
     }
 
     // Called when the CoreWindow object is created (or re-created).
     void App::SetWindow(CoreWindow^ window)
     {
-        window->SizeChanged +=
-            ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &App::OnWindowSizeChanged);
-
-        window->VisibilityChanged +=
-            ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &App::OnVisibilityChanged);
-
-        window->Closed +=
-            ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &App::OnWindowClosed);
+        window->SizeChanged += ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &App::OnWindowSizeChanged);
+        window->VisibilityChanged += ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &App::OnVisibilityChanged);
+        window->Closed += ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &App::OnWindowClosed);
 
         DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
 
-        currentDisplayInformation->DpiChanged +=
-            ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnDpiChanged);
-
-        currentDisplayInformation->OrientationChanged +=
-            ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnOrientationChanged);
-
-        DisplayInformation::DisplayContentsInvalidated +=
-            ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnDisplayContentsInvalidated);
+        currentDisplayInformation->DpiChanged += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnDpiChanged);
+        currentDisplayInformation->OrientationChanged += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnOrientationChanged);
+        DisplayInformation::DisplayContentsInvalidated += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnDisplayContentsInvalidated);
     }
 
     // Initializes scene resources, or loads a previously saved app state.
     void App::Load(Platform::String^ entryPoint)
     {
-        //if (m_main == nullptr)
-        //{
-        //	m_main = std::unique_ptr<App1Main>(new App1Main());
-        //}
+        mpFramework.reset(new Takoyaki::Framework());
+
+        mpFramework->Initialize();
     }
 
     // This method is called after the window becomes active.
     void App::Run()
     {
-        while (!m_windowClosed) {
-            if (m_windowVisible) {
+        while (!mWindowClosed) {
+            if (mWindowVisible) {
                 CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
                 //auto commandQueue = GetDeviceResources()->GetCommandQueue();
@@ -167,12 +150,12 @@ int main(Platform::Array<Platform::String^>^)
 
     void App::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
     {
-        m_windowVisible = args->Visible;
+        mWindowVisible = args->Visible;
     }
 
     void App::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
     {
-        m_windowClosed = true;
+        mWindowClosed = true;
     }
 
     // DisplayInformation event handlers.

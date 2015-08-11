@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "pch.h"
-//#include "Common\DeviceResources.h"
-//#include "AppMain.h"
+#include <memory>
+
+#include <framework.h>
 
 namespace App
 {
@@ -36,13 +36,9 @@ namespace App
 		void OnDisplayContentsInvalidated(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
 
 	private:
-		//// Private accessor for m_deviceResources, protects against device removed errors.
-		//std::shared_ptr<DX::DeviceResources> GetDeviceResources();
-
-		//std::shared_ptr<DX::DeviceResources> m_deviceResources;
-		//std::unique_ptr<AppMain> m_main;
-		bool m_windowClosed;
-		bool m_windowVisible;
+        std::unique_ptr<Takoyaki::Framework> mpFramework;
+		bool mWindowClosed;
+		bool mWindowVisible;
 	};
 }
 

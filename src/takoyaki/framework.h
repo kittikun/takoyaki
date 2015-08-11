@@ -38,7 +38,7 @@ namespace Takoyaki
         Framework();
         ~Framework();
 
-        HRESULT Initialize(HINSTANCE);
+        void Initialize();
         void Terminate();
 
     private:

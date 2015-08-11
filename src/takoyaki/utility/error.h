@@ -20,17 +20,12 @@
 
 #pragma once
 
-#include <string>
-#include <windows.h>
 
 namespace Takoyaki
 {
     namespace Utility
     {
-        std::string GetWDAError();
-        std::string GetDXGIError(HRESULT);
-        std::string GetDXError(HRESULT);
+        void DXGICheckThrow(HRESULT);
 
     } // namespace Utility
 } // namespace Takoyaki
-

@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 kittikun
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -18,4 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
+#pragma once
+
+#include "../IRenderer.h"
+#include "DX12Device.h"
+
+namespace Takoyaki
+{
+    class DX12Renderer final : public IRenderer
+    {
+        DX12Renderer(const DX12Renderer&) = delete;
+        DX12Renderer& operator=(const DX12Renderer&) = delete;
+        DX12Renderer(DX12Renderer&&) = delete;
+        DX12Renderer& operator=(DX12Renderer&&) = delete;
+
+    public:
+        DX12Renderer(std::shared_ptr<DX12Device>&&);
+        ~DX12Renderer() override = default;
+
+        void CreateWindowDepedentResources() override;
+
+    private:
+        std::shared_ptr<DX12Device> device_;
+    };
+} // namespace Takoyaki

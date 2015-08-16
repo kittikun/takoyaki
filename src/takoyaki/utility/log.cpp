@@ -42,6 +42,32 @@ namespace Takoyaki
 {
 	namespace Log
 	{
+        class LogContext
+        {
+            LogContext(const LogContext&) = delete;
+            LogContext& operator=(const LogContext&) = delete;
+            LogContext(LogContext&&) = delete;
+            LogContext& operator=(LogContext&&) = delete;
+
+        public:
+            LogContext()
+            {
+                count.fill(0);
+                isNew.fill(false);
+            }
+
+            ~LogContext()
+            {
+
+            }
+
+            // Public because of laziness
+            std::array<uint32_t, Log_Level_Count> count;
+            std::array<bool, Log_Level_Count> isNew;
+        };
+
+        static std::unique_ptr<LogContext> sLogContext;
+
 		BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", ELogLevel);
 
 		std::ostream& operator<<(std::ostream& strm, ELogLevel level)
@@ -49,8 +75,7 @@ namespace Takoyaki
 			static const char* strings[] =
 			{
 				"Core",
-				"Dominion",
-				"Network",
+                "Device",
 				"WARNING",
 				"ERROR",
 			};
@@ -65,10 +90,11 @@ namespace Takoyaki
 
 		void Initialize()
 		{
-			logging::add_console_log(std::cout, keywords::format = expr::format("%1%: [%2%] %3%")
-                % expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
-                % severity
-                % expr::message);
+            // No console for windows app
+			//logging::add_console_log(std::cout, keywords::format = expr::format("%1%: [%2%] %3%")
+   //             % expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
+   //             % severity
+   //             % expr::message);
 
 			logging::add_common_attributes();
 
@@ -82,6 +108,38 @@ namespace Takoyaki
 				% expr::message);
 
 			core->add_sink(debugSink);
+
+            sLogContext.reset(new LogContext());
 		}
+
+        void StartIndent(ELogLevel level)
+        {
+            ++sLogContext->count[level];
+            sLogContext->isNew[level] = true;
+        }
+
+        void EndIndent(ELogLevel level)
+        {
+            --sLogContext->count[level];
+        }
+
+        std::string GetIndent(ELogLevel level)
+        {
+            std::string res;
+
+            if (sLogContext->isNew[level]) {
+                for (uint32_t i = 1; i < sLogContext->count[level]; ++i)
+                    res += " ";
+
+                res += "- ";
+                sLogContext->isNew[level] = false;
+            } else {
+                for (uint32_t i = 0; i < sLogContext->count[level]; ++i)
+                    res += "  ";
+            }
+
+            return res;
+        }
+
 	} // namespace Log
 } // namespace Takoyaki

@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 kittikun
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -18,4 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
+#pragma once
+
+namespace Takoyaki
+{
+    class IRenderer
+    {
+    public:
+        virtual ~IRenderer() = default;
+
+        virtual void CreateWindowDepedentResources() = 0;
+    };
+
+} // namespace Takoyaki

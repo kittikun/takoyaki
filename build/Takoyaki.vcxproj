@@ -183,7 +183,7 @@
       <AdditionalDependencies>d3d12.lib;dxgi.lib;Kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(Outdir)$(ProjectName).dll $(Outdir)AppX</Command>
+      <Command>copy $(Outdir)Takoyaki.dll $(Outdir)AppX</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -198,21 +198,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\takoyaki\framework.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\DX12Renderer.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\error.h" />
+    <ClInclude Include="..\src\takoyaki\IDevice.h" />
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
+    <ClInclude Include="..\src\takoyaki\IRenderer.h" />
     <ClInclude Include="..\src\takoyaki\pch.h" />
-    <ClInclude Include="..\src\takoyaki\utility\error.h" />
+    <ClInclude Include="..\src\takoyaki\pimpl\framework_desc.h" />
+    <ClInclude Include="..\src\takoyaki\pimpl\framework.h" />
+    <ClInclude Include="..\src\takoyaki\pimpl\platform.h" />
     <ClInclude Include="..\src\takoyaki\utility\log.h" />
-    <ClInclude Include="..\src\takoyaki\utility\platform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\takoyaki\dllmain.cpp" />
-    <ClCompile Include="..\src\takoyaki\framework.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\DX12Renderer.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\error.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\utility\error.cpp" />
+    <ClCompile Include="..\src\takoyaki\pimpl\framework.cpp" />
     <ClCompile Include="..\src\takoyaki\utility\log.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -19,29 +19,17 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "framework.h"
-
-#include "impl/framework_impl.h"
+#include "DX12Renderer.h"
 
 namespace Takoyaki
 {
-    Framework::Framework()
-        : impl_(std::make_unique<FrameworkImpl>())
+    DX12Renderer::DX12Renderer(std::shared_ptr<DX12Device>&& device)
+        : device_(device)
     {
     }
 
-    Framework::~Framework()
+    void DX12Renderer::CreateWindowDepedentResources()
     {
-    }
 
-    void Framework::Initialize()
-    {
-        impl_->Initialize();
-    }
-
-    void Framework::Terminate()
-    { 
-        impl_->Terminate();
     }
 }
-// namespace Takoyaki

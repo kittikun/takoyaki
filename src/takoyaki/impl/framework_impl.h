@@ -20,27 +20,30 @@
 
 #pragma once
 
-#include <memory>
-#include <windows.h>
+#include "../pimpl/framework_desc.h"
+
+#include "../IDevice.h"
+#include "../IRenderer.h"
 
 namespace Takoyaki
 {
     class FrameworkImpl
     {
+        FrameworkImpl(const FrameworkImpl&) = delete;
+        FrameworkImpl& operator=(const FrameworkImpl&) = delete;
+        FrameworkImpl(FrameworkImpl&&) = delete;
+        FrameworkImpl& operator=(FrameworkImpl&&) = delete;
+
     public:
         FrameworkImpl();
          ~FrameworkImpl();
 
-        void Initialize();
+        void Initialize(const FrameworkDesc&);
         void Terminate();
 
     private:
-        void CreateDevice();
-        void CreateSwapChain();
-
-    private:
-        Microsoft::WRL::ComPtr<ID3D12Device>    mD3DDevice;
-        Microsoft::WRL::ComPtr<IDXGIFactory4>   mDXGIFactory;
+        std::shared_ptr<IDevice> device_;
+        std::unique_ptr<IRenderer> renderer_;
     };
 
 } // namespace Takoyaki

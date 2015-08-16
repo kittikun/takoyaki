@@ -1,7 +1,7 @@
-﻿#include "pch.h"
-#include "App.h"
+﻿#include "App.h"
 
 #include <ppltasks.h>
+#include <wrl.h>
 
 using namespace concurrency;
 using namespace Windows::ApplicationModel;
@@ -67,7 +67,16 @@ int main(Platform::Array<Platform::String^>^)
     {
         mpFramework.reset(new Takoyaki::Framework());
 
-        mpFramework->Initialize();
+        auto window = CoreWindow::GetForCurrentThread();
+
+        Takoyaki::FrameworkDesc desc;
+
+        desc.type = Takoyaki::DeviceType::DX12;
+        desc.windowHandle = reinterpret_cast<void*>(window);
+        desc.windowWidth = window->Bounds.Width;
+        desc.windowHeight = window->Bounds.Height;
+
+        mpFramework->Initialize(desc);
     }
 
     // This method is called after the window becomes active.

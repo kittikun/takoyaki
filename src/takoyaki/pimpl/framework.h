@@ -20,25 +20,25 @@
 
 #pragma once
 
-#include <memory>
-#include <windows.h>
-
-#include "utility/platform.h"
-
+#include "platform.h"
+#include "framework_desc.h"
 
 namespace Takoyaki
 {
     class FrameworkImpl;
 
-    template class TAKOYAKI_API std::unique_ptr<FrameworkImpl>;
-
     class TAKOYAKI_API Framework
     {
+        Framework(const Framework&) = delete;
+        Framework& operator=(const Framework&) = delete;
+        Framework(Framework&&) = delete;
+        Framework& operator=(Framework&&) = delete;
+
     public:
         Framework();
         ~Framework();
 
-        void Initialize();
+        void Initialize(const FrameworkDesc&);
         void Terminate();
 
     private:

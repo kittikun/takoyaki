@@ -21,10 +21,11 @@
 #include "pch.h"
 #include "framework_impl.h"
 
-#include <boost/format.hpp>
+#include <DirectXMath.h>
 
-#include "../utility/error.h"
 #include "../utility/log.h"
+#include "../dx12/DX12Device.h"
+#include "../dx12/DX12Renderer.h"
 
 using namespace Microsoft::WRL;
 
@@ -40,48 +41,20 @@ namespace Takoyaki
 
     }
 
-    void FrameworkImpl::CreateDevice()
+    void FrameworkImpl::Initialize(const FrameworkDesc& desc)
     {
-        LOGC << "- Creating D3D Device";
+        LOGC_INDENT_START << "Initializing Takoyaki FrameworkImpl..";
 
-#if defined(_DEBUG)
-        // If the project is in a debug build, enable debugging via SDK Layers.
-        {
-            ComPtr<ID3D12Debug> debugController;
-            if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
-                debugController->EnableDebugLayer();
-            }
-        }
-#endif
-
-        Utility::DXGICheckThrow(CreateDXGIFactory1(IID_PPV_ARGS(&mDXGIFactory)));
-
-        // Create the Direct3D 12 API device object
-        HRESULT hr = D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mD3DDevice));
-
-        if (FAILED(hr)) {
-            LOGW << "ID3D12Device initialization fails, falling back to the WARP device.";
-
-            ComPtr<IDXGIAdapter> warpAdapter;
-
-            mDXGIFactory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter));
-            Utility::DXGICheckThrow(D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mD3DDevice)));
+        if (desc.type == DeviceType::DX12) {
+            device_.reset(new DX12Device());
+            renderer_.reset(new DX12Renderer(std::static_pointer_cast<DX12Device>(device_)));
         }
 
-    }
+        device_->Initialize();
 
-    void FrameworkImpl::CreateSwapChain()
-    {
-        LOGC << "- Creating D3D SwapChain";
-    }
+        auto b = DirectX::XMVerifyCPUSupport();
 
-    void FrameworkImpl::Initialize()
-    {
-        LOGC << "Initializing Takoyaki FrameworkImpl..";
-
-        CreateDevice();
-
-        LOGC << "Initialization complete.";
+        LOGC_INDENT_END << "Initialization complete.";
     }
 
     void FrameworkImpl::Terminate()

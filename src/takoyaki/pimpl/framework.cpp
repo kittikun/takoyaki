@@ -18,14 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "framework.h"
 
+#include "../impl/framework_impl.h"
 
 namespace Takoyaki
 {
-    namespace Utility
+    Framework::Framework()
+        : impl_(std::make_unique<FrameworkImpl>())
     {
-        void DXGICheckThrow(HRESULT);
+    }
 
-    } // namespace Utility
-} // namespace Takoyaki
+    Framework::~Framework() = default;
+
+    void Framework::Initialize(const FrameworkDesc& desc)
+    {
+        impl_->Initialize(desc);
+    }
+
+    void Framework::Terminate()
+    { 
+        impl_->Terminate();
+    }
+}
+// namespace Takoyaki

@@ -172,7 +172,7 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\external;$(BOOST_ROOT);$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_EXPORT_TAKOYAKI_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -200,21 +200,21 @@
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12Renderer.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\error.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\utility.h" />
     <ClInclude Include="..\src\takoyaki\IDevice.h" />
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
     <ClInclude Include="..\src\takoyaki\IRenderer.h" />
     <ClInclude Include="..\src\takoyaki\pch.h" />
-    <ClInclude Include="..\src\takoyaki\pimpl\framework_desc.h" />
     <ClInclude Include="..\src\takoyaki\pimpl\framework.h" />
     <ClInclude Include="..\src\takoyaki\pimpl\platform.h" />
+    <ClInclude Include="..\src\takoyaki\pimpl\definitions.h" />
     <ClInclude Include="..\src\takoyaki\utility\log.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\takoyaki\dllmain.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Renderer.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\error.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\utility.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

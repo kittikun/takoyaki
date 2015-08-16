@@ -22,7 +22,6 @@
 
 #include <d3d12.h>
 #include <dxgi1_4.h>
-#include <d3d11_3.h>
 #include <wrl/client.h>
 
 #include "../IDevice.h"
@@ -40,30 +39,26 @@ namespace Takoyaki
         DX12Device();
         ~DX12Device() override = default;
 
-        void Initialize() override;
-
-    private:
-        void CreateDevice();
+        void create(uint_fast32_t) override;
 
         //Wait for pending GPU work to complete.
-        void WaitForGPU();
+        void waitForGpu();
+
+        size_t getBufferCount() { return commandAllocators_.size(); }
 
     private:
-        static const uint_fast32_t BUFFER_COUNT = 3;    // Use triple buffering.
-
         Microsoft::WRL::ComPtr<ID3D12Device> D3DDevice_;
         Microsoft::WRL::ComPtr<IDXGIFactory4> DXGIFactory_;
 
         // TODO: Move to another thread class
         Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
-        std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, BUFFER_COUNT> commandAllocators_;
+        std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
 
         // CPU/GPU Synchronization.
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-        std::array<uint_fast32_t, BUFFER_COUNT> fenceValues_;
+        std::vector<uint_fast32_t> fenceValues_;
         HANDLE fenceEvent_;
 
         uint_fast32_t currentFrame_;
-
     };
 } // namespace Takoyaki

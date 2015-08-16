@@ -35,8 +35,11 @@ namespace App
 		void OnOrientationChanged(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
 		void OnDisplayContentsInvalidated(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
 
+    private:
+        Takoyaki::DisplayOrientation DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations);
+
 	private:
-        std::unique_ptr<Takoyaki::Framework> mpFramework;
+        std::unique_ptr<Takoyaki::Framework> framework_;
 		bool mWindowClosed;
 		bool mWindowVisible;
 	};

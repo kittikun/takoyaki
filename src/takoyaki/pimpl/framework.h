@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -20,12 +20,26 @@
 
 #pragma once
 
+#include <boost/any.hpp>
+#include <glm/glm.hpp>
+
 #include "platform.h"
-#include "framework_desc.h"
+#include "definitions.h"
 
 namespace Takoyaki
 {
     class FrameworkImpl;
+
+    struct FrameworkDesc
+    {
+        uint_fast32_t       bufferCount;
+        DisplayOrientation  currentOrientation;
+        DisplayOrientation  nativeOrientation;
+        DeviceType          type;
+        void*               windowHandle;
+        glm::vec2           windowSize;
+        float               windowDpi;
+    };
 
     class TAKOYAKI_API Framework
     {
@@ -38,8 +52,9 @@ namespace Takoyaki
         Framework();
         ~Framework();
 
-        void Initialize(const FrameworkDesc&);
-        void Terminate();
+        void initialize(const FrameworkDesc&);
+        void setProperty(PropertyID, const boost::any&);
+        void terminate();
 
     private:
         std::unique_ptr<FrameworkImpl> impl_;

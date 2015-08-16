@@ -21,8 +21,6 @@
 #include "pch.h"
 #include "framework_impl.h"
 
-#include <DirectXMath.h>
-
 #include "../utility/log.h"
 #include "../dx12/DX12Device.h"
 #include "../dx12/DX12Renderer.h"
@@ -41,7 +39,7 @@ namespace Takoyaki
 
     }
 
-    void FrameworkImpl::Initialize(const FrameworkDesc& desc)
+    void FrameworkImpl::initialize(const FrameworkDesc& desc)
     {
         LOGC_INDENT_START << "Initializing Takoyaki FrameworkImpl..";
 
@@ -50,14 +48,30 @@ namespace Takoyaki
             renderer_.reset(new DX12Renderer(std::static_pointer_cast<DX12Device>(device_)));
         }
 
-        device_->Initialize();
-
-        auto b = DirectX::XMVerifyCPUSupport();
+        device_->create(desc.bufferCount);
+        renderer_->setup(desc);
+        renderer_->createSwapChain();
 
         LOGC_INDENT_END << "Initialization complete.";
     }
 
-    void FrameworkImpl::Terminate()
+    void FrameworkImpl::setProperty(PropertyID id, const boost::any& value)
+    {
+        switch (id) {
+            case Takoyaki::PropertyID::WINDOW_SIZE:
+            case Takoyaki::PropertyID::WINDOW_ORIENTATION:
+            case Takoyaki::PropertyID::WINDOW_DPI:
+                renderer_->setProperty(id, value);
+                break;
+
+            default:
+                LOGE << "setProperty unknown property";
+                throw new std::runtime_error("setProperty unknown property");
+                break;
+        }
+    }
+
+    void FrameworkImpl::terminate()
     {
 
     }

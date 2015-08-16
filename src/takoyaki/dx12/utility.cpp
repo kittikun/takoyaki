@@ -19,9 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "error.h"
-
-#include <exception>
+#include "utility.h"
 
 #include "../utility/log.h"
 
@@ -67,6 +65,14 @@ namespace Takoyaki
         };
 
         return map[code];
+    }
+
+    float ConvertDipsToPixels(float dips, float dpi)
+    {
+        // https://en.wikipedia.org/wiki/Device_independent_pixel
+        static const float dipsPerInch = 96.0f;
+
+        return std::max(floorf(dips * dpi / dipsPerInch + 0.5f), 1.f);
     }
 
     void DXCheckThrow(HRESULT hr)

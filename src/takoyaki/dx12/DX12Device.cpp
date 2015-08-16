@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "DX12Device.h"
 
-#include "error.h"
+#include "utility.h"
 #include "../utility/log.h"
 
 namespace Takoyaki
@@ -31,7 +31,7 @@ namespace Takoyaki
     {
     }
 
-    void DX12Device::CreateDevice()
+    void DX12Device::create(uint_fast32_t bufferCount)
     {
         LOGD << "Creating D3D Device";
 
@@ -66,22 +66,21 @@ namespace Takoyaki
 
         DXCheckThrow(D3DDevice_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
 
-        for (auto i = 0; i < commandAllocators_.size(); ++i) {
+        commandAllocators_.resize(bufferCount);
+
+        for (size_t i = 0; i < bufferCount; ++i) {
             DXCheckThrow(D3DDevice_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
         }
 
         // Create synchronization objects.
+        fenceValues_.resize(bufferCount);
+        std::fill(fenceValues_.begin(), fenceValues_.end(), 0);
         DXCheckThrow(D3DDevice_->CreateFence(fenceValues_[currentFrame_], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));
         fenceValues_[currentFrame_]++;
         fenceEvent_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
     }
 
-    void DX12Device::Initialize()
-    {
-        CreateDevice();
-    }
-
-    void DX12Device::WaitForGPU()
+    void DX12Device::waitForGpu()
     {
         // Schedule a Signal command in the queue.
         DXCheckThrow(commandQueue_->Signal(fence_.Get(), fenceValues_[currentFrame_]));

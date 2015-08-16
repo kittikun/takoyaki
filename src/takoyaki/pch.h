@@ -30,10 +30,15 @@
 #include <windows.h>
 
 // STL
+#include <exception>
 #include <memory>
 #include <array>
 #include <unordered_map>
 #include <vector>
 
 // Boost
+#include <boost/any.hpp>
 #include <boost/format.hpp>
+
+// Maths
+#include <glm/glm.hpp>

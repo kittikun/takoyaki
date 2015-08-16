@@ -38,6 +38,24 @@ int main(Platform::Array<Platform::String^>^)
     {
     }
 
+    Takoyaki::DisplayOrientation App::DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations orientation)
+    {
+        switch (orientation) {
+            case Windows::Graphics::Display::DisplayOrientations::Landscape:
+                return Takoyaki::DisplayOrientation::LANDSCAPE;
+            case Windows::Graphics::Display::DisplayOrientations::Portrait:
+                return Takoyaki::DisplayOrientation::PORTRAIT;
+            case Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped:
+                return Takoyaki::DisplayOrientation::LANDSCAPE_FLIPPED;
+            case Windows::Graphics::Display::DisplayOrientations::PortraitFlipped:
+                return Takoyaki::DisplayOrientation::PORTRAIT_FLIPPED;
+            default:
+                break;
+        }
+
+        return Takoyaki::DisplayOrientation::UNKNOWN;
+    }
+
     // The first method called when the IFrameworkView is being created.
     void App::Initialize(CoreApplicationView^ applicationView)
     {
@@ -65,18 +83,23 @@ int main(Platform::Array<Platform::String^>^)
     // Initializes scene resources, or loads a previously saved app state.
     void App::Load(Platform::String^ entryPoint)
     {
-        mpFramework.reset(new Takoyaki::Framework());
+        framework_.reset(new Takoyaki::Framework());
 
         auto window = CoreWindow::GetForCurrentThread();
+        DisplayInformation^ disp = DisplayInformation::GetForCurrentView();
 
         Takoyaki::FrameworkDesc desc;
 
+        desc.bufferCount = 3;
+        desc.nativeOrientation = DisplayOrientationsToTakoyaki(disp->NativeOrientation);
+        desc.currentOrientation = DisplayOrientationsToTakoyaki(disp->CurrentOrientation);
         desc.type = Takoyaki::DeviceType::DX12;
         desc.windowHandle = reinterpret_cast<void*>(window);
-        desc.windowWidth = window->Bounds.Width;
-        desc.windowHeight = window->Bounds.Height;
+        desc.windowSize.x = window->Bounds.Width;
+        desc.windowSize.y = window->Bounds.Height;
+        desc.windowDpi = disp->LogicalDpi;
 
-        mpFramework->Initialize(desc);
+        framework_->initialize(desc);
     }
 
     // This method is called after the window becomes active.
@@ -153,8 +176,9 @@ int main(Platform::Array<Platform::String^>^)
 
     void App::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
     {
-        //GetDeviceResources()->SetLogicalSize(Size(sender->Bounds.Width, sender->Bounds.Height));
-        //m_main->OnWindowSizeChanged();
+        glm::vec2 size(sender->Bounds.Width, sender->Bounds.Height);
+
+        framework_->setProperty(Takoyaki::PropertyID::WINDOW_SIZE, size);
     }
 
     void App::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
@@ -167,43 +191,18 @@ int main(Platform::Array<Platform::String^>^)
         mWindowClosed = true;
     }
 
-    // DisplayInformation event handlers.
-
     void App::OnDpiChanged(DisplayInformation^ sender, Object^ args)
     {
-        //GetDeviceResources()->SetDpi(sender->LogicalDpi);
-        //m_main->OnWindowSizeChanged();
+        framework_->setProperty(Takoyaki::PropertyID::WINDOW_DPI, sender->LogicalDpi);
     }
 
     void App::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
     {
-        //GetDeviceResources()->SetCurrentOrientation(sender->CurrentOrientation);
-        //m_main->OnWindowSizeChanged();
+        framework_->setProperty(Takoyaki::PropertyID::WINDOW_ORIENTATION, sender->CurrentOrientation);
     }
 
     void App::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
     {
         //GetDeviceResources()->ValidateDevice();
     }
-
-    //std::shared_ptr<DX::DeviceResources> App::GetDeviceResources()
-    //{
-    //	if (m_deviceResources != nullptr && m_deviceResources->IsDeviceRemoved())
-    //	{
-    //		// All references to the existing D3D device must be released before a new device
-    //		// can be created.
-    //
-    //		m_deviceResources = nullptr;
-    //		m_main->OnDeviceRemoved();
-    //	}
-    //
-    //	if (m_deviceResources == nullptr)
-    //	{
-    //		m_deviceResources = std::make_shared<DX::DeviceResources>();
-    //		m_deviceResources->SetWindow(CoreWindow::GetForCurrentThread());
-    //		m_main->CreateRenderers(m_deviceResources);
-    //	}
-    //	return m_deviceResources;
-    //}
-
 }

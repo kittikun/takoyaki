@@ -36,10 +36,10 @@
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\error.cpp">
+    <ClCompile Include="..\src\takoyaki\dx12\DX12Renderer.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12Renderer.cpp">
+    <ClCompile Include="..\src\takoyaki\dx12\utility.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,16 +65,16 @@
     <ClInclude Include="..\src\takoyaki\IDevice.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\error.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12Renderer.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\IRenderer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\pimpl\framework_desc.h">
+    <ClInclude Include="..\src\takoyaki\dx12\utility.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\pimpl\definitions.h">
       <Filter>Source Files\pimpl</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,8 +20,10 @@
 
 #pragma once
 
-#include "../IRenderer.h"
 #include "DX12Device.h"
+
+#include "../IRenderer.h"
+#include "../pimpl/framework.h"
 
 namespace Takoyaki
 {
@@ -36,9 +38,26 @@ namespace Takoyaki
         DX12Renderer(std::shared_ptr<DX12Device>&&);
         ~DX12Renderer() override = default;
 
-        void CreateWindowDepedentResources() override;
+        void createSwapChain() override;
+        void setProperty(PropertyID, const boost::any&) override;
+        void setup(const FrameworkDesc&) override;
+
+    private:
+        DXGI_MODE_ROTATION GetDXGIOrientation() const;
 
     private:
         std::shared_ptr<DX12Device> device_;
+
+        // window related
+        IUnknown* window_;
+        glm::vec2 windowSize_;
+        float dpi_;
+        DisplayOrientation currentOrientation_;
+        DisplayOrientation nativeOrientation_;
+
+        // swap chain
+        Microsoft::WRL::ComPtr<IDXGISwapChain3> swapChain_;
+        std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> renderTargets_;
+        Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
     };
 } // namespace Takoyaki

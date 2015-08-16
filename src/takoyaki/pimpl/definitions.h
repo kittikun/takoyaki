@@ -27,13 +27,19 @@ namespace Takoyaki
         DX12
     };
 
-    struct FrameworkDesc
+    enum class DisplayOrientation
     {
-        DeviceType      type;
-        void*           windowHandle;
-        float           windowWidth;
-        float           windowHeight;
+        UNKNOWN,
+        LANDSCAPE,
+        PORTRAIT,
+        LANDSCAPE_FLIPPED,
+        PORTRAIT_FLIPPED
+    };
+
+    enum class PropertyID
+    {
+        WINDOW_SIZE,            // glm::vec2
+        WINDOW_ORIENTATION,     // DisplayOrientation
+        WINDOW_DPI
     };
 } // namespace Takoyaki
-
-

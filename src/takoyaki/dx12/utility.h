@@ -23,4 +23,5 @@
 namespace Takoyaki
 {
     void DXCheckThrow(HRESULT);
+    float ConvertDipsToPixels(float dips, float dpi);
 } // namespace Takoyaki

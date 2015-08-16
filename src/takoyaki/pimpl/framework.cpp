@@ -32,14 +32,19 @@ namespace Takoyaki
 
     Framework::~Framework() = default;
 
-    void Framework::Initialize(const FrameworkDesc& desc)
+    void Framework::initialize(const FrameworkDesc& desc)
     {
-        impl_->Initialize(desc);
+        impl_->initialize(desc);
     }
 
-    void Framework::Terminate()
+    void Framework::setProperty(PropertyID id, const boost::any& value)
+    {
+        impl_->setProperty(id, value);
+    }
+
+    void Framework::terminate()
     { 
-        impl_->Terminate();
+        impl_->terminate();
     }
 }
 // namespace Takoyaki

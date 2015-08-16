@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "../pimpl/framework_desc.h"
+#include "../pimpl/framework.h"
 
 #include "../IDevice.h"
 #include "../IRenderer.h"
@@ -38,8 +38,9 @@ namespace Takoyaki
         FrameworkImpl();
          ~FrameworkImpl();
 
-        void Initialize(const FrameworkDesc&);
-        void Terminate();
+        void initialize(const FrameworkDesc&);
+        void setProperty(PropertyID, const boost::any&);
+        void terminate();
 
     private:
         std::shared_ptr<IDevice> device_;

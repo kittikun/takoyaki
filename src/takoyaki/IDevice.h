@@ -27,7 +27,7 @@ namespace Takoyaki
     public:
         virtual ~IDevice() = default;
 
-        virtual void Initialize() = 0;
+        virtual void create(uint_fast32_t) = 0;
     };
 
 } // namespace Takoyaki

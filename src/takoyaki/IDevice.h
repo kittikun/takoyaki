@@ -20,6 +20,9 @@
 
 #pragma once
 
+#include "pimpl/definitions.h"
+#include "pimpl/framework.h"
+
 namespace Takoyaki
 {
     class IDevice
@@ -27,7 +30,9 @@ namespace Takoyaki
     public:
         virtual ~IDevice() = default;
 
-        virtual void create(uint_fast32_t) = 0;
+        virtual void create(const FrameworkDesc& desc) = 0;
+        virtual void createSwapChain() = 0;
+        virtual void setProperty(PropertyID, const boost::any&) = 0;
     };
 
 } // namespace Takoyaki

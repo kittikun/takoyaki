@@ -199,7 +199,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\DX12Renderer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\utility.h" />
     <ClInclude Include="..\src\takoyaki\IDevice.h" />
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
@@ -213,7 +212,6 @@
   <ItemGroup>
     <ClCompile Include="..\src\takoyaki\dllmain.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\DX12Renderer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\utility.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">

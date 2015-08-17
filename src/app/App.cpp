@@ -50,6 +50,7 @@ int main(Platform::Array<Platform::String^>^)
             case Windows::Graphics::Display::DisplayOrientations::PortraitFlipped:
                 return Takoyaki::DisplayOrientation::PORTRAIT_FLIPPED;
             default:
+                throw std::runtime_error("DisplayOrientationsToTakoyaki");
                 break;
         }
 
@@ -59,7 +60,7 @@ int main(Platform::Array<Platform::String^>^)
     // The first method called when the IFrameworkView is being created.
     void App::Initialize(CoreApplicationView^ applicationView)
     {
-        // Register event handlers for app lifecycle. This example includes Activated, so that we
+        // Register event handlers for app life cycle. This example includes Activated, so that we
         // can make the CoreWindow active and start rendering on the window.
         applicationView->Activated += ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &App::OnActivated);
         CoreApplication::Suspending += ref new EventHandler<SuspendingEventArgs^>(this, &App::OnSuspending);
@@ -88,7 +89,7 @@ int main(Platform::Array<Platform::String^>^)
         auto window = CoreWindow::GetForCurrentThread();
         DisplayInformation^ disp = DisplayInformation::GetForCurrentView();
 
-        Takoyaki::FrameworkDesc desc;
+        Takoyaki::FrameworkDesc desc = { 0 };
 
         desc.bufferCount = 3;
         desc.nativeOrientation = DisplayOrientationsToTakoyaki(disp->NativeOrientation);

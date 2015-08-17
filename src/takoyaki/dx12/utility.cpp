@@ -78,11 +78,7 @@ namespace Takoyaki
     void DXCheckThrow(HRESULT hr)
     {
         if (FAILED(hr)) {
-            LOGE << GetDXError(hr);
-
-            // Set a breakpoint on this line to catch Win32 API errors.
             throw std::runtime_error(GetDXError(hr));
-
         }
     }
 } // namespace Takoyaki

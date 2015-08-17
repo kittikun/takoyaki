@@ -22,6 +22,7 @@
 
 #include <d3d12.h>
 #include <dxgi1_4.h>
+#include <glm/fwd.hpp>
 #include <wrl/client.h>
 
 #include "../IDevice.h"
@@ -39,17 +40,22 @@ namespace Takoyaki
         DX12Device();
         ~DX12Device() override = default;
 
-        void create(uint_fast32_t) override;
+        void create(const FrameworkDesc& desc) override;
+        void setProperty(PropertyID, const boost::any&) override;
 
-        //Wait for pending GPU work to complete.
+        const glm::mat4x4& getDeviceOrientation() const { return matDeviceRotation_; }
+
+    private:
+        void createDevice(uint_fast32_t);
+        void createSwapChain() override;
+        DXGI_MODE_ROTATION GetDXGIOrientation() const;
         void waitForGpu();
-
-        size_t getBufferCount() { return commandAllocators_.size(); }
 
     private:
         Microsoft::WRL::ComPtr<ID3D12Device> D3DDevice_;
         Microsoft::WRL::ComPtr<IDXGIFactory4> DXGIFactory_;
 
+        // Command queue
         // TODO: Move to another thread class
         Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
         std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
@@ -59,6 +65,24 @@ namespace Takoyaki
         std::vector<uint_fast32_t> fenceValues_;
         HANDLE fenceEvent_;
 
+        // window related
+        IUnknown* window_;
+        glm::vec2 windowSize_;
+        float dpi_;
+        DisplayOrientation currentOrientation_;
+        DisplayOrientation nativeOrientation_;
+
+        // swap chain
+        Microsoft::WRL::ComPtr<IDXGISwapChain3> swapChain_;
+        std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> renderTargets_;
+        Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
+        uint_fast32_t bufferCount_;
+
+        // misc
         uint_fast32_t currentFrame_;
+        glm::mat4x4 matDeviceRotation_;
+
+        // TODO: wrap this rendertargetviews nicely
+        uint_fast32_t rtvDescriptorSize_;
     };
 } // namespace Takoyaki

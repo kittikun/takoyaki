@@ -75,7 +75,6 @@ namespace Takoyaki
 			static const char* strings[] =
 			{
 				"Core",
-                "Device",
 				"WARNING",
 				"ERROR",
 			};

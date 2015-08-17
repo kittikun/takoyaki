@@ -23,7 +23,6 @@
 
 #include "../utility/log.h"
 #include "../dx12/DX12Device.h"
-#include "../dx12/DX12Renderer.h"
 
 using namespace Microsoft::WRL;
 
@@ -45,12 +44,9 @@ namespace Takoyaki
 
         if (desc.type == DeviceType::DX12) {
             device_.reset(new DX12Device());
-            renderer_.reset(new DX12Renderer(std::static_pointer_cast<DX12Device>(device_)));
         }
 
-        device_->create(desc.bufferCount);
-        renderer_->setup(desc);
-        renderer_->createSwapChain();
+        device_->create(desc);
 
         LOGC_INDENT_END << "Initialization complete.";
     }
@@ -61,7 +57,7 @@ namespace Takoyaki
             case Takoyaki::PropertyID::WINDOW_SIZE:
             case Takoyaki::PropertyID::WINDOW_ORIENTATION:
             case Takoyaki::PropertyID::WINDOW_DPI:
-                renderer_->setProperty(id, value);
+                device_->setProperty(id, value);
                 break;
 
             default:

@@ -27,15 +27,12 @@
 #include <boost/log/sources/severity_logger.hpp>
 
 #define LOGC BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Core) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Core) 
-#define LOGD BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Device) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Device) 
 #define LOGW BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Warning)
 #define LOGE BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Error)
 
 #define LOGC_INDENT_START Takoyaki::Log::StartIndent(Takoyaki::Log::Log_Core); ## LOGC
-#define LOGD_INDENT_START Takoyaki::Log::StartIndent(Takoyaki::Log::Log_Device); ## LOGD
 
-#define LOGC_INDENT_END Takoyaki::Log::EndIndent(Takoyaki::Log::Log_Core); ## LOGD
-#define LOGD_INDENT_END Takoyaki::Log::EndIndent(Takoyaki::Log::Log_Device); ## LOGD
+#define LOGC_INDENT_END Takoyaki::Log::EndIndent(Takoyaki::Log::Log_Core); ## LOGC
 
 namespace Takoyaki
 {
@@ -44,7 +41,6 @@ namespace Takoyaki
 		enum ELogLevel
 		{
 			Log_Core,
-            Log_Device,
 			Log_Warning,
 			Log_Error,
             Log_Level_Count

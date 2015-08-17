@@ -28,10 +28,6 @@ namespace Takoyaki
     {
     public:
         virtual ~IRenderer() = default;
-
-        virtual void createSwapChain() = 0;
-        virtual void setProperty(PropertyID, const boost::any&) = 0;
-        virtual void setup(const FrameworkDesc&) = 0;
     };
 
 } // namespace Takoyaki

@@ -19,37 +19,4 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "framework.h"
-
-#include "../impl/framework_impl.h"
-
-namespace Takoyaki
-{
-    Framework::Framework()
-        : impl_(std::make_unique<FrameworkImpl>())
-    {
-    }
-
-    Framework::~Framework() = default;
-
-    void Framework::initialize(const FrameworkDesc& desc)
-    {
-        impl_->initialize(desc);
-    }
-
-    void Framework::setProperty(EPropertyID id, const boost::any& value)
-    {
-        impl_->setProperty(id, value);
-    }
-
-    void Framework::terminate()
-    { 
-        impl_->terminate();
-    }
-
-    void Framework::validateDevice() const
-    {
-        impl_->validateDevice();
-    }
-}
-// namespace Takoyaki
+#include "DX12Texture.h"

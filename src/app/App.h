@@ -36,7 +36,7 @@ namespace App
 		void OnDisplayContentsInvalidated(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
 
     private:
-        Takoyaki::DisplayOrientation DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations);
+        Takoyaki::EDisplayOrientation DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations);
 
 	private:
         std::unique_ptr<Takoyaki::Framework> framework_;

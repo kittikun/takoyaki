@@ -20,6 +20,10 @@
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable : 4251)
+
+#include <memory>
 #include <boost/any.hpp>
 #include <glm/glm.hpp>
 
@@ -33,9 +37,9 @@ namespace Takoyaki
     struct FrameworkDesc
     {
         uint_fast32_t       bufferCount;
-        DisplayOrientation  currentOrientation;
-        DisplayOrientation  nativeOrientation;
-        DeviceType          type;
+        EDisplayOrientation  currentOrientation;
+        EDisplayOrientation  nativeOrientation;
+        EDeviceType          type;
         void*               windowHandle;
         glm::vec2           windowSize;
         float               windowDpi;
@@ -53,11 +57,14 @@ namespace Takoyaki
         ~Framework();
 
         void initialize(const FrameworkDesc&);
-        void setProperty(PropertyID, const boost::any&);
+        void setProperty(EPropertyID, const boost::any&);
         void terminate();
+        void validateDevice() const;
 
     private:
         std::unique_ptr<FrameworkImpl> impl_;
     };
 }
 // namespace Takoyaki
+
+#pragma warning(pop) 

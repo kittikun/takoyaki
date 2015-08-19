@@ -32,7 +32,8 @@ namespace Takoyaki
 
         virtual void create(const FrameworkDesc& desc) = 0;
         virtual void createSwapChain() = 0;
-        virtual void setProperty(PropertyID, const boost::any&) = 0;
+        virtual void setProperty(EPropertyID, const boost::any&) = 0;
+        virtual void validate() const = 0;
     };
 
 } // namespace Takoyaki

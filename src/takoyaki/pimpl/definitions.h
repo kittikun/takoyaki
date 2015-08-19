@@ -22,12 +22,12 @@
 
 namespace Takoyaki
 {
-    enum class DeviceType
+    enum class EDeviceType
     {
         DX12
     };
 
-    enum class DisplayOrientation
+    enum class EDisplayOrientation
     {
         UNKNOWN,
         LANDSCAPE,
@@ -36,7 +36,7 @@ namespace Takoyaki
         PORTRAIT_FLIPPED
     };
 
-    enum class PropertyID
+    enum class EPropertyID
     {
         WINDOW_SIZE,            // glm::vec2
         WINDOW_ORIENTATION,     // DisplayOrientation

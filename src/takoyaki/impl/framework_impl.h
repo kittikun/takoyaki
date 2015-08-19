@@ -39,8 +39,9 @@ namespace Takoyaki
          ~FrameworkImpl();
 
         void initialize(const FrameworkDesc&);
-        void setProperty(PropertyID, const boost::any&);
+        void setProperty(EPropertyID, const boost::any&);
         void terminate();
+        void validateDevice() const;
 
     private:
         std::shared_ptr<IDevice> device_;

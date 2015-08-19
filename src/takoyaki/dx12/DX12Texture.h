@@ -18,38 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "framework.h"
-
-#include "../impl/framework_impl.h"
+#pragma once
 
 namespace Takoyaki
 {
-    Framework::Framework()
-        : impl_(std::make_unique<FrameworkImpl>())
+    class DX12Texture
     {
-    }
+        DX12Texture(const DX12Texture&) = delete;
+        DX12Texture& operator=(const DX12Texture&) = delete;
+        DX12Texture(DX12Texture&&) = delete;
+        DX12Texture& operator=(DX12Texture&&) = delete;
 
-    Framework::~Framework() = default;
+    public:
+        void getRenderTargetView() {};
 
-    void Framework::initialize(const FrameworkDesc& desc)
-    {
-        impl_->initialize(desc);
-    }
-
-    void Framework::setProperty(EPropertyID id, const boost::any& value)
-    {
-        impl_->setProperty(id, value);
-    }
-
-    void Framework::terminate()
-    { 
-        impl_->terminate();
-    }
-
-    void Framework::validateDevice() const
-    {
-        impl_->validateDevice();
-    }
-}
-// namespace Takoyaki
+    private:
+        Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
+        uint_fast32_t rtvDescriptorIndex_;
+    };
+} // na

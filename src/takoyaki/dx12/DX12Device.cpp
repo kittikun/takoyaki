@@ -21,6 +21,7 @@
 #include "pch.h"
 #include "DX12Device.h"
 
+#include "DX12DescriptorHeap.h"
 #include "utility.h"
 #include "../utility/log.h"
 
@@ -30,7 +31,6 @@ namespace Takoyaki
         : window_(nullptr)
         , bufferCount_(0)
         , currentFrame_(0)
-        , rtvDescriptorSize_(0)
     {
     }
 
@@ -42,7 +42,6 @@ namespace Takoyaki
         nativeOrientation_ = desc.nativeOrientation;
         dpi_ = desc.windowDpi;
         windowSize_ = desc.windowSize;
-        renderTargets_.resize(bufferCount_);
 
         createDevice(bufferCount_);
         createSwapChain();
@@ -53,12 +52,10 @@ namespace Takoyaki
         LOGC << "Creating D3D Device...";
 
 #if defined(_DEBUG)
-        // If the project is in a debug build, enable debugging via SDK Layers.
-        {
-            Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
-            if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
-                debugController->EnableDebugLayer();
-            }
+        Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
+
+        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+            debugController->EnableDebugLayer();
         }
 #endif
 
@@ -95,6 +92,9 @@ namespace Takoyaki
         DXCheckThrow(D3DDevice_->CreateFence(fenceValues_[currentFrame_], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));
         fenceValues_[currentFrame_]++;
         fenceEvent_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
+        
+        // Create descriptor heaps
+        descHeapRTV_.push_back(new DescriptorHeap(EDescriptorHeapType::RENDERTARGETVIEW, shared_from_this(), descHeapRTV_.size()));
     }
 
     void DX12Device::createSwapChain()
@@ -102,12 +102,6 @@ namespace Takoyaki
         LOGC << "Creating swap chain...";
 
         waitForGpu();
-
-        // clear old render targets
-        for (int i = 0; i < renderTargets_.size(); ++i)
-            renderTargets_[i] = nullptr;
-
-        rtvHeap_ = nullptr;
 
         // Calculate the necessary render target size in pixels.
         glm::vec2 outSize;
@@ -141,7 +135,7 @@ namespace Takoyaki
                 break;
 
             default:
-                throw std::runtime_error("displayRotation");
+                throw std::runtime_error("DX12Device::createSwapChain, displayRotation");
         }
 
 
@@ -172,25 +166,14 @@ namespace Takoyaki
 
         DXCheckThrow(swapChain_->SetRotation(displayRotation));
 
-        // Create a render target view of the swap chain back buffer.
-        {
-            D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-            desc.NumDescriptors = bufferCount_;
-            desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-            desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
-            DXCheckThrow(D3DDevice_->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&rtvHeap_)));
-            rtvHeap_->SetName(L"Render Target View Descriptor Heap");
-
-            // All pending GPU work was already finished. Update the tracked fence values
-            // to the last value signaled.
-            for (int i = 0; i < bufferCount_; i++) {
-                fenceValues_[i] = fenceValues_[currentFrame_];
-            }
-
-            currentFrame_ = 0;
-
+        // All pending GPU work was already finished. Update the tracked fence values
+        // to the last value signaled.
+        for (uint_fast32_t i = 0; i < bufferCount_; i++) {
+            fenceValues_[i] = fenceValues_[currentFrame_];
         }
+
+        currentFrame_ = 0;
     }
 
     DXGI_MODE_ROTATION DX12Device::GetDXGIOrientation() const
@@ -200,74 +183,111 @@ namespace Takoyaki
         // Note: NativeOrientation can only be Landscape or Portrait even though
         // the DisplayOrientations enum has other values.
         switch (nativeOrientation_) {
-            case DisplayOrientation::LANDSCAPE:
+            case EDisplayOrientation::LANDSCAPE:
                 switch (currentOrientation_) {
-                    case DisplayOrientation::LANDSCAPE:
+                    case EDisplayOrientation::LANDSCAPE:
                         rotation = DXGI_MODE_ROTATION_IDENTITY;
                         break;
 
-                    case DisplayOrientation::PORTRAIT:
+                    case EDisplayOrientation::PORTRAIT:
                         rotation = DXGI_MODE_ROTATION_ROTATE270;
                         break;
 
-                    case DisplayOrientation::LANDSCAPE_FLIPPED:
+                    case EDisplayOrientation::LANDSCAPE_FLIPPED:
                         rotation = DXGI_MODE_ROTATION_ROTATE180;
                         break;
 
-                    case DisplayOrientation::PORTRAIT_FLIPPED:
+                    case EDisplayOrientation::PORTRAIT_FLIPPED:
                         rotation = DXGI_MODE_ROTATION_ROTATE90;
                         break;
 
                     default:
-                        throw std::runtime_error("nativeOrientation_");
+                        throw std::runtime_error("DX12Device::GetDXGIOrientation, nativeOrientation_");
                 }
                 break;
 
-            case DisplayOrientation::PORTRAIT:
+            case EDisplayOrientation::PORTRAIT:
                 switch (currentOrientation_) {
-                    case DisplayOrientation::LANDSCAPE:
+                    case EDisplayOrientation::LANDSCAPE:
                         rotation = DXGI_MODE_ROTATION_ROTATE90;
                         break;
 
-                    case DisplayOrientation::PORTRAIT:
+                    case EDisplayOrientation::PORTRAIT:
                         rotation = DXGI_MODE_ROTATION_IDENTITY;
                         break;
 
-                    case DisplayOrientation::LANDSCAPE_FLIPPED:
+                    case EDisplayOrientation::LANDSCAPE_FLIPPED:
                         rotation = DXGI_MODE_ROTATION_ROTATE270;
                         break;
 
-                    case DisplayOrientation::PORTRAIT_FLIPPED:
+                    case EDisplayOrientation::PORTRAIT_FLIPPED:
                         rotation = DXGI_MODE_ROTATION_ROTATE180;
                         break;
 
                     default:
-                        throw std::runtime_error("currentOrientation_");
+                        throw std::runtime_error("DX12Device::GetDXGIOrientation, currentOrientation_");
                 }
                 break;
         }
         return rotation;
     }
 
-    void DX12Device::setProperty(PropertyID id, const boost::any& value)
+    void DX12Device::setProperty(EPropertyID id, const boost::any& value)
     {
         switch (id) {
-            case Takoyaki::PropertyID::WINDOW_SIZE:
+            case Takoyaki::EPropertyID::WINDOW_SIZE:
                 windowSize_ = boost::any_cast<glm::vec2>(value);
                 break;
-            case Takoyaki::PropertyID::WINDOW_ORIENTATION:
-                currentOrientation_ = boost::any_cast<DisplayOrientation>(value);
+
+            case Takoyaki::EPropertyID::WINDOW_ORIENTATION:
+                currentOrientation_ = boost::any_cast<EDisplayOrientation>(value);
                 break;
-            case Takoyaki::PropertyID::WINDOW_DPI:
+
+            case Takoyaki::EPropertyID::WINDOW_DPI:
                 dpi_ = boost::any_cast<float>(value);
                 break;
+
             default:
-                LOGE << "setProperty unknown property";
-                throw new std::runtime_error("setProperty unknown property");
+                throw new std::runtime_error("DX12Device::setProperty, id");
                 break;
         }
 
         createSwapChain();
+    }
+
+    void DX12Device::validate() const
+    {
+        // The D3D Device is no longer valid if the default adapter changed since the device
+        // was created or if the device has been removed.
+
+        // First, get the LUID for the adapter from when the device was created.
+
+        LUID previousAdapterLuid = D3DDevice_->GetAdapterLuid();
+
+        // Next, get the information for the current default adapter.
+
+        Microsoft::WRL::ComPtr<IDXGIFactory2> currentFactory;
+
+        DXCheckThrow(CreateDXGIFactory1(IID_PPV_ARGS(&currentFactory)));
+
+        Microsoft::WRL::ComPtr<IDXGIAdapter1> currentDefaultAdapter;
+
+        DXCheckThrow(currentFactory->EnumAdapters1(0, &currentDefaultAdapter));
+
+        DXGI_ADAPTER_DESC currentDesc;
+
+        DXCheckThrow(currentDefaultAdapter->GetDesc(&currentDesc));
+
+        // If the adapter LUIDs don't match, or if the device reports that it has been removed,
+        // a new D3D device must be created.
+
+        if ((previousAdapterLuid.LowPart != currentDesc.AdapterLuid.LowPart) ||
+            (previousAdapterLuid.HighPart != currentDesc.AdapterLuid.HighPart) ||
+            (D3DDevice_->GetDeviceRemovedReason() < 0)) {
+            
+            // TODO: Apparently this can only happen for on mobile devices
+            // when the application is killed by the OS. Add proper support
+        }
     }
 
     void DX12Device::waitForGpu()

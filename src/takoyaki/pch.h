@@ -29,6 +29,13 @@
 
 #include <windows.h>
 
+// WinRT
+#include <wrl/client.h>
+
+// DirectX
+#include <d3d12.h>
+#include <dxgi1_4.h>
+
 // STL
 #include <exception>
 #include <memory>

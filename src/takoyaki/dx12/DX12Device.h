@@ -20,16 +20,19 @@
 
 #pragma once
 
+#include <wrl/client.h>
+#include <glm/fwd.hpp>
 #include <d3d12.h>
 #include <dxgi1_4.h>
-#include <glm/fwd.hpp>
-#include <wrl/client.h>
 
 #include "../IDevice.h"
 
 namespace Takoyaki
 {
-    class DX12Device final : public IDevice
+    class DescriptorHeap;
+    class DX12Texture;
+
+    class DX12Device final : public IDevice, public std::enable_shared_from_this<DX12Device>
     {
         DX12Device(const DX12Device&) = delete;
         DX12Device& operator=(const DX12Device&) = delete;
@@ -41,9 +44,10 @@ namespace Takoyaki
         ~DX12Device() override = default;
 
         void create(const FrameworkDesc& desc) override;
-        void setProperty(PropertyID, const boost::any&) override;
+        void setProperty(EPropertyID, const boost::any&) override;
+        void validate() const override;
 
-        const glm::mat4x4& getDeviceOrientation() const { return matDeviceRotation_; }
+        const Microsoft::WRL::ComPtr<ID3D12Device>& getDevice() { return D3DDevice_;  }
 
     private:
         void createDevice(uint_fast32_t);
@@ -62,27 +66,28 @@ namespace Takoyaki
 
         // CPU/GPU Synchronization.
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-        std::vector<uint_fast32_t> fenceValues_;
+        std::vector<uint64_t> fenceValues_;
         HANDLE fenceEvent_;
 
         // window related
         IUnknown* window_;
         glm::vec2 windowSize_;
+        EDisplayOrientation currentOrientation_;
+        EDisplayOrientation nativeOrientation_;
         float dpi_;
-        DisplayOrientation currentOrientation_;
-        DisplayOrientation nativeOrientation_;
 
         // swap chain
         Microsoft::WRL::ComPtr<IDXGISwapChain3> swapChain_;
-        std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> renderTargets_;
-        Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
         uint_fast32_t bufferCount_;
+
+        // Descriptor heaps
+        std::vector<DescriptorHeap*> descHeapRTV_;
+
+        // Resources
+        std::vector<DX12Texture*> textures_;
 
         // misc
         uint_fast32_t currentFrame_;
         glm::mat4x4 matDeviceRotation_;
-
-        // TODO: wrap this rendertargetviews nicely
-        uint_fast32_t rtvDescriptorSize_;
     };
 } // namespace Takoyaki

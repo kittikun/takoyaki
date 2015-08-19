@@ -42,7 +42,7 @@ namespace Takoyaki
     {
         LOGC_INDENT_START << "Initializing Takoyaki FrameworkImpl..";
 
-        if (desc.type == DeviceType::DX12) {
+        if (desc.type == EDeviceType::DX12) {
             device_.reset(new DX12Device());
         }
 
@@ -51,18 +51,17 @@ namespace Takoyaki
         LOGC_INDENT_END << "Initialization complete.";
     }
 
-    void FrameworkImpl::setProperty(PropertyID id, const boost::any& value)
+    void FrameworkImpl::setProperty(EPropertyID id, const boost::any& value)
     {
         switch (id) {
-            case Takoyaki::PropertyID::WINDOW_SIZE:
-            case Takoyaki::PropertyID::WINDOW_ORIENTATION:
-            case Takoyaki::PropertyID::WINDOW_DPI:
+            case Takoyaki::EPropertyID::WINDOW_SIZE:
+            case Takoyaki::EPropertyID::WINDOW_ORIENTATION:
+            case Takoyaki::EPropertyID::WINDOW_DPI:
                 device_->setProperty(id, value);
                 break;
 
             default:
-                LOGE << "setProperty unknown property";
-                throw new std::runtime_error("setProperty unknown property");
+                throw new std::runtime_error("FrameworkImpl::setProperty, id");
                 break;
         }
     }
@@ -70,6 +69,11 @@ namespace Takoyaki
     void FrameworkImpl::terminate()
     {
 
+    }
+
+    void FrameworkImpl::validateDevice() const
+    {
+        device_->validate();
     }
 }
 // namespace Takoyaki

@@ -39,6 +39,12 @@
     <ClCompile Include="..\src\takoyaki\dx12\utility.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\DX12DescriptorHeap.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\pch.h">
@@ -70,6 +76,12 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\pimpl\definitions.h">
       <Filter>Source Files\pimpl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h">
+      <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

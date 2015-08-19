@@ -38,23 +38,23 @@ int main(Platform::Array<Platform::String^>^)
     {
     }
 
-    Takoyaki::DisplayOrientation App::DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations orientation)
+    Takoyaki::EDisplayOrientation App::DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations orientation)
     {
         switch (orientation) {
             case Windows::Graphics::Display::DisplayOrientations::Landscape:
-                return Takoyaki::DisplayOrientation::LANDSCAPE;
+                return Takoyaki::EDisplayOrientation::LANDSCAPE;
             case Windows::Graphics::Display::DisplayOrientations::Portrait:
-                return Takoyaki::DisplayOrientation::PORTRAIT;
+                return Takoyaki::EDisplayOrientation::PORTRAIT;
             case Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped:
-                return Takoyaki::DisplayOrientation::LANDSCAPE_FLIPPED;
+                return Takoyaki::EDisplayOrientation::LANDSCAPE_FLIPPED;
             case Windows::Graphics::Display::DisplayOrientations::PortraitFlipped:
-                return Takoyaki::DisplayOrientation::PORTRAIT_FLIPPED;
+                return Takoyaki::EDisplayOrientation::PORTRAIT_FLIPPED;
             default:
                 throw std::runtime_error("DisplayOrientationsToTakoyaki");
                 break;
         }
 
-        return Takoyaki::DisplayOrientation::UNKNOWN;
+        return Takoyaki::EDisplayOrientation::UNKNOWN;
     }
 
     // The first method called when the IFrameworkView is being created.
@@ -94,7 +94,7 @@ int main(Platform::Array<Platform::String^>^)
         desc.bufferCount = 3;
         desc.nativeOrientation = DisplayOrientationsToTakoyaki(disp->NativeOrientation);
         desc.currentOrientation = DisplayOrientationsToTakoyaki(disp->CurrentOrientation);
-        desc.type = Takoyaki::DeviceType::DX12;
+        desc.type = Takoyaki::EDeviceType::DX12;
         desc.windowHandle = reinterpret_cast<void*>(window);
         desc.windowSize.x = window->Bounds.Width;
         desc.windowSize.y = window->Bounds.Height;
@@ -179,7 +179,7 @@ int main(Platform::Array<Platform::String^>^)
     {
         glm::vec2 size(sender->Bounds.Width, sender->Bounds.Height);
 
-        framework_->setProperty(Takoyaki::PropertyID::WINDOW_SIZE, size);
+        framework_->setProperty(Takoyaki::EPropertyID::WINDOW_SIZE, size);
     }
 
     void App::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
@@ -194,16 +194,16 @@ int main(Platform::Array<Platform::String^>^)
 
     void App::OnDpiChanged(DisplayInformation^ sender, Object^ args)
     {
-        framework_->setProperty(Takoyaki::PropertyID::WINDOW_DPI, sender->LogicalDpi);
+        framework_->setProperty(Takoyaki::EPropertyID::WINDOW_DPI, sender->LogicalDpi);
     }
 
     void App::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
     {
-        framework_->setProperty(Takoyaki::PropertyID::WINDOW_ORIENTATION, sender->CurrentOrientation);
+        framework_->setProperty(Takoyaki::EPropertyID::WINDOW_ORIENTATION, sender->CurrentOrientation);
     }
 
     void App::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
     {
-        //GetDeviceResources()->ValidateDevice();
+        framework_->validateDevice();
     }
 }

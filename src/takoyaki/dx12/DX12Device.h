@@ -20,17 +20,18 @@
 
 #pragma once
 
-#include <wrl/client.h>
-#include <glm/fwd.hpp>
 #include <d3d12.h>
 #include <dxgi1_4.h>
+#include <memory>
+#include <mutex>
+#include <wrl/client.h>
+#include <glm/fwd.hpp>
 
 #include "../IDevice.h"
 
 namespace Takoyaki
 {
-    class DescriptorHeap;
-    class DX12Texture;
+    class DX12DeviceContext;
 
     class DX12Device final : public IDevice, public std::enable_shared_from_this<DX12Device>
     {
@@ -45,9 +46,10 @@ namespace Takoyaki
 
         void create(const FrameworkDesc& desc) override;
         void setProperty(EPropertyID, const boost::any&) override;
-        void validate() const override;
+        void validate() override;
 
         const Microsoft::WRL::ComPtr<ID3D12Device>& getDevice() { return D3DDevice_;  }
+        std::mutex& getDeviceMutex() { return deviceMutex_; }
 
     private:
         void createDevice(uint_fast32_t);
@@ -58,6 +60,10 @@ namespace Takoyaki
     private:
         Microsoft::WRL::ComPtr<ID3D12Device> D3DDevice_;
         Microsoft::WRL::ComPtr<IDXGIFactory4> DXGIFactory_;
+        std::mutex deviceMutex_;
+
+        // Contexts
+        std::unordered_map<std::thread::id, std::shared_ptr<DX12DeviceContext>> contexts_;
 
         // Command queue
         // TODO: Move to another thread class
@@ -75,19 +81,14 @@ namespace Takoyaki
         EDisplayOrientation currentOrientation_;
         EDisplayOrientation nativeOrientation_;
         float dpi_;
+        D3D12_VIEWPORT viewport_;
 
         // swap chain
         Microsoft::WRL::ComPtr<IDXGISwapChain3> swapChain_;
         uint_fast32_t bufferCount_;
 
-        // Descriptor heaps
-        std::vector<DescriptorHeap*> descHeapRTV_;
-
-        // Resources
-        std::vector<DX12Texture*> textures_;
-
         // misc
         uint_fast32_t currentFrame_;
-        glm::mat4x4 matDeviceRotation_;
+        glm::mat4x4 matDeviceRotation_;        
     };
 } // namespace Takoyaki

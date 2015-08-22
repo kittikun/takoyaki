@@ -23,6 +23,8 @@
 
 #include "../utility/log.h"
 #include "../dx12/DX12Device.h"
+#include "../dx12/DX12DeviceContext.h"
+#include "../dx12/DX12Texture.h"
 
 using namespace Microsoft::WRL;
 

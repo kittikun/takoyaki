@@ -37,9 +37,12 @@
 #include <dxgi1_4.h>
 
 // STL
+#include <array>
 #include <exception>
 #include <memory>
-#include <array>
+#include <mutex>
+#include <numeric>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 

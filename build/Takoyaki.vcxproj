@@ -201,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h" />
     <ClInclude Include="..\src\takoyaki\dx12\utility.h" />
     <ClInclude Include="..\src\takoyaki\IDevice.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="..\src\takoyaki\dllmain.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12DescriptorHeap.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\utility.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />

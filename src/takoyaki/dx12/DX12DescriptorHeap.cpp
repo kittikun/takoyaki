@@ -21,67 +21,23 @@
 #include "pch.h"
 #include "DX12DescriptorHeap.h"
 
-#include "DX12Device.h"
-#include "utility.h"
-
-#define MAX_DESCRIPTORS 128
+#include <numeric>
 
 namespace Takoyaki
 {
-    DescriptorHeap::DescriptorHeap(EDescriptorHeapType type, std::weak_ptr<DX12Device> device, uint_fast32_t id)
-        : device_(device_)
-        , count_(0)
+    // Instance template here and use them elsewhere as extern
+    template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
+
+    // Specializations
+    template <>
+    LPCWSTR DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>::getFormatString() const
     {
-        auto locked = device.lock();
-        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-
-        desc.NumDescriptors = MAX_DESCRIPTORS;
-
-        switch (type) {
-            case EDescriptorHeapType::DEPTHSTENCILVIEW:
-                desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-                desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-                descriptorSize_ = locked->getDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-                break;
-
-            case EDescriptorHeapType::SHADER_RESOURCE:
-                desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-                desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-                descriptorSize_ = locked->getDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-                break;
-
-            case EDescriptorHeapType::RENDERTARGETVIEW:
-                desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-                desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-                descriptorSize_ = locked->getDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-                break;
-
-            case EDescriptorHeapType::SAMPLER:
-                desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-                desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-                descriptorSize_ = locked->getDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-                break;
-
-            default:
-                throw std::runtime_error("displayRotation");
-                break;
-        }
-
-        DXCheckThrow(locked->getDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap_)));
-        heap_->SetName(L"Render target view descriptor heap");
-        handle_ = heap_->GetCPUDescriptorHandleForHeapStart();
+        return L"Render Target View Heap %zd";
     }
 
-    DescriptorHeap::~DescriptorHeap() = default;
-
-    D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::Create()
-    {        
-        D3D12_CPU_DESCRIPTOR_HANDLE res;
-        
-        res.ptr = handle_.ptr + count_ * descriptorSize_;
-
-        ++count_;
-
-        return res;
+    template <>
+    D3D12_DESCRIPTOR_HEAP_FLAGS DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>::getFlags() const
+    {
+        return D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     }
 } // namespace Takoyaki

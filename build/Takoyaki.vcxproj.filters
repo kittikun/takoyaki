@@ -45,6 +45,9 @@
     <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\pch.h">
@@ -81,6 +84,9 @@
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>

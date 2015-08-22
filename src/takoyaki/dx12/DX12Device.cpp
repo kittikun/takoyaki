@@ -21,7 +21,11 @@
 #include "pch.h"
 #include "DX12Device.h"
 
+#include <thread>
+
+#include "DX12DeviceContext.h"
 #include "DX12DescriptorHeap.h"
+#include "DX12Texture.h"
 #include "utility.h"
 #include "../utility/log.h"
 
@@ -93,8 +97,8 @@ namespace Takoyaki
         fenceValues_[currentFrame_]++;
         fenceEvent_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
         
-        // Create descriptor heaps
-        descHeapRTV_.push_back(new DescriptorHeap(EDescriptorHeapType::RENDERTARGETVIEW, shared_from_this(), descHeapRTV_.size()));
+        // Create a context for the main thread        
+        contexts_.insert(std::make_pair(std::this_thread::get_id(), std::make_shared<DX12DeviceContext>(shared_from_this())));
     }
 
     void DX12Device::createSwapChain()
@@ -117,6 +121,8 @@ namespace Takoyaki
         if (displayRotation == DXGI_MODE_ROTATION_ROTATE90 || displayRotation == DXGI_MODE_ROTATION_ROTATE270)
             std::swap(outSize.x, outSize.y);
 
+        viewport_ = { 0.0f, 0.0f, outSize.x, outSize.y, 0.0f, 1.0f };
+
         switch (displayRotation) {
             case DXGI_MODE_ROTATION_IDENTITY:
                 matDeviceRotation_ = glm::mat4(1.0f);
@@ -137,7 +143,6 @@ namespace Takoyaki
             default:
                 throw std::runtime_error("DX12Device::createSwapChain, displayRotation");
         }
-
 
         if (swapChain_ != nullptr) {
             // TODO: Do proper handling or DXGI_ERROR_DEVICE_REMOVED and DXGI_ERROR_DEVICE_RESET
@@ -174,6 +179,21 @@ namespace Takoyaki
         }
 
         currentFrame_ = 0;
+
+        auto context = contexts_[std::this_thread::get_id()].get();
+
+        for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
+            auto tex = context->CreateTexture();
+            auto& res = tex->getResource();
+
+            DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&res)));            
+            D3DDevice_->CreateRenderTargetView(res.Get(), nullptr, tex->getRenderTargetView());
+
+            WCHAR name[25];
+
+            swprintf_s(name, L"Swap chain Render Target %d", i);
+            res->SetName(name);
+        }
     }
 
     DXGI_MODE_ROTATION DX12Device::GetDXGIOrientation() const
@@ -255,7 +275,7 @@ namespace Takoyaki
         createSwapChain();
     }
 
-    void DX12Device::validate() const
+    void DX12Device::validate()
     {
         // The D3D Device is no longer valid if the default adapter changed since the device
         // was created or if the device has been removed.
@@ -287,6 +307,8 @@ namespace Takoyaki
             
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
+            D3DDevice_.Reset();
+            throw new std::runtime_error("Device removal not implemented");
         }
     }
 

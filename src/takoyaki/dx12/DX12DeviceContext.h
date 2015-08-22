@@ -23,28 +23,33 @@
 #include <d3d12.h>
 #include <memory>
 
+#include "DX12Device.h"
+#include "DX12DescriptorHeap.h"
+
 namespace Takoyaki
 {
-    class DX12DeviceContext;
+    class DX12Texture;
 
-    class DX12Texture
+    // To avoid synchronizations mechanisms, use a context per thread
+    class DX12DeviceContext : public std::enable_shared_from_this<DX12DeviceContext>
     {
-        DX12Texture(const DX12Texture&) = delete;
-        DX12Texture& operator=(const DX12Texture&) = delete;
-        DX12Texture(DX12Texture&&) = delete;
-        DX12Texture& operator=(DX12Texture&&) = delete;
+        DX12DeviceContext(const DX12DeviceContext&) = delete;
+        DX12DeviceContext& operator=(const DX12DeviceContext&) = delete;
+        DX12DeviceContext(DX12DeviceContext&&) = delete;
+        DX12DeviceContext& operator=(DX12DeviceContext&&) = delete;
 
     public:
-        DX12Texture(std::weak_ptr<DX12DeviceContext>);
-        ~DX12Texture();
+        DX12DeviceContext(std::weak_ptr<DX12Device>);
 
-        // For external initialization, swap buffer only ?
-        Microsoft::WRL::ComPtr<ID3D12Resource>& getResource() { return resource_; }
-        D3D12_CPU_DESCRIPTOR_HANDLE getRenderTargetView();
+        DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>& getRTVDescHeapCollection() { return descHeapRTV_; }
+
+        DX12Texture* CreateTexture();
 
     private:
-        std::weak_ptr<DX12DeviceContext> owner_;
-        Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
-        D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
+        std::weak_ptr<DX12Device> owner_;
+        DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV> descHeapRTV_;
+
+        // put to some proper class later
+        std::vector<std::unique_ptr<DX12Texture>> textures_;
     };
 } // namespace Takoyaki

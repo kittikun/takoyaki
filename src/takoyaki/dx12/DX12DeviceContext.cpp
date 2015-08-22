@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -19,33 +19,25 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "DX12Texture.h"
-
-#include <intsafe.h>
-
 #include "DX12DeviceContext.h"
+
+#include "DX12Texture.h"
 
 namespace Takoyaki
 {
-    DX12Texture::DX12Texture(std::weak_ptr<DX12DeviceContext> owner)
-        : owner_(owner)
-    {
-        rtv_.ptr = ULONG_PTR_MAX;
-    }
+    extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
 
-    DX12Texture::~DX12Texture()
+    DX12DeviceContext::DX12DeviceContext(std::weak_ptr<DX12Device> owner)
+        : owner_(owner_)
+        , descHeapRTV_(owner)
     {
-        if (rtv_.ptr != ULONG_PTR_MAX)
-            owner_.lock()->getRTVDescHeapCollection().releaseOne(rtv_);
 
     }
 
-    D3D12_CPU_DESCRIPTOR_HANDLE DX12Texture::getRenderTargetView()
+    DX12Texture* DX12DeviceContext::CreateTexture()
     {
-        if (rtv_.ptr == ULONG_PTR_MAX)
-            rtv_ = owner_.lock()->getRTVDescHeapCollection().createOne();
+        textures_.push_back(std::make_unique<DX12Texture>(shared_from_this()));
 
-        return rtv_;
+        return textures_.back().get();
     }
-
 } // namespace Takoyaki

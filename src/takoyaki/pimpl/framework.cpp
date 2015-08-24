@@ -37,6 +37,11 @@ namespace Takoyaki
         impl_->initialize(desc);
     }
 
+    void Framework::loadAsyncFileResult(const std::vector<uint8_t>& res)
+    {
+        impl_->loadAsyncFileResult(res);
+    }
+
     void Framework::setProperty(EPropertyID id, const boost::any& value)
     {
         impl_->setProperty(id, value);

@@ -189,7 +189,7 @@ namespace Takoyaki
             DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&res)));            
             D3DDevice_->CreateRenderTargetView(res.Get(), nullptr, tex->getRenderTargetView());
 
-            WCHAR name[25];
+            WCHAR name[64];
 
             swprintf_s(name, L"Swap chain Render Target %d", i);
             res->SetName(name);

@@ -20,6 +20,9 @@
 
 #pragma once
 
+#include <synchapi.h>
+#include <ppltasks.h>
+
 #include "../pimpl/framework.h"
 
 #include "../IDevice.h"
@@ -43,9 +46,13 @@ namespace Takoyaki
         void terminate();
         void validateDevice() const;
 
+        void loadAsyncFileResult(const std::vector<uint8_t>&);
+
     private:
         std::shared_ptr<IDevice> device_;
         std::unique_ptr<IRenderer> renderer_;
+
+        LoadFileAsyncFunc loadFileAsyncFunc_;
     };
 
 } // namespace Takoyaki

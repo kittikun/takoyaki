@@ -50,7 +50,21 @@ namespace Takoyaki
 
         device_->create(desc);
 
+        if (!desc.loadAsyncFunc)
+            throw new std::runtime_error("FrameworkDesc missing LoadFileAsyncFunc");
+
+        loadFileAsyncFunc_ = desc.loadAsyncFunc;
+
+        loadFileAsyncFunc_(L"assets\\Example.oddl");
+
         LOGC_INDENT_END << "Initialization complete.";
+    }
+
+    void FrameworkImpl::loadAsyncFileResult(const std::vector<uint8_t>& res)
+    {
+        const char* test = reinterpret_cast<const char*>(&res[0]);
+
+        int i = 0;
     }
 
     void FrameworkImpl::setProperty(EPropertyID id, const boost::any& value)

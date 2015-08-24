@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <memory>
+#include <ppltasks.h>
+#include <synchapi.h>
 
 #include <framework.h>
 
@@ -37,6 +39,7 @@ namespace App
 
     private:
         Takoyaki::EDisplayOrientation DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations);
+        Concurrency::task<std::vector<byte>> loadFileAsync(const std::wstring&);
 
 	private:
         std::unique_ptr<Takoyaki::Framework> framework_;

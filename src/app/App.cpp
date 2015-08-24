@@ -1,5 +1,6 @@
 ﻿#include "App.h"
 
+#include <functional>
 #include <ppltasks.h>
 #include <wrl.h>
 
@@ -99,6 +100,12 @@ int main(Platform::Array<Platform::String^>^)
         desc.windowSize.x = window->Bounds.Width;
         desc.windowSize.y = window->Bounds.Height;
         desc.windowDpi = disp->LogicalDpi;
+        desc.loadAsyncFunc = std::bind<void>([this](const std::wstring& filename) {
+            auto createVSTask = loadFileAsync(filename).then([this](std::vector<byte>& fileData)
+            {
+                framework_->loadAsyncFileResult(fileData);
+            });
+        }, std::placeholders::_1);
 
         framework_->initialize(desc);
     }
@@ -205,5 +212,24 @@ int main(Platform::Array<Platform::String^>^)
     void App::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
     {
         framework_->validateDevice();
+    }
+
+    Concurrency::task<std::vector<byte>> App::loadFileAsync(const std::wstring& filename)
+    {
+        using namespace Windows::Storage;
+        using namespace Concurrency;
+
+        auto folder = Windows::ApplicationModel::Package::Current->InstalledLocation;
+
+        return create_task(folder->GetFileAsync(Platform::StringReference(filename.c_str()))).then([](StorageFile^ file)
+        {
+            return FileIO::ReadBufferAsync(file);
+        }).then([](Streams::IBuffer^ fileBuffer) -> std::vector<byte>
+        {
+            std::vector<byte> returnBuffer;
+            returnBuffer.resize(fileBuffer->Length);
+            Streams::DataReader::FromBuffer(fileBuffer)->ReadBytes(Platform::ArrayReference<byte>(returnBuffer.data(), fileBuffer->Length));
+            return returnBuffer;
+        });
     }
 }

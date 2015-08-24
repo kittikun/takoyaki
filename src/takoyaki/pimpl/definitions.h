@@ -22,6 +22,8 @@
 
 namespace Takoyaki
 {
+    using LoadFileAsyncFunc = std::function<void(const std::wstring&)>;
+
     enum class EDeviceType
     {
         DX12

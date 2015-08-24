@@ -57,7 +57,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection(std::weak_ptr<DX12Device> device)
             : owner_(device)
         {
-
+            descriptorSize_ = owner_.lock()->getDevice()->GetDescriptorHandleIncrementSize(T);
         }
 
         ~DX12DescriptorHeapCollection() = default;
@@ -129,6 +129,7 @@ namespace Takoyaki
             heap.descriptor_->SetName(name);
 
             heap.handle_ = heap.descriptor_->GetCPUDescriptorHandleForHeapStart();
+            heap.freelist_.resize(MAX_DESCRIPTOR_HEAP_SIZE);
             std::iota(heap.freelist_.begin(), heap.freelist_.end(), 0);
         }
 

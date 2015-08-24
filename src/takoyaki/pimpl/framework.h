@@ -43,6 +43,7 @@ namespace Takoyaki
         void*               windowHandle;
         glm::vec2           windowSize;
         float               windowDpi;
+        LoadFileAsyncFunc   loadAsyncFunc;
     };
 
     class TAKOYAKI_API Framework
@@ -60,6 +61,8 @@ namespace Takoyaki
         void setProperty(EPropertyID, const boost::any&);
         void terminate();
         void validateDevice() const;
+
+        void loadAsyncFileResult(const std::vector<uint8_t>&);
 
     private:
         std::unique_ptr<FrameworkImpl> impl_;

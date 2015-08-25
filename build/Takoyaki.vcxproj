@@ -191,12 +191,12 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;Kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;Kernel32.lib;OpenDDL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(Outdir)Takoyaki.dll $(Outdir)AppX
-copy $(SolutionDir)..\data\* $(Outdir)AppX\assets</Command>
+xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -215,14 +215,14 @@ copy $(SolutionDir)..\data\* $(Outdir)AppX\assets</Command>
     <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\shader_manager.h" />
     <ClInclude Include="..\src\takoyaki\dx12\utility.h" />
-    <ClInclude Include="..\src\takoyaki\IDevice.h" />
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
-    <ClInclude Include="..\src\takoyaki\IRenderer.h" />
+    <ClInclude Include="..\src\takoyaki\io.h" />
     <ClInclude Include="..\src\takoyaki\pch.h" />
-    <ClInclude Include="..\src\takoyaki\pimpl\framework.h" />
-    <ClInclude Include="..\src\takoyaki\pimpl\platform.h" />
-    <ClInclude Include="..\src\takoyaki\pimpl\definitions.h" />
+    <ClInclude Include="..\src\takoyaki\public\definitions.h" />
+    <ClInclude Include="..\src\takoyaki\public\framework.h" />
+    <ClInclude Include="..\src\takoyaki\public\platform.h" />
     <ClInclude Include="..\src\takoyaki\utility\log.h" />
   </ItemGroup>
   <ItemGroup>
@@ -231,12 +231,14 @@ copy $(SolutionDir)..\data\* $(Outdir)AppX\assets</Command>
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\utility.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
+    <ClCompile Include="..\src\takoyaki\io.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\pimpl\framework.cpp" />
+    <ClCompile Include="..\src\takoyaki\public\framework.cpp" />
     <ClCompile Include="..\src\takoyaki\utility\log.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

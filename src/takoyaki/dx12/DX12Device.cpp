@@ -28,6 +28,7 @@
 #include "DX12Texture.h"
 #include "utility.h"
 #include "../utility/log.h"
+#include "../public/framework.h"
 
 namespace Takoyaki
 {

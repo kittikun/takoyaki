@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -20,38 +20,35 @@
 
 #pragma once
 
-#include "../public/definitions.h"
+#include <functional>
+#include <unordered_map>
+
+#include "public/definitions.h"
 
 namespace Takoyaki
 {
     struct FrameworkDesc;
-    class DX12Device;
-    class IO;
-    class ShaderManager;
 
-    class FrameworkImpl
+    class IO
     {
-        FrameworkImpl(const FrameworkImpl&) = delete;
-        FrameworkImpl& operator=(const FrameworkImpl&) = delete;
-        FrameworkImpl(FrameworkImpl&&) = delete;
-        FrameworkImpl& operator=(FrameworkImpl&&) = delete;
+        IO(const IO&) = delete;
+        IO& operator=(const IO&) = delete;
+        IO(IO&&) = delete;
+        IO& operator=(IO&&) = delete;
 
     public:
-        FrameworkImpl();
-         ~FrameworkImpl();
+        using LoadResultFunc = std::function<void(const std::vector<uint8_t>&)>;
+
+        IO();
+        ~IO();
 
         void initialize(const FrameworkDesc&);
-        void setProperty(EPropertyID, const boost::any&);
-        void terminate();
-        void validateDevice() const;
+
+        void loadAsyncFile(const std::wstring&, const LoadResultFunc&);
 
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
-
     private:
-        std::shared_ptr<DX12Device> device_;
-        std::unique_ptr<IO> io_;
-        std::unique_ptr<ShaderManager> shaderManager_;
+        std::unordered_map<std::wstring, LoadResultFunc> mapQueued_;
+        LoadFileAsyncFunc loadFileAsyncFunc_;
     };
-
 } // namespace Takoyaki
-

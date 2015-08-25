@@ -62,7 +62,7 @@ namespace Takoyaki
         void terminate();
         void validateDevice() const;
 
-        void loadAsyncFileResult(const std::vector<uint8_t>&);
+        void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
 
     private:
         std::unique_ptr<FrameworkImpl> impl_;

@@ -27,13 +27,14 @@
 #include <wrl/client.h>
 #include <glm/fwd.hpp>
 
-#include "../IDevice.h"
+#include "../public/definitions.h"
 
 namespace Takoyaki
 {
+    struct FrameworkDesc;
     class DX12DeviceContext;
 
-    class DX12Device final : public IDevice, public std::enable_shared_from_this<DX12Device>
+    class DX12Device : public std::enable_shared_from_this<DX12Device>
     {
         DX12Device(const DX12Device&) = delete;
         DX12Device& operator=(const DX12Device&) = delete;
@@ -42,18 +43,18 @@ namespace Takoyaki
 
     public:
         DX12Device();
-        ~DX12Device() override = default;
+        ~DX12Device() = default;
 
-        void create(const FrameworkDesc& desc) override;
-        void setProperty(EPropertyID, const boost::any&) override;
-        void validate() override;
+        void create(const FrameworkDesc& desc);
+        void setProperty(EPropertyID, const boost::any&);
+        void validate();
 
         const Microsoft::WRL::ComPtr<ID3D12Device>& getDevice() { return D3DDevice_;  }
         std::mutex& getDeviceMutex() { return deviceMutex_; }
 
     private:
         void createDevice(uint_fast32_t);
-        void createSwapChain() override;
+        void createSwapChain();
         DXGI_MODE_ROTATION GetDXGIOrientation() const;
         void waitForGpu();
 

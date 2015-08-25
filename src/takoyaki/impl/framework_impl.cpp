@@ -21,16 +21,18 @@
 #include "pch.h"
 #include "framework_impl.h"
 
-#include "../utility/log.h"
+#include "../io.h"
 #include "../dx12/DX12Device.h"
 #include "../dx12/DX12DeviceContext.h"
 #include "../dx12/DX12Texture.h"
-
-using namespace Microsoft::WRL;
+#include "../dx12/shader_manager.h"
+#include "../public/framework.h"
+#include "../utility/log.h"
 
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
+        : io_(std::make_unique<IO>())
     {
         Log::Initialize();
     }
@@ -49,22 +51,15 @@ namespace Takoyaki
         }
 
         device_->create(desc);
-
-        if (!desc.loadAsyncFunc)
-            throw new std::runtime_error("FrameworkDesc missing LoadFileAsyncFunc");
-
-        loadFileAsyncFunc_ = desc.loadAsyncFunc;
-
-        loadFileAsyncFunc_(L"assets\\Example.oddl");
+        io_->initialize(desc);
+        shaderManager_->initialize(io_.get());
 
         LOGC_INDENT_END << "Initialization complete.";
     }
 
-    void FrameworkImpl::loadAsyncFileResult(const std::vector<uint8_t>& res)
+    void FrameworkImpl::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
     {
-        const char* test = reinterpret_cast<const char*>(&res[0]);
-
-        int i = 0;
+        io_->loadAsyncFileResult(filename, res);
     }
 
     void FrameworkImpl::setProperty(EPropertyID id, const boost::any& value)

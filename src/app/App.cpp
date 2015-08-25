@@ -100,10 +100,12 @@ int main(Platform::Array<Platform::String^>^)
         desc.windowSize.x = window->Bounds.Width;
         desc.windowSize.y = window->Bounds.Height;
         desc.windowDpi = disp->LogicalDpi;
+
         desc.loadAsyncFunc = std::bind<void>([this](const std::wstring& filename) {
-            auto createVSTask = loadFileAsync(filename).then([this](std::vector<byte>& fileData)
+            lamdaBuffer = filename;
+            auto createVSTask = loadFileAsync(filename).then([this](std::vector<byte>& data)
             {
-                framework_->loadAsyncFileResult(fileData);
+                framework_->loadAsyncFileResult(lamdaBuffer, data);
             });
         }, std::placeholders::_1);
 

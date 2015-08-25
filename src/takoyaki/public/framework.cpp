@@ -18,40 +18,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "framework.h"
 
-#include "../public/definitions.h"
+#include "../impl/framework_impl.h"
 
 namespace Takoyaki
 {
-    struct FrameworkDesc;
-    class DX12Device;
-    class IO;
-    class ShaderManager;
-
-    class FrameworkImpl
+    Framework::Framework()
+        : impl_(std::make_unique<FrameworkImpl>())
     {
-        FrameworkImpl(const FrameworkImpl&) = delete;
-        FrameworkImpl& operator=(const FrameworkImpl&) = delete;
-        FrameworkImpl(FrameworkImpl&&) = delete;
-        FrameworkImpl& operator=(FrameworkImpl&&) = delete;
+    }
 
-    public:
-        FrameworkImpl();
-         ~FrameworkImpl();
+    Framework::~Framework() = default;
 
-        void initialize(const FrameworkDesc&);
-        void setProperty(EPropertyID, const boost::any&);
-        void terminate();
-        void validateDevice() const;
+    void Framework::initialize(const FrameworkDesc& desc)
+    {
+        impl_->initialize(desc);
+    }
 
-        void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
+    void Framework::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
+    {
+        impl_->loadAsyncFileResult(filename, res);
+    }
 
-    private:
-        std::shared_ptr<DX12Device> device_;
-        std::unique_ptr<IO> io_;
-        std::unique_ptr<ShaderManager> shaderManager_;
-    };
+    void Framework::setProperty(EPropertyID id, const boost::any& value)
+    {
+        impl_->setProperty(id, value);
+    }
 
-} // namespace Takoyaki
+    void Framework::terminate()
+    { 
+        impl_->terminate();
+    }
 
+    void Framework::validateDevice() const
+    {
+        impl_->validateDevice();
+    }
+}
+// namespace Takoyaki

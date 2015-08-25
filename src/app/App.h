@@ -45,6 +45,7 @@ namespace App
         std::unique_ptr<Takoyaki::Framework> framework_;
 		bool mWindowClosed;
 		bool mWindowVisible;
+        std::wstring lamdaBuffer;
 	};
 }
 

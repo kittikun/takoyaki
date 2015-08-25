@@ -10,11 +10,11 @@
     <Filter Include="Source Files\impl">
       <UniqueIdentifier>{46dbb61f-f4b8-4a6c-8f17-fb412e172b2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\pimpl">
-      <UniqueIdentifier>{0515ce8f-c386-433c-a362-b07503340b5f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\dx12">
       <UniqueIdentifier>{e3c58ddb-aab7-4035-a91f-777791cbed42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\public">
+      <UniqueIdentifier>{0515ce8f-c386-433c-a362-b07503340b5f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -29,9 +29,6 @@
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp">
       <Filter>Source Files\impl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\pimpl\framework.cpp">
-      <Filter>Source Files\pimpl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp">
       <Filter>Source Files\dx12</Filter>
@@ -48,6 +45,15 @@
     <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\public\framework.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\io.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\pch.h">
@@ -59,26 +65,11 @@
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h">
       <Filter>Source Files\impl</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\pimpl\framework.h">
-      <Filter>Source Files\pimpl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\pimpl\platform.h">
-      <Filter>Source Files\pimpl</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\IDevice.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\IRenderer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\utility.h">
       <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\pimpl\definitions.h">
-      <Filter>Source Files\pimpl</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h">
       <Filter>Source Files\dx12</Filter>
@@ -88,6 +79,21 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h">
       <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\shader_manager.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\public\definitions.h">
+      <Filter>Source Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\public\framework.h">
+      <Filter>Source Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\public\platform.h">
+      <Filter>Source Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\io.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

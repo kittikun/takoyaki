@@ -30,9 +30,9 @@ namespace Takoyaki
 
     // Specializations
     template <>
-    LPCWSTR DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>::getFormatString() const
+    boost::wformat DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>::getFormatString()
     {
-        return L"Render Target View Heap %zd";
+        return boost::wformat(L"Render Target View Heap %1%");
     }
 
     template <>

@@ -39,12 +39,15 @@ namespace Takoyaki
 
     void IO::loadAsyncFile(const std::wstring& filename, const LoadResultFunc& func)
     {
+        std::lock_guard<std::mutex> lock(mutex_);
+
         mapQueued_.insert(std::make_pair(filename, func));
         loadFileAsyncFunc_(filename);
     }
 
     void IO::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
     {
+        std::lock_guard<std::mutex> lock(mutex_);
         auto found = mapQueued_.find(filename);
 
         if (found != mapQueued_.end()) {

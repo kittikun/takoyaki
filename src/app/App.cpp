@@ -119,21 +119,7 @@ int main(Platform::Array<Platform::String^>^)
             if (mWindowVisible) {
                 CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-                //auto commandQueue = GetDeviceResources()->GetCommandQueue();
-                //PIXBeginEvent(commandQueue, 0, L"Update");
-                //{
-                //	m_main->Update();
-                //}
-                //PIXEndEvent(commandQueue);
-
-                //PIXBeginEvent(commandQueue, 0, L"Render");
-                //{
-                //	if (m_main->Render())
-                //	{
-                //		GetDeviceResources()->Present();
-                //	}
-                //}
-                //PIXEndEvent(commandQueue);
+                framework_->present();
             } else {
                 CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
             }
@@ -165,8 +151,9 @@ int main(Platform::Array<Platform::String^>^)
 
         create_task([this, deferral]()
         {
-            // TODO: Insert your code here.
-            //m_main->OnSuspending();
+            // WinRT doesn't call destructor upon quitting but will call suspend 
+            // Since this is probably a bad habit for other platforms, use suspend to simulate resource
+            framework_.reset();
 
             deferral->Complete();
         });

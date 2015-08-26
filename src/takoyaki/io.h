@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <functional>
+#include <thread>
 #include <unordered_map>
 
 #include "public/definitions.h"
@@ -48,6 +48,7 @@ namespace Takoyaki
 
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
     private:
+        std::mutex mutex_;
         std::unordered_map<std::wstring, LoadResultFunc> mapQueued_;
         LoadFileAsyncFunc loadFileAsyncFunc_;
     };

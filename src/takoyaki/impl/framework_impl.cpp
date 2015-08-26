@@ -32,15 +32,13 @@
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
-        : io_(std::make_unique<IO>())
+        : io_(std::make_shared<IO>())
+        , shaderManager_(std::make_unique<ShaderManager>())
     {
         Log::Initialize();
     }
 
-    FrameworkImpl::~FrameworkImpl()
-    {
-
-    }
+    FrameworkImpl::~FrameworkImpl() = default;
 
     void FrameworkImpl::initialize(const FrameworkDesc& desc)
     {
@@ -52,7 +50,7 @@ namespace Takoyaki
 
         device_->create(desc);
         io_->initialize(desc);
-        shaderManager_->initialize(io_.get());
+        shaderManager_->initialize(io_);
 
         LOGC_INDENT_END << "Initialization complete.";
     }
@@ -60,6 +58,11 @@ namespace Takoyaki
     void FrameworkImpl::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
     {
         io_->loadAsyncFileResult(filename, res);
+    }
+
+    void FrameworkImpl::present()
+    {
+        device_->present();
     }
 
     void FrameworkImpl::setProperty(EPropertyID id, const boost::any& value)

@@ -21,9 +21,10 @@
 #include "pch.h"
 #include "shader_manager.h"
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/interprocess/streams/bufferstream.hpp>
+#include <boost/format.hpp>
+
+#include <D3Dcompiler.h>
+#include <rapidjson/document.h>
 
 #include "../io.h"
 #include "../utility/log.h"
@@ -31,22 +32,51 @@
 namespace Takoyaki
 {
     ShaderManager::ShaderManager() = default;
-    ShaderManager::~ShaderManager() = default;
 
-    void ShaderManager::initialize(IO* io)
+    ShaderManager::~ShaderManager()
     {
-        io->loadAsyncFile(L"data\\shaders.xml", std::bind(&ShaderManager::loadAsyncCallback, this, std::placeholders::_1));
     }
 
-    void ShaderManager::loadAsyncCallback(const std::vector<uint8_t>& data)
+    void ShaderManager::loadCallback(const std::vector<uint8_t>& data)
     {
-        boost::property_tree::ptree tree;
+        // data will expire when we leave this function so pass a copy
+        p.set_value(data);
+    }
 
-        boost::interprocess::bufferstream stream(reinterpret_cast<char*>(const_cast<uint8_t*>(&data.front())), buffer.size());
-        boost::property_tree::read_xml(stream, tree);
+    void ShaderManager::test(std::future<std::vector<uint8_t>> data)
+    {
+        auto& res = data.get();
+        rapidjson::Document doc;
 
-        auto name = tree.get<std::string>("program.<xmlattr>.name");
-        auto vertex = tree.get<std::string>("program.vertex.<xmlattr>.path"); 
-        auto pixel = tree.get<std::string>("program.pixel.<xmlattr>.path");
+        std::string test(res.begin(), res.end());
+
+        doc.Parse(test.c_str());
+
+        for (auto iter = doc.MemberBegin(); iter != doc.MemberEnd(); ++iter) {
+            LOGC << iter->name.GetString();
+
+            if (iter->value.IsArray()) {
+                for (auto item = iter->value.Begin(); item != iter->value.End(); ++item) {
+                    if (item->IsObject()) {
+                        for (auto member = item->MemberBegin(); member != item->MemberEnd(); ++member)
+                            if (member->value.IsString())
+                                LOGC << member->name.GetString() << ", " << member->value.GetString();
+                    }
+                }
+            }
+        }
+    }
+
+    void ShaderManager::initialize(std::weak_ptr<IO> io)
+    {
+        compilerThread_ = std::thread(std::bind(&ShaderManager::test, this, std::placeholders::_1), p.get_future());
+
+        //detach the thread so it will not try to be destroyed at manager destruction
+        compilerThread_.detach();
+
+
+        auto lock = io.lock();
+
+        lock->loadAsyncFile(L"data\\shaderlist.json", std::bind(&ShaderManager::loadCallback, this, std::placeholders::_1));
     }
 } // namespace Takoyaki

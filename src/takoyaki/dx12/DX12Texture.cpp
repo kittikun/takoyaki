@@ -35,9 +35,9 @@ namespace Takoyaki
 
     DX12Texture::~DX12Texture()
     {
-        if (rtv_.ptr != ULONG_PTR_MAX)
+        if ((rtv_.ptr != ULONG_PTR_MAX) && (!owner_.expired())) {
             owner_.lock()->getRTVDescHeapCollection().releaseOne(rtv_);
-
+        }
     }
 
     D3D12_CPU_DESCRIPTOR_HANDLE DX12Texture::getRenderTargetView()

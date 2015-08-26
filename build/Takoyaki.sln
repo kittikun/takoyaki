@@ -9,11 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "App", "App.vcxproj", "{80F0
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Takoyaki", "Takoyaki.vcxproj", "{68B5B191-D860-4F7B-B78A-57DBA659AE26}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2} = {DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenDDL", "OpenDDL.vcxproj", "{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,18 +50,6 @@ Global
 		{68B5B191-D860-4F7B-B78A-57DBA659AE26}.Release|x64.Build.0 = Release|x64
 		{68B5B191-D860-4F7B-B78A-57DBA659AE26}.Release|x86.ActiveCfg = Release|Win32
 		{68B5B191-D860-4F7B-B78A-57DBA659AE26}.Release|x86.Build.0 = Release|Win32
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Debug|ARM.ActiveCfg = Debug|ARM
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Debug|ARM.Build.0 = Debug|ARM
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Debug|x64.ActiveCfg = Debug|x64
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Debug|x64.Build.0 = Debug|x64
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Debug|x86.ActiveCfg = Debug|Win32
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Debug|x86.Build.0 = Debug|Win32
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Release|ARM.ActiveCfg = Release|ARM
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Release|ARM.Build.0 = Release|ARM
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Release|x64.ActiveCfg = Release|x64
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Release|x64.Build.0 = Release|x64
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Release|x86.ActiveCfg = Release|Win32
-		{DD2283BD-D261-49AF-B13C-C1BA23C7E1E2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

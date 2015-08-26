@@ -117,7 +117,7 @@ namespace Takoyaki
         // The width and height of the swap chain must be based on the window's
         // natively-oriented width and height. If the window is not in the native
         // orientation, the dimensions must be reversed.
-        DXGI_MODE_ROTATION displayRotation = GetDXGIOrientation();
+        DXGI_MODE_ROTATION displayRotation = getDXGIOrientation();
 
         if (displayRotation == DXGI_MODE_ROTATION_ROTATE90 || displayRotation == DXGI_MODE_ROTATION_ROTATE270)
             std::swap(outSize.x, outSize.y);
@@ -190,14 +190,13 @@ namespace Takoyaki
             DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&res)));            
             D3DDevice_->CreateRenderTargetView(res.Get(), nullptr, tex->getRenderTargetView());
 
-            WCHAR name[64];
+            auto fmt = boost::wformat(L"Swap chain Render Target %1%") % i;
 
-            swprintf_s(name, L"Swap chain Render Target %d", i);
-            res->SetName(name);
+            res->SetName(boost::str(fmt).c_str());
         }
     }
 
-    DXGI_MODE_ROTATION DX12Device::GetDXGIOrientation() const
+    DXGI_MODE_ROTATION DX12Device::getDXGIOrientation() const
     {
         DXGI_MODE_ROTATION rotation = DXGI_MODE_ROTATION_UNSPECIFIED;
 
@@ -251,6 +250,41 @@ namespace Takoyaki
                 break;
         }
         return rotation;
+    }
+
+    void DX12Device::present()
+    {
+        // The first argument instructs DXGI to block until VSync, putting the application
+        // to sleep until the next VSync. This ensures we don't waste any cycles rendering
+        // frames that will never be displayed to the screen.
+        auto res = swapChain_->Present(1, 0);
+
+        // If the device was removed either by a disconnection or a driver upgrade, we 
+        // must recreate all device resources.
+        if (res == DXGI_ERROR_DEVICE_REMOVED || res == DXGI_ERROR_DEVICE_RESET) {
+            // TODO: Apparently this can only happen for on mobile devices
+            // when the application is killed by the OS. Add proper support
+            throw new std::runtime_error("Device removal not implemented");
+            D3DDevice_.Reset();
+        } else {
+            DXCheckThrow(res);
+
+            // Schedule a Signal command in the queue.
+            auto current = fenceValues_[currentFrame_];
+            DXCheckThrow(commandQueue_->Signal(fence_.Get(), current));
+
+            // Advance the frame index.
+            currentFrame_ = (currentFrame_ + 1) % bufferCount_;
+
+            // Check to see if the next frame is ready to start.
+            if (fence_->GetCompletedValue() < fenceValues_[currentFrame_]) {
+                DXCheckThrow(fence_->SetEventOnCompletion(fenceValues_[currentFrame_], fenceEvent_));
+                WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
+            }
+
+            // Set the fence value for the next frame.
+            fenceValues_[currentFrame_]++;
+        }
     }
 
     void DX12Device::setProperty(EPropertyID id, const boost::any& value)
@@ -308,8 +342,8 @@ namespace Takoyaki
             
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
-            D3DDevice_.Reset();
             throw new std::runtime_error("Device removal not implemented");
+            D3DDevice_.Reset();
         }
     }
 

@@ -46,6 +46,7 @@ namespace Takoyaki
         ~DX12Device() = default;
 
         void create(const FrameworkDesc& desc);
+        void present();
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
@@ -55,7 +56,7 @@ namespace Takoyaki
     private:
         void createDevice(uint_fast32_t);
         void createSwapChain();
-        DXGI_MODE_ROTATION GetDXGIOrientation() const;
+        DXGI_MODE_ROTATION getDXGIOrientation() const;
         void waitForGpu();
 
     private:

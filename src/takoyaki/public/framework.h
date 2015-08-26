@@ -36,14 +36,14 @@ namespace Takoyaki
 
     struct FrameworkDesc
     {
-        uint_fast32_t       bufferCount;
-        EDisplayOrientation  currentOrientation;
-        EDisplayOrientation  nativeOrientation;
-        EDeviceType          type;
-        void*               windowHandle;
-        glm::vec2           windowSize;
-        float               windowDpi;
-        LoadFileAsyncFunc   loadAsyncFunc;
+        uint_fast32_t           bufferCount;
+        EDisplayOrientation     currentOrientation;
+        EDisplayOrientation     nativeOrientation;
+        EDeviceType             type;
+        void*                   windowHandle;
+        glm::vec2               windowSize;
+        float                   windowDpi;
+        LoadFileAsyncFunc       loadAsyncFunc;
     };
 
     class TAKOYAKI_API Framework
@@ -59,6 +59,7 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc&);
         void setProperty(EPropertyID, const boost::any&);
+        void present();
         void terminate();
         void validateDevice() const;
 

@@ -42,6 +42,11 @@ namespace Takoyaki
         impl_->loadAsyncFileResult(filename, res);
     }
 
+    void Framework::present()
+    {
+        impl_->present();
+    }
+
     void Framework::setProperty(EPropertyID id, const boost::any& value)
     {
         impl_->setProperty(id, value);

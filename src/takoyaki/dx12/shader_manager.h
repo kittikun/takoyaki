@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <future>
+
 namespace Takoyaki
 {
     class IO;
@@ -35,9 +37,14 @@ namespace Takoyaki
         ShaderManager();
         ~ShaderManager();
 
-        void initialize(IO*);
+        void initialize(std::weak_ptr<IO>);
 
     private:
-        void loadAsyncCallback(const std::vector<uint8_t>&);
+        void loadCallback(const std::vector<uint8_t>& data);
+        void test(std::future<std::vector<uint8_t>> data);
+
+        std::thread compilerThread_;
+        std::promise<std::vector<uint8_t>> p;
+
     };
 } // namespace Takoyaki

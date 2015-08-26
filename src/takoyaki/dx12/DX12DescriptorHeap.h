@@ -123,17 +123,13 @@ namespace Takoyaki
             }
 
             // Make a suitable name
-            WCHAR name[64];
-
-            swprintf_s(name, getFormatString(), heaps_.size());
-            heap.descriptor_->SetName(name);
-
+            heap.descriptor_->SetName(boost::str(getFormatString() % heaps_.size()).c_str());
             heap.handle_ = heap.descriptor_->GetCPUDescriptorHandleForHeapStart();
             heap.freelist_.resize(MAX_DESCRIPTOR_HEAP_SIZE);
             std::iota(heap.freelist_.begin(), heap.freelist_.end(), 0);
         }
 
-        LPCWSTR getFormatString() const;
+        boost::wformat getFormatString();
         D3D12_DESCRIPTOR_HEAP_FLAGS getFlags() const;
 
     private:

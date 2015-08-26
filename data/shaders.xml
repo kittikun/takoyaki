@@ -1,4 +1,0 @@
-<program name="clear">
-    <vertex path="data/clear.hlsl" main="VS_Main" />
-    <pixel path="data/clear.hlsl" main="PS_Main" />
-</program>

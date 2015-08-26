@@ -42,6 +42,7 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc&);
         void setProperty(EPropertyID, const boost::any&);
+        void present();
         void terminate();
         void validateDevice() const;
 
@@ -49,7 +50,7 @@ namespace Takoyaki
 
     private:
         std::shared_ptr<DX12Device> device_;
-        std::unique_ptr<IO> io_;
+        std::shared_ptr<IO> io_;
         std::unique_ptr<ShaderManager> shaderManager_;
     };
 

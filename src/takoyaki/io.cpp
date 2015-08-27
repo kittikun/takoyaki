@@ -23,6 +23,7 @@
 
 #include "public/definitions.h"
 #include "public/framework.h"
+#include "utility/winUtility.h"
 
 namespace Takoyaki
 {
@@ -37,21 +38,21 @@ namespace Takoyaki
         loadFileAsyncFunc_ = desc.loadAsyncFunc;
     }
 
-    void IO::loadAsyncFile(const std::wstring& filename, const LoadResultFunc& func)
+    void IO::loadAsyncFile(const std::string& filename, const LoadResultFunc& func)
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
         mapQueued_.insert(std::make_pair(filename, func));
-        loadFileAsyncFunc_(filename);
+        loadFileAsyncFunc_(makeWinPath(filename));
     }
 
-    void IO::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
+    void IO::loadAsyncFileResult(const std::string& filename, const std::vector<uint8_t>& res)
     {
         std::lock_guard<std::mutex> lock(mutex_);
         auto found = mapQueued_.find(filename);
 
         if (found != mapQueued_.end()) {
-            mapQueued_[filename](res);
+            found->second(res);
             mapQueued_.erase(found);
         } else {
             throw new std::runtime_error("IO::loadAsyncFileResult, key not found");

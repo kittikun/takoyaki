@@ -33,9 +33,6 @@
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\utility.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\DX12DescriptorHeap.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
@@ -54,6 +51,12 @@
     <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\DXUtility.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\utility\winUtility.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\pch.h">
@@ -66,9 +69,6 @@
       <Filter>Source Files\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\utility.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h">
@@ -94,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\io.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\DXUtility.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\utility\winUtility.h">
+      <Filter>Source Files\utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -44,12 +44,12 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc&);
 
-        void loadAsyncFile(const std::wstring&, const LoadResultFunc&);
+        void loadAsyncFile(const std::string&, const LoadResultFunc&);
 
-        void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
+        void loadAsyncFileResult(const std::string&, const std::vector<uint8_t>&);
     private:
         std::mutex mutex_;
-        std::unordered_map<std::wstring, LoadResultFunc> mapQueued_;
+        std::unordered_map<std::string, LoadResultFunc> mapQueued_;
         LoadFileAsyncFunc loadFileAsyncFunc_;
     };
 } // namespace Takoyaki

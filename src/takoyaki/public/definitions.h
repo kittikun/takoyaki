@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <functional>
+
 namespace Takoyaki
 {
     using LoadFileAsyncFunc = std::function<void(const std::wstring&)>;

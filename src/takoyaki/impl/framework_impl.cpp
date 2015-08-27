@@ -28,21 +28,24 @@
 #include "../dx12/shader_manager.h"
 #include "../public/framework.h"
 #include "../utility/log.h"
+#include "../utility/winUtility.h"
 
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
-        : io_(std::make_shared<IO>())
-        , shaderManager_(std::make_unique<ShaderManager>())
+        : io_{ std::make_unique<IO>() }
+        , shaderManager_{ std::make_unique<ShaderManager>() }
     {
+#ifdef USE_LOG
         Log::Initialize();
+#endif
     }
 
     FrameworkImpl::~FrameworkImpl() = default;
 
     void FrameworkImpl::initialize(const FrameworkDesc& desc)
     {
-        LOGC_INDENT_START << "Initializing Takoyaki FrameworkImpl..";
+        LOGC_INDENT_START << "Initializing Takoyaki Framework..";
 
         if (desc.type == EDeviceType::DX12) {
             device_.reset(new DX12Device());
@@ -50,14 +53,14 @@ namespace Takoyaki
 
         device_->create(desc);
         io_->initialize(desc);
-        shaderManager_->initialize(io_);
+        shaderManager_->initialize(io_.get());
 
         LOGC_INDENT_END << "Initialization complete.";
     }
 
     void FrameworkImpl::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
     {
-        io_->loadAsyncFileResult(filename, res);
+        io_->loadAsyncFileResult(makeUnixPath(filename), res);
     }
 
     void FrameworkImpl::present()

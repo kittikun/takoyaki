@@ -24,6 +24,7 @@
 #pragma warning(disable : 4251)
 
 #include <memory>
+#include <vector>
 #include <boost/any.hpp>
 #include <glm/glm.hpp>
 

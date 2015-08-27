@@ -21,6 +21,8 @@
 #include "pch.h"
 #include "log.h"
 
+#ifdef USE_LOG
+
 #include <iostream>
 #include <boost/date_time.hpp>
 #include <boost/log/attributes.hpp>
@@ -53,7 +55,7 @@ namespace Takoyaki
             LogContext()
             {
                 count.fill(0);
-                isNew.fill(false);
+                isNew.fill(0);
             }
 
             ~LogContext()
@@ -63,7 +65,7 @@ namespace Takoyaki
 
             // Public because of laziness
             std::array<uint32_t, Log_Level_Count> count;
-            std::array<bool, Log_Level_Count> isNew;
+            std::array<uint32_t, Log_Level_Count> isNew;
         };
 
         static std::unique_ptr<LogContext> sLogContext;
@@ -75,8 +77,9 @@ namespace Takoyaki
 			static const char* strings[] =
 			{
 				"Core",
-				"WARNING",
-				"ERROR",
+                "ERROR",
+                "Shader",
+                "WARNING",
 			};
 
 			if (static_cast<std::size_t>(level) < sizeof(strings) / sizeof(*strings))
@@ -126,12 +129,12 @@ namespace Takoyaki
         {
             std::string res;
 
-            if (sLogContext->isNew[level]) {
+            if (sLogContext->isNew[level] > 0) {
                 for (uint32_t i = 1; i < sLogContext->count[level]; ++i)
                     res += " ";
 
                 res += "- ";
-                sLogContext->isNew[level] = false;
+                --sLogContext->isNew[level];
             } else {
                 for (uint32_t i = 0; i < sLogContext->count[level]; ++i)
                     res += "  ";
@@ -142,3 +145,5 @@ namespace Takoyaki
 
 	} // namespace Log
 } // namespace Takoyaki
+
+#endif // USE_LOG

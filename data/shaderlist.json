@@ -1,10 +1,6 @@
 {
   "clear": [
-    { "type": "vertex", "path": "data/clear.hlsl", "main": "VS_Main" },
-    { "type": "pixel", "path": "data/clear.hlsl", "main": "PS_Main" }
-  ],
-  "clear2": [
-    { "type": "vertex", "path": "data/clear.hlsl", "main": "VS_Main" },
-    { "type": "pixel", "path": "data/clear.hlsl", "main": "PS_Main" }
+    { "type": "vs_5_0", "path": "data/clear.hlsl", "main": "VS_Main" },
+    { "type": "ps_5_0", "path": "data/clear.hlsl", "main": "PS_Main" }
   ]
 }

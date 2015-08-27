@@ -50,7 +50,7 @@ namespace Takoyaki
 
     private:
         std::shared_ptr<DX12Device> device_;
-        std::shared_ptr<IO> io_;
+        std::unique_ptr<IO> io_;
         std::unique_ptr<ShaderManager> shaderManager_;
     };
 

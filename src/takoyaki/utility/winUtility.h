@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -18,50 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "framework.h"
-
-#include "../impl/framework_impl.h"
+#pragma once
 
 namespace Takoyaki
 {
-    Framework::Framework()
-        : impl_{ std::make_unique<FrameworkImpl>() }
-    {
-    }
-
-    Framework::~Framework()
-    {
-    }
-
-    void Framework::initialize(const FrameworkDesc& desc)
-    {
-        impl_->initialize(desc);
-    }
-
-    void Framework::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
-    {
-        impl_->loadAsyncFileResult(filename, res);
-    }
-
-    void Framework::present()
-    {
-        impl_->present();
-    }
-
-    void Framework::setProperty(EPropertyID id, const boost::any& value)
-    {
-        impl_->setProperty(id, value);
-    }
-
-    void Framework::terminate()
-    { 
-        impl_->terminate();
-    }
-
-    void Framework::validateDevice() const
-    {
-        impl_->validateDevice();
-    }
-}
-// namespace Takoyaki
+    std::wstring makeWinPath(const std::string&);
+    std::string makeUnixPath(const std::wstring&);
+    void setThreadName(std::thread::native_handle_type, const std::string&);
+    std::wstring strToWStr(const std::string&);
+    std::string wstrToStr(const std::wstring&);
+} // namespace Takoyaki

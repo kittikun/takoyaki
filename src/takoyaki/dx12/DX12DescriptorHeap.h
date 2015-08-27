@@ -25,7 +25,7 @@
 #include <unordered_map>
 
 #include "DX12Device.h"
-#include "utility.h"
+#include "DXUtility.h"
 
 namespace Takoyaki
 {

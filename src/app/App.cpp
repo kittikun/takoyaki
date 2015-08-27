@@ -19,20 +19,19 @@ using namespace Windows::Graphics::Display;
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
-    auto direct3DApplicationSource = ref new Direct3DApplicationSource();
-    CoreApplication::Run(direct3DApplicationSource);
+    auto app = ref new TakoyakiView();
+    CoreApplication::Run(app);
+
     return 0;
 }
 
-    IFrameworkView^ Direct3DApplicationSource::CreateView()
-    {
-        return ref new App::App();
-    }
+IFrameworkView^ TakoyakiView::CreateView()
+{
+    return ref new TakoyakiApp::App();
+}
 
-    namespace App
-    {
-
-
+namespace TakoyakiApp
+{
     App::App() :
         mWindowClosed(false),
         mWindowVisible(true)
@@ -101,11 +100,11 @@ int main(Platform::Array<Platform::String^>^)
         desc.windowSize.y = window->Bounds.Height;
         desc.windowDpi = disp->LogicalDpi;
 
-        desc.loadAsyncFunc = std::bind<void>([this](const std::wstring& filename) {
-            lamdaBuffer = filename;
-            auto createVSTask = loadFileAsync(filename).then([this](std::vector<byte>& data)
+        desc.loadAsyncFunc = std::bind<void>([this](const std::wstring& filename)
+        {
+            auto createVSTask = loadFileAsync(filename).then([=, this](std::vector<byte>& data)
             {
-                framework_->loadAsyncFileResult(lamdaBuffer, data);
+                framework_->loadAsyncFileResult(filename, data);
             });
         }, std::placeholders::_1);
 
@@ -154,7 +153,6 @@ int main(Platform::Array<Platform::String^>^)
             // WinRT doesn't call destructor upon quitting but will call suspend 
             // Since this is probably a bad habit for other platforms, use suspend to simulate resource
             framework_.reset();
-
             deferral->Complete();
         });
     }

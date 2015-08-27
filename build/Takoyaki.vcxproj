@@ -128,7 +128,7 @@
     <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)out\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
-    <CodeAnalysisRuleSet>D:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -186,7 +186,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalIncludeDirectories>$(SolutionDir)..\src\external;$(BOOST_ROOT);$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_EXPORT_TAKOYAKI_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_EXPORT_TAKOYAKI_API;USE_LOG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
@@ -219,7 +219,7 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
     <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h" />
     <ClInclude Include="..\src\takoyaki\dx12\shader_manager.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\utility.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\DXUtility.h" />
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
     <ClInclude Include="..\src\takoyaki\io.h" />
     <ClInclude Include="..\src\takoyaki\pch.h" />
@@ -227,6 +227,7 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
     <ClInclude Include="..\src\takoyaki\public\framework.h" />
     <ClInclude Include="..\src\takoyaki\public\platform.h" />
     <ClInclude Include="..\src\takoyaki\utility\log.h" />
+    <ClInclude Include="..\src\takoyaki\utility\winUtility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\takoyaki\dllmain.cpp" />
@@ -235,7 +236,7 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
     <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\utility.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\DXUtility.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\io.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">
@@ -243,6 +244,7 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\public\framework.cpp" />
     <ClCompile Include="..\src\takoyaki\utility\log.cpp" />
+    <ClCompile Include="..\src\takoyaki\utility\winUtility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,7 +26,7 @@
 #include "DX12DeviceContext.h"
 #include "DX12DescriptorHeap.h"
 #include "DX12Texture.h"
-#include "utility.h"
+#include "DXUtility.h"
 #include "../utility/log.h"
 #include "../public/framework.h"
 
@@ -54,7 +54,7 @@ namespace Takoyaki
 
     void DX12Device::createDevice(uint_fast32_t bufferCount)
     {
-        LOGC << "Creating D3D Device...";
+        LOGC << "Creating D3D12 Device...";
 
 #if defined(_DEBUG)
         Microsoft::WRL::ComPtr<ID3D12Debug> debugController;

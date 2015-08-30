@@ -1,6 +1,6 @@
 {
   "clear": [
-    { "type": "vs_5_0", "path": "data/clear.hlsl", "main": "VS_Main" },
-    { "type": "ps_5_0", "path": "data/clear.hlsl", "main": "PS_Main" }
+    { "type": "vs", "path": "data/clear.hlsl", "main": "VS_Main" },
+    { "type": "ps", "path": "data/clear.hlsl", "main": "PS_Main" }
   ]
 }

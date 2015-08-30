@@ -28,8 +28,8 @@ namespace Takoyaki
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
 
     DX12DeviceContext::DX12DeviceContext(std::weak_ptr<DX12Device> owner)
-        : owner_(owner_)
-        , descHeapRTV_(owner)
+        : owner_{ owner_ }
+        , descHeapRTV_{ owner }
     {
 
     }

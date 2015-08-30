@@ -50,8 +50,8 @@ namespace Takoyaki
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
-        const Microsoft::WRL::ComPtr<ID3D12Device>& getDevice() { return D3DDevice_;  }
-        std::mutex& getDeviceMutex() { return deviceMutex_; }
+        const Microsoft::WRL::ComPtr<ID3D12Device>& getDevice();
+        std::unique_lock<std::mutex> getLock();
 
     private:
         void createDevice(uint_fast32_t);

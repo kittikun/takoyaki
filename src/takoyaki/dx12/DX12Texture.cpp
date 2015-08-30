@@ -28,7 +28,7 @@
 namespace Takoyaki
 {
     DX12Texture::DX12Texture(std::weak_ptr<DX12DeviceContext> owner)
-        : owner_(owner)
+        : owner_{ owner }
     {
         rtv_.ptr = ULONG_PTR_MAX;
     }

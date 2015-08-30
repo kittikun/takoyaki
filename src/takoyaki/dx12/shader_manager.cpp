@@ -21,8 +21,7 @@
 #include "pch.h"
 #include "shader_manager.h"
 
-#include <atomic>
-#include <D3Dcompiler.h>
+#include <d3dcompiler.h>
 #include <boost/format.hpp>
 #include <rapidjson/document.h>
 
@@ -33,52 +32,44 @@
 
 namespace Takoyaki
 {
+    // Some definition for json shader list
+    struct ShaderDesc
+    {
+        std::string type;
+        std::string path;
+        std::string main;
+        uint_fast32_t flags;
+    };
+
+    struct ProgramDesc
+    {
+        std::string name;
+        std::vector<ShaderDesc> shaders;
+    };
+
     ShaderManager::ShaderManager() = default;
     ShaderManager::~ShaderManager() = default;
 
-    void ShaderManager::compilerMain(IO* io)
+    void ShaderManager::compileShaders(IO* io, const std::vector<ProgramDesc>& programList)
     {
-        std::atomic<int> flag{0};
-        std::string buffer;
-
-        auto loadWait = [&buffer, &flag, &io](const std::string& path)
-        {
-            flag.store(0);
-            io->loadAsyncFile(path, [&buffer, &flag](const std::vector<uint8_t>& data)
-            {
-                // copy data or it will expire after this scope
-                buffer = std::string(data.begin(), data.end()).c_str();
-                flag.store(1);
-            });
-
-            // we can afford to block this thread
-            while (flag.load() == 0) {
-                std::this_thread::yield();
-            }
-        };
-
-        LOGS_INDENT_START << "Starting shaders compilation..";
-
-        loadWait("data/shaderlist.json");
-
-        auto programList = parseShaderList(buffer);
-
         // Compile shaders, might want to move this to a function so it can be called outside of framework ?
-        for (auto program : programList) {
-            auto fmt = boost::format("Compiling program \"%1%\"") % program.name;
+        for (auto programDesc : programList) {
+            auto fmt = boost::format("Compiling program \"%1%\"") % programDesc.name;
             LOGS_INDENT_START << boost::str(fmt);
 
-            for (auto shader : program.shaders) {
-                auto fmt = boost::format("Path: %1%, Type: %2%, Entry: %3%") % shader.path % shader.type % shader.main;
+            Program prog;
+
+            for (auto shaderDesc : programDesc.shaders) {
+                auto fmt = boost::format("Path: %1%, Type: %2%, Entry: %3%") % shaderDesc.path % shaderDesc.type % shaderDesc.main;
 
                 LOGS << boost::str(fmt);
 
-                loadWait(shader.path);
+                auto buffer = io->loadFile(shaderDesc.path);
 
                 ID3DBlob* shaderBlob = nullptr;
                 ID3DBlob* errorBlob = nullptr;
 
-                auto hr = D3DCompile(buffer.c_str(), buffer.size(), shader.path.c_str(), nullptr, nullptr, shader.main.c_str(), shader.type.c_str(), shader.flags, 0, &shaderBlob, &errorBlob);
+                auto hr = D3DCompile(buffer.c_str(), buffer.size(), shaderDesc.path.c_str(), nullptr, nullptr, shaderDesc.main.c_str(), getDXShaderType(shaderDesc.type).c_str(), shaderDesc.flags, 0, &shaderBlob, &errorBlob);
 
                 if (FAILED(hr)) {
                     if (errorBlob != nullptr) {
@@ -89,22 +80,94 @@ namespace Takoyaki
                     if (shaderBlob != nullptr)
                         shaderBlob->Release();
 
-                    fmt = boost::format("Shader compilation failed: %1%") % shader.path;
+                    fmt = boost::format("Shader compilation failed: %1%") % shaderDesc.path;
 
                     throw new std::runtime_error(boost::str(fmt));
                 }
+
+                D3D12_SHADER_BYTECODE bc;
+
+                bc.BytecodeLength = shaderBlob->GetBufferSize();
+                bc.pShaderBytecode = shaderBlob->GetBufferPointer();
+
+                if (shaderDesc.type == "vs")
+                    prog.vs = bc;
+                else if (shaderDesc.type == "ps")
+                    prog.ps = bc;
+
+                getShaderBindings(shaderBlob);
+            }
+
+            // Get write privilege on the map
+            {
+                std::lock_guard<boost::shared_mutex> lock(rwMutex_);
+
+                // a copy might happen here ?
+                programList_.insert({ programDesc.name, prog });
             }
 
             LOGS_INDENT_END << "Program done.";
         }
+    }
 
-        LOGS_INDENT_END << "Shaders compilation done.";
+    std::string ShaderManager::getDXShaderType(const std::string& type) const
+    {
+        std::string res;
+
+        if (type == "vs")
+            res = "vs_5_0";
+        else if (type == "ps")
+            res = "ps_5_0";
+        else
+            throw new std::runtime_error("ShaderManager::getDXShaderType, unknown type");
+
+        return res;
+    }
+
+    void ShaderManager::getShaderBindings(ID3DBlob* blob)
+    {
+        // use reflection to extract bind info
+        ID3D12ShaderReflection* reflect = nullptr;
+        D3D12_SHADER_DESC progDesc;
+
+        D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&reflect));
+        reflect->GetDesc(&progDesc);
+
+        for (uint_fast32_t i = 0; i < progDesc.ConstantBuffers; ++i) {
+            auto cb = reflect->GetConstantBufferByIndex(i);
+            D3D12_SHADER_BUFFER_DESC cbDesc;
+
+            cb->GetDesc(&cbDesc);
+
+            LOGS << cbDesc.Name;
+
+            for (uint_fast32_t j = 0; j < cbDesc.Variables; ++j) {
+                auto var = cb->GetVariableByIndex(j);
+                D3D12_SHADER_VARIABLE_DESC vardesc;
+
+                var->GetDesc(&vardesc);
+                LOGS << vardesc.Name;
+            }
+        }
+    }
+
+    const Program& ShaderManager::getProgram(const std::string& name) const
+    {
+        // RW lock so should block unless someone is updating the map
+        boost::shared_lock<boost::shared_mutex> lock{ rwMutex_ };
+
+        auto found = programList_.find(name);
+
+        if (found == programList_.end())
+            throw new std::runtime_error("ShaderManager::getProgram, unknown name");
+
+        return found->second;
     }
 
     void ShaderManager::initialize(IO* io)
     {
         // shaders are processed in a different thread
-        auto thread = std::thread{ std::bind(&ShaderManager::compilerMain, this, std::placeholders::_1), io };
+        auto thread = std::thread{ std::bind(&ShaderManager::mainCompiler, this, std::placeholders::_1), io };
 
         setThreadName(thread.native_handle(), "Shader Compiler");
 
@@ -112,10 +175,23 @@ namespace Takoyaki
         thread.detach();
     }
 
-    std::vector<ShaderManager::ProgramDesc> ShaderManager::parseShaderList(const std::string& data)
+    void ShaderManager::mainCompiler(IO* io)
+    {
+        LOGS_INDENT_START << "Starting shaders compilation..";
+
+        auto buffer = io->loadFile("data/shaderlist.json");
+
+        std::vector<ProgramDesc> programList;
+        
+        parseShaderList(buffer, programList);
+        compileShaders(io, programList);
+
+        LOGS_INDENT_END << "Shader compilation done.";
+    }
+
+    void ShaderManager::parseShaderList(const std::string& data, std::vector<ProgramDesc>& programList) const
     {
         rapidjson::Document doc;
-        std::vector<ProgramDesc> programList;
 
         LOGS << "Parsing program list..";
         doc.Parse(data.c_str());
@@ -153,7 +229,5 @@ namespace Takoyaki
 
             programList.push_back(program);
         }
-
-        return programList;
     }
 } // namespace Takoyaki

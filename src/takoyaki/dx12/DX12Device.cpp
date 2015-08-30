@@ -33,9 +33,9 @@
 namespace Takoyaki
 {
     DX12Device::DX12Device()
-        : window_(nullptr)
-        , bufferCount_(0)
-        , currentFrame_(0)
+        : window_{ nullptr }
+        , bufferCount_{ 0 }
+        , currentFrame_{ 0 }
     {
     }
 
@@ -54,7 +54,7 @@ namespace Takoyaki
 
     void DX12Device::createDevice(uint_fast32_t bufferCount)
     {
-        LOGC << "Creating D3D12 Device...";
+        LOGC << "Creating D3D Device...";
 
 #if defined(_DEBUG)
         Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
@@ -97,9 +97,9 @@ namespace Takoyaki
         DXCheckThrow(D3DDevice_->CreateFence(fenceValues_[currentFrame_], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));
         fenceValues_[currentFrame_]++;
         fenceEvent_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
-        
+
         // Create a context for the main thread        
-        contexts_.insert(std::make_pair(std::this_thread::get_id(), std::make_shared<DX12DeviceContext>(shared_from_this())));
+        contexts_.insert({ std::this_thread::get_id(), std::make_shared<DX12DeviceContext>(shared_from_this()) });
     }
 
     void DX12Device::createSwapChain()
@@ -252,6 +252,16 @@ namespace Takoyaki
         return rotation;
     }
 
+    const Microsoft::WRL::ComPtr<ID3D12Device>& DX12Device::getDevice()
+    {
+        return D3DDevice_;
+    }
+
+    std::unique_lock<std::mutex> DX12Device::getLock()
+    {
+        return std::unique_lock<std::mutex>(deviceMutex_);
+    }
+
     void DX12Device::present()
     {
         // The first argument instructs DXGI to block until VSync, putting the application
@@ -264,7 +274,7 @@ namespace Takoyaki
         if (res == DXGI_ERROR_DEVICE_REMOVED || res == DXGI_ERROR_DEVICE_RESET) {
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
-            throw new std::runtime_error("Device removal not implemented");
+            throw new std::runtime_error{ "Device removal not implemented" };
             D3DDevice_.Reset();
         } else {
             DXCheckThrow(res);
@@ -303,7 +313,7 @@ namespace Takoyaki
                 break;
 
             default:
-                throw new std::runtime_error("DX12Device::setProperty, id");
+                throw new std::runtime_error{ "DX12Device::setProperty, id" };
                 break;
         }
 
@@ -342,7 +352,7 @@ namespace Takoyaki
             
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
-            throw new std::runtime_error("Device removal not implemented");
+            throw new std::runtime_error{ "Device removal not implemented" };
             D3DDevice_.Reset();
         }
     }

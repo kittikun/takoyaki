@@ -32,7 +32,7 @@ namespace Takoyaki
     template <>
     boost::wformat DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>::getFormatString()
     {
-        return boost::wformat(L"Render Target View Heap %1%");
+        return boost::wformat{ L"Render Target View Heap %1%" };
     }
 
     template <>

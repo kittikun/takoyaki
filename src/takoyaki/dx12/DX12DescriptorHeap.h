@@ -55,9 +55,9 @@ namespace Takoyaki
 
     public:
         DX12DescriptorHeapCollection(std::weak_ptr<DX12Device> device)
-            : owner_(device)
+            : owner_{ device }
+            , descriptorSize_{ UINT_FAST32_MAX }
         {
-            descriptorSize_ = owner_.lock()->getDevice()->GetDescriptorHandleIncrementSize(T);
         }
 
         ~DX12DescriptorHeapCollection() = default;
@@ -88,7 +88,7 @@ namespace Takoyaki
             }
 
             // we need to store which container it belonged to for later release
-            containerMap_.insert(std::make_pair(res.ptr, i));
+            containerMap_.insert({ res.ptr, i });
 
             return res;
         }
@@ -103,8 +103,6 @@ namespace Takoyaki
     private:
         void allocateHeap()
         {
-            auto& device = owner_.lock();
-
             D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 
             desc.NumDescriptors = MAX_DESCRIPTOR_HEAP_SIZE;
@@ -115,10 +113,13 @@ namespace Takoyaki
 
             auto& heap = heaps_[heaps_.size() - 1];
 
-            // CreateDescriptorHeap is not thread-safe so lock it
+            // Not thread-safe so lock device
             {
-                std::lock_guard<std::mutex> lock(device->getDeviceMutex());
+                auto device = owner_.lock();
+                auto lock = device->getLock();
 
+                if (descriptorSize_ == UINT_FAST32_MAX)
+                    descriptorSize_ = device->getDevice()->GetDescriptorHandleIncrementSize(T);
                 DXCheckThrow(device->getDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap.descriptor_)));
             }
 

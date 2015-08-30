@@ -20,9 +20,18 @@
 
 #pragma once
 
+#include <boost/thread.hpp>
+
 namespace Takoyaki
 {
     class IO;
+    struct ProgramDesc;
+
+    struct Program
+    {
+        D3D12_SHADER_BYTECODE vs;
+        D3D12_SHADER_BYTECODE ps;
+    };
 
     class ShaderManager
     {
@@ -36,23 +45,18 @@ namespace Takoyaki
         ~ShaderManager();
 
         void initialize(IO*);
+        const Program& getProgram(const std::string& name) const;
 
     private:
-        struct ShaderDesc
-        {
-            std::string type;
-            std::string path;
-            std::string main;
-            uint_fast32_t flags;
-        };
+        void mainCompiler(IO* io);
+        void compileShaders(IO* io, const std::vector<ProgramDesc>&);
+        void getShaderBindings(ID3DBlob*);
+        std::string getDXShaderType(const std::string& type) const;
+        void parseShaderList(const std::string&, std::vector<ProgramDesc>&) const;
 
-        struct ProgramDesc
-        {
-            std::string name;
-            std::vector<ShaderDesc> shaders;
-        };
-
-        void compilerMain(IO* io);
-        std::vector<ProgramDesc> parseShaderList(const std::string&);
+    private:
+        mutable boost::shared_mutex rwMutex_;
+        // Note: add some synchronization to allow recompilation during runtime
+        std::unordered_map<std::string, Program> programList_;
     };
 } // namespace Takoyaki

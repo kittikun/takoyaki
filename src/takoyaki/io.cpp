@@ -21,6 +21,8 @@
 #include "pch.h"
 #include "io.h"
 
+#include <atomic>
+
 #include "public/definitions.h"
 #include "public/framework.h"
 #include "utility/winUtility.h"
@@ -33,28 +35,55 @@ namespace Takoyaki
     void IO::initialize(const FrameworkDesc& desc)
     {
         if (!desc.loadAsyncFunc)
-            throw new std::runtime_error("FrameworkDesc missing LoadFileAsyncFunc");
+            throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
 
         loadFileAsyncFunc_ = desc.loadAsyncFunc;
     }
 
+    std::string IO::loadFile(const std::string& path)
+    {
+        std::atomic<int> flag{ 0 };
+        std::string buffer;
+
+        loadAsyncFile(path, [&buffer, &flag](const std::vector<uint8_t>& data)
+        {
+            // copy data or it will expire after this scope
+            buffer = std::string(data.begin(), data.end()).c_str();
+            flag.store(1);
+        });
+
+        // we can afford to block this thread
+        while (flag.load() == 0) {
+            std::this_thread::yield();
+        }
+
+        return buffer;
+    }
+
     void IO::loadAsyncFile(const std::string& filename, const LoadResultFunc& func)
     {
-        std::lock_guard<std::mutex> lock(mutex_);
+        // only protect access to the map
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
 
-        mapQueued_.insert(std::make_pair(filename, func));
+            mapQueued_.insert({ filename, func });
+        }
+
         loadFileAsyncFunc_(makeWinPath(filename));
     }
 
     void IO::loadAsyncFileResult(const std::string& filename, const std::vector<uint8_t>& res)
     {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex_);
         auto found = mapQueued_.find(filename);
 
         if (found != mapQueued_.end()) {
-            found->second(res);
+            auto func = found->second;
             mapQueued_.erase(found);
+            lock.unlock();
+            func(res);
         } else {
+            lock.unlock();
             throw new std::runtime_error("IO::loadAsyncFileResult, key not found");
         }
     }

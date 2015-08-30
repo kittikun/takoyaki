@@ -44,8 +44,13 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc&);
 
+        // Blocking load a file
+        std::string loadFile(const std::string&);
+
+        // Asynchronously load a file
         void loadAsyncFile(const std::string&, const LoadResultFunc&);
 
+        // called by framework to return the async result by OS
         void loadAsyncFileResult(const std::string&, const std::vector<uint8_t>&);
     private:
         std::mutex mutex_;

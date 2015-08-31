@@ -69,7 +69,7 @@ namespace Takoyaki
                 ID3DBlob* shaderBlob = nullptr;
                 ID3DBlob* errorBlob = nullptr;
 
-                auto hr = D3DCompile(buffer.c_str(), buffer.size(), shaderDesc.path.c_str(), nullptr, nullptr, shaderDesc.main.c_str(), getDXShaderType(shaderDesc.type).c_str(), shaderDesc.flags, 0, &shaderBlob, &errorBlob);
+                auto hr = D3DCompile(buffer.c_str(), buffer.size(), shaderDesc.path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, shaderDesc.main.c_str(), getDXShaderType(shaderDesc.type).c_str(), shaderDesc.flags, 0, &shaderBlob, &errorBlob);
 
                 if (FAILED(hr)) {
                     if (errorBlob != nullptr) {
@@ -133,20 +133,81 @@ namespace Takoyaki
         D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&reflect));
         reflect->GetDesc(&progDesc);
 
+        // constant buffers
         for (uint_fast32_t i = 0; i < progDesc.ConstantBuffers; ++i) {
             auto cb = reflect->GetConstantBufferByIndex(i);
             D3D12_SHADER_BUFFER_DESC cbDesc;
 
             cb->GetDesc(&cbDesc);
 
-            LOGS << cbDesc.Name;
+            LOGS << "Constant buffer : " << cbDesc.Name;
 
             for (uint_fast32_t j = 0; j < cbDesc.Variables; ++j) {
                 auto var = cb->GetVariableByIndex(j);
                 D3D12_SHADER_VARIABLE_DESC vardesc;
 
                 var->GetDesc(&vardesc);
-                LOGS << vardesc.Name;
+                LOGS << "CB var : " << vardesc.Name << ", Size:" << vardesc.Size;
+            }
+        }
+
+        // shader resources (textures and buffers) bound
+        for (uint_fast32_t i = 0; i < progDesc.BoundResources; ++i) {
+            D3D12_SHADER_INPUT_BIND_DESC resdesc;
+            auto res = reflect->GetResourceBindingDesc(i, &resdesc);
+
+            switch (resdesc.Type) {
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_BYTEADDRESS:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_BYTEADDRESS";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_CBUFFER:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_CBUFFER";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_SAMPLER:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_SAMPLER";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_STRUCTURED:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_STRUCTURED";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_TBUFFER:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_TBUFFER";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_TEXTURE:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_TEXTURE";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_UAV_APPEND_STRUCTURED:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_UAV_APPEND_STRUCTURED";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_UAV_CONSUME_STRUCTURED:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_UAV_CONSUME_STRUCTURED";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_UAV_RWBYTEADDRESS:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_UAV_RWBYTEADDRESS";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_UAV_RWSTRUCTURED:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_UAV_RWSTRUCTURED";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_UAV_RWTYPED:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_UAV_RWTYPED";
+                    break;
+
+                case D3D_SHADER_INPUT_TYPE::D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
+                    LOGS << "Resource binding : " << resdesc.Name << ", D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER";
+                    break;
+
+                default:
+                    throw new std::runtime_error("Unknown D3D_SHADER_INPUT_TYPE");
+                    break;
             }
         }
     }

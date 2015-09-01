@@ -24,6 +24,7 @@
 
 namespace Takoyaki
 {
+    class DX12DeviceContext;
     class IO;
     struct ProgramDesc;
 
@@ -44,19 +45,13 @@ namespace Takoyaki
         ShaderManager();
         ~ShaderManager();
 
-        void initialize(IO*);
-        const Program& getProgram(const std::string& name) const;
+        void initialize(IO*, std::weak_ptr<DX12DeviceContext>);
 
     private:
-        void mainCompiler(IO* io);
-        void compileShaders(IO* io, const std::vector<ProgramDesc>&);
-        void getShaderBindings(ID3DBlob*);
-        std::string getDXShaderType(const std::string& type) const;
+        void mainCompiler(IO*, std::weak_ptr<DX12DeviceContext>);
+        void compileShaders(IO*, const std::vector<ProgramDesc>&, std::weak_ptr<DX12DeviceContext>);
+        void getShaderResources(ID3DBlob*, std::weak_ptr<DX12DeviceContext>);
+        std::string getDXShaderType(const std::string&) const;
         void parseShaderList(const std::string&, std::vector<ProgramDesc>&) const;
-
-    private:
-        mutable boost::shared_mutex rwMutex_;
-        // Note: add some synchronization to allow recompilation during runtime
-        std::unordered_map<std::string, Program> programList_;
     };
 } // namespace Takoyaki

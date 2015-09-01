@@ -53,7 +53,7 @@ namespace Takoyaki
 
         device_->create(desc);
         io_->initialize(desc);
-        shaderManager_->initialize(io_.get());
+        shaderManager_->initialize(io_.get(), device_->getContext());
 
         LOGC_INDENT_END << "Initialization complete.";
     }

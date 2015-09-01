@@ -26,6 +26,7 @@
 #include <rapidjson/document.h>
 
 #include "DXUtility.h"
+#include "DX12DeviceContext.h"
 #include "../io.h"
 #include "../utility/log.h"
 #include "../utility/winUtility.h"
@@ -50,7 +51,7 @@ namespace Takoyaki
     ShaderManager::ShaderManager() = default;
     ShaderManager::~ShaderManager() = default;
 
-    void ShaderManager::compileShaders(IO* io, const std::vector<ProgramDesc>& programList)
+    void ShaderManager::compileShaders(IO* io, const std::vector<ProgramDesc>& programList, std::weak_ptr<DX12DeviceContext> context)
     {
         // Compile shaders, might want to move this to a function so it can be called outside of framework ?
         for (auto programDesc : programList) {
@@ -95,15 +96,7 @@ namespace Takoyaki
                 else if (shaderDesc.type == "ps")
                     prog.ps = bc;
 
-                getShaderBindings(shaderBlob);
-            }
-
-            // Get write privilege on the map
-            {
-                std::lock_guard<boost::shared_mutex> lock(rwMutex_);
-
-                // a copy might happen here ?
-                programList_.insert({ programDesc.name, prog });
+                getShaderResources(shaderBlob, context);
             }
 
             LOGS_INDENT_END << "Program done.";
@@ -124,7 +117,7 @@ namespace Takoyaki
         return res;
     }
 
-    void ShaderManager::getShaderBindings(ID3DBlob* blob)
+    void ShaderManager::getShaderResources(ID3DBlob* blob, std::weak_ptr<DX12DeviceContext> context)
     {
         // use reflection to extract bind info
         ID3D12ShaderReflection* reflect = nullptr;
@@ -212,23 +205,10 @@ namespace Takoyaki
         }
     }
 
-    const Program& ShaderManager::getProgram(const std::string& name) const
-    {
-        // RW lock so should block unless someone is updating the map
-        boost::shared_lock<boost::shared_mutex> lock{ rwMutex_ };
-
-        auto found = programList_.find(name);
-
-        if (found == programList_.end())
-            throw new std::runtime_error("ShaderManager::getProgram, unknown name");
-
-        return found->second;
-    }
-
-    void ShaderManager::initialize(IO* io)
+    void ShaderManager::initialize(IO* io, std::weak_ptr<DX12DeviceContext> context)
     {
         // shaders are processed in a different thread
-        auto thread = std::thread{ std::bind(&ShaderManager::mainCompiler, this, std::placeholders::_1), io };
+        auto thread = std::thread{ std::bind(&ShaderManager::mainCompiler, this, std::placeholders::_1, std::placeholders::_2), io, context };
 
         setThreadName(thread.native_handle(), "Shader Compiler");
 
@@ -236,7 +216,7 @@ namespace Takoyaki
         thread.detach();
     }
 
-    void ShaderManager::mainCompiler(IO* io)
+    void ShaderManager::mainCompiler(IO* io, std::weak_ptr<DX12DeviceContext> context)
     {
         LOGS_INDENT_START << "Starting shaders compilation..";
 
@@ -245,7 +225,7 @@ namespace Takoyaki
         std::vector<ProgramDesc> programList;
         
         parseShaderList(buffer, programList);
-        compileShaders(io, programList);
+        compileShaders(io, programList, context);
 
         LOGS_INDENT_END << "Shader compilation done.";
     }

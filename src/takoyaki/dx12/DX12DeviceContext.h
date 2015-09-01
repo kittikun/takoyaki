@@ -23,14 +23,15 @@
 #include <d3d12.h>
 #include <memory>
 
+#include "DX12ConstantBuffer.h"
 #include "DX12Device.h"
 #include "DX12DescriptorHeap.h"
+#include "DX12Texture.h"
+
 
 namespace Takoyaki
 {
-    class DX12Texture;
-
-    // To avoid synchronizations mechanisms, use a context per thread
+    // TODO: Not thread safe, implement some protection later
     class DX12DeviceContext : public std::enable_shared_from_this<DX12DeviceContext>
     {
         DX12DeviceContext(const DX12DeviceContext&) = delete;
@@ -42,14 +43,17 @@ namespace Takoyaki
         DX12DeviceContext(std::weak_ptr<DX12Device>);
 
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>& getRTVDescHeapCollection() { return descHeapRTV_; }
+        DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>& getSRVDescHeapCollection() { return descHeapSRV_; }
 
-        DX12Texture* CreateTexture();
+        DX12ConstantBuffer& CreateConstanBuffer();
+        DX12Texture& CreateTexture();
 
     private:
         std::weak_ptr<DX12Device> owner_;
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV> descHeapRTV_;
+        DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV> descHeapSRV_;
 
-        // put to some proper class later
-        std::vector<std::unique_ptr<DX12Texture>> textures_;
+        std::vector<DX12ConstantBuffer> constantBuffers_;
+        std::vector<DX12Texture> textures_;
     };
 } // namespace Takoyaki

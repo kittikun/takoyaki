@@ -99,7 +99,7 @@ namespace Takoyaki
         fenceEvent_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
 
         // Create a context for the main thread        
-        contexts_.insert({ std::this_thread::get_id(), std::make_shared<DX12DeviceContext>(shared_from_this()) });
+        context_ = std::make_shared<DX12DeviceContext>(shared_from_this());
     }
 
     void DX12Device::createSwapChain()
@@ -181,14 +181,12 @@ namespace Takoyaki
 
         currentFrame_ = 0;
 
-        auto context = contexts_[std::this_thread::get_id()].get();
-
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
-            auto tex = context->CreateTexture();
-            auto& res = tex->getResource();
+            auto& tex = context_->CreateTexture();
+            auto& res = tex.getResource();
 
             DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&res)));            
-            D3DDevice_->CreateRenderTargetView(res.Get(), nullptr, tex->getRenderTargetView());
+            D3DDevice_->CreateRenderTargetView(res.Get(), nullptr, tex.getRenderTargetView());
 
             auto fmt = boost::wformat(L"Swap chain Render Target %1%") % i;
 
@@ -250,16 +248,6 @@ namespace Takoyaki
                 break;
         }
         return rotation;
-    }
-
-    const Microsoft::WRL::ComPtr<ID3D12Device>& DX12Device::getDevice()
-    {
-        return D3DDevice_;
-    }
-
-    std::unique_lock<std::mutex> DX12Device::getLock()
-    {
-        return std::unique_lock<std::mutex>(deviceMutex_);
     }
 
     void DX12Device::present()

@@ -214,6 +214,7 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h" />
@@ -231,6 +232,7 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\takoyaki\dllmain.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\DX12ConstantBuffer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12DescriptorHeap.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp" />

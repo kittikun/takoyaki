@@ -57,6 +57,9 @@
     <ClCompile Include="..\src\takoyaki\utility\winUtility.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\DX12ConstantBuffer.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\pch.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\utility\winUtility.h">
       <Filter>Source Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h">
+      <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

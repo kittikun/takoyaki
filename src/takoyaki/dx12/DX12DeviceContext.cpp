@@ -21,7 +21,6 @@
 #include "pch.h"
 #include "DX12DeviceContext.h"
 
-#include "DX12Texture.h"
 
 namespace Takoyaki
 {
@@ -30,14 +29,22 @@ namespace Takoyaki
     DX12DeviceContext::DX12DeviceContext(std::weak_ptr<DX12Device> owner)
         : owner_{ owner_ }
         , descHeapRTV_{ owner }
+        , descHeapSRV_{ owner }
     {
 
     }
 
-    DX12Texture* DX12DeviceContext::CreateTexture()
+    DX12ConstantBuffer& DX12DeviceContext::CreateConstanBuffer()
     {
-        textures_.push_back(std::make_unique<DX12Texture>(shared_from_this()));
+        constantBuffers_.push_back(DX12ConstantBuffer{ shared_from_this() });
 
-        return textures_.back().get();
+        return constantBuffers_.back();
+    }
+
+    DX12Texture& DX12DeviceContext::CreateTexture()
+    {
+        textures_.push_back(DX12Texture{ shared_from_this() });
+
+        return textures_.back();
     }
 } // namespace Takoyaki

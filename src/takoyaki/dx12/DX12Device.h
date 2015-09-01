@@ -50,8 +50,9 @@ namespace Takoyaki
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
-        const Microsoft::WRL::ComPtr<ID3D12Device>& getDevice();
-        std::unique_lock<std::mutex> getLock();
+        std::weak_ptr<DX12DeviceContext> getContext() { return context_; }
+        const Microsoft::WRL::ComPtr<ID3D12Device>& getDevice() { return D3DDevice_; }
+        std::unique_lock<std::mutex> getLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
 
     private:
         void createDevice(uint_fast32_t);
@@ -64,8 +65,8 @@ namespace Takoyaki
         Microsoft::WRL::ComPtr<IDXGIFactory4> DXGIFactory_;
         std::mutex deviceMutex_;
 
-        // Contexts
-        std::unordered_map<std::thread::id, std::shared_ptr<DX12DeviceContext>> contexts_;
+        // Context
+        std::shared_ptr<DX12DeviceContext> context_;
 
         // Command queue
         // TODO: Move to another thread class

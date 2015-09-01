@@ -31,11 +31,11 @@ namespace Takoyaki
     {
         DX12Texture(const DX12Texture&) = delete;
         DX12Texture& operator=(const DX12Texture&) = delete;
-        DX12Texture(DX12Texture&&) = delete;
         DX12Texture& operator=(DX12Texture&&) = delete;
 
     public:
         DX12Texture(std::weak_ptr<DX12DeviceContext>);
+        DX12Texture(DX12Texture&&) noexcept;
         ~DX12Texture();
 
         // For external initialization, swap buffer only ?

@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -18,41 +18,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "DX12Texture.h"
+#pragma once
 
-#include <intsafe.h>
-
-#include "DX12DeviceContext.h"
+#include <d3d12.h>
+#include <memory>
 
 namespace Takoyaki
 {
-    DX12Texture::DX12Texture(std::weak_ptr<DX12DeviceContext> owner)
-        : owner_{ owner }
+    class DX12DeviceContext;
+
+    class DX12ConstantBuffer
     {
-        rtv_.ptr = ULONG_PTR_MAX;
-    }
+        DX12ConstantBuffer(const DX12ConstantBuffer&) = delete;
+        DX12ConstantBuffer& operator=(const DX12ConstantBuffer&) = delete;
+        DX12ConstantBuffer& operator=(DX12ConstantBuffer&&) = delete;
 
-    DX12Texture::DX12Texture(DX12Texture&& other) noexcept
-        : owner_{ std::move(other.owner_) }
-        , rtv_{ std::move(other.rtv_) }
-    {
+    public:
+        DX12ConstantBuffer(std::weak_ptr<DX12DeviceContext>);
+        DX12ConstantBuffer(DX12ConstantBuffer&&) noexcept;
+        ~DX12ConstantBuffer();
 
-    }
+        D3D12_CPU_DESCRIPTOR_HANDLE getConstantBufferView();
 
-    DX12Texture::~DX12Texture()
-    {
-        if ((rtv_.ptr != ULONG_PTR_MAX) && (!owner_.expired())) {
-            owner_.lock()->getRTVDescHeapCollection().releaseOne(rtv_);
-        }
-    }
-
-    D3D12_CPU_DESCRIPTOR_HANDLE DX12Texture::getRenderTargetView()
-    {
-        if (rtv_.ptr == ULONG_PTR_MAX)
-            rtv_ = owner_.lock()->getRTVDescHeapCollection().createOne();
-
-        return rtv_;
-    }
-
+    private:
+        std::weak_ptr<DX12DeviceContext> owner_;
+        std::vector<uint8_t> buffer_;
+        D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
+    };
 } // namespace Takoyaki

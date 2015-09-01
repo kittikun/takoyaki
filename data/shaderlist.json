@@ -1,6 +1,6 @@
 {
-  "clear": [
-    { "type": "vs", "path": "data/clear.hlsl", "main": "VS_Main" },
-    { "type": "ps", "path": "data/clear.hlsl", "main": "PS_Main" }
+  "testReflection": [
+    { "type": "vs", "path": "data/testReflection.hlsl", "main": "VS_Main" },
+    { "type": "ps", "path": "data/testReflection.hlsl", "main": "PS_Main" }
   ]
 }

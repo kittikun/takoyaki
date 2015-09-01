@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "DX12Texture.h"
+#include "DX12ConstantBuffer.h"
 
 #include <intsafe.h>
 
@@ -27,30 +27,30 @@
 
 namespace Takoyaki
 {
-    DX12Texture::DX12Texture(std::weak_ptr<DX12DeviceContext> owner)
+    DX12ConstantBuffer::DX12ConstantBuffer(std::weak_ptr<DX12DeviceContext> owner)
         : owner_{ owner }
     {
         rtv_.ptr = ULONG_PTR_MAX;
     }
 
-    DX12Texture::DX12Texture(DX12Texture&& other) noexcept
+    DX12ConstantBuffer::DX12ConstantBuffer(DX12ConstantBuffer&& other) noexcept
         : owner_{ std::move(other.owner_) }
         , rtv_{ std::move(other.rtv_) }
     {
 
     }
 
-    DX12Texture::~DX12Texture()
+    DX12ConstantBuffer::~DX12ConstantBuffer()
     {
         if ((rtv_.ptr != ULONG_PTR_MAX) && (!owner_.expired())) {
             owner_.lock()->getRTVDescHeapCollection().releaseOne(rtv_);
         }
     }
 
-    D3D12_CPU_DESCRIPTOR_HANDLE DX12Texture::getRenderTargetView()
+    D3D12_CPU_DESCRIPTOR_HANDLE DX12ConstantBuffer::getConstantBufferView()
     {
         if (rtv_.ptr == ULONG_PTR_MAX)
-            rtv_ = owner_.lock()->getRTVDescHeapCollection().createOne();
+            rtv_ = owner_.lock()->getSRVDescHeapCollection().createOne();
 
         return rtv_;
     }

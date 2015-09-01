@@ -29,6 +29,41 @@ namespace Takoyaki
     template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
 
     // Specializations
+    boost::wformat DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV >::getFormatString()
+    {
+        return boost::wformat{ L"Shader Resource View Heap %1%" };
+    }
+
+    template <>
+    D3D12_DESCRIPTOR_HEAP_FLAGS DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>::getFlags() const
+    {
+        return D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    }
+
+    template <>
+    boost::wformat DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER>::getFormatString()
+    {
+        return boost::wformat{ L"Sample View Heap %1%" };
+    }
+
+    template <>
+    D3D12_DESCRIPTOR_HEAP_FLAGS DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER>::getFlags() const
+    {
+        return D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    }
+
+    template <>
+    boost::wformat DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_DSV>::getFormatString()
+    {
+        return boost::wformat{ L"Depth Stencil View Heap %1%" };
+    }
+
+    template <>
+    D3D12_DESCRIPTOR_HEAP_FLAGS DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_DSV>::getFlags() const
+    {
+        return D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    }
+
     template <>
     boost::wformat DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>::getFormatString()
     {
@@ -40,4 +75,5 @@ namespace Takoyaki
     {
         return D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     }
+
 } // namespace Takoyaki

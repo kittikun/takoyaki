@@ -1,0 +1,4 @@
+version: 0.0.{build}
+before_build:
+- ps: (new-object net.webclient).DownloadFile('http://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.zip/download', 'boost_1_59_0.zip')
+- ps: dir

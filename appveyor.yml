@@ -1,14 +1,29 @@
 version: 0.0.{build}
 os: Visual Studio 2015
-clone_folder: c:\projects\takoyaki
+configuration: AppVeyor
+platform: x64
 environment:
-  BOOST_ROOT: c:\projects\takoyaki\boost_1_59_0
-platform:
-  - x64
-
-configuration:
-  - Debug
-  
+  BOOST_ROOT: C:\projects\takoyaki\boost_1_59_0
 before_build:
-- provider: Script
-  script: ./boost.ps1
+- ps: >-
+    Add-Type -assembly "system.io.compression.filesystem"
+
+
+    Write-Host "Downloading boost.."
+
+    (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "C:\projects\takoyaki\boost_1_59_0.zip")
+
+    Write-Host "Extracting archive.."
+
+    [io.compression.zipfile]::ExtractToDirectory("C:\projects\takoyaki\boost_1_59_0.zip", "C:\projects\takoyaki\")
+
+    Set-Location "C:\projects\takoyaki\boost_1_59_0"
+
+    Write-Host "Building boost.."
+
+    & ".\bootstrap.bat"
+
+    & .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
+build:
+  project: C:\projects\takoyaki\build\Takoyaki.sln
+  verbosity: minimal

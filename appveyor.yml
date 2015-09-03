@@ -10,5 +10,5 @@ configuration:
   - Debug
   
 before_build:
-- ps: boost.ps1
+- ps: $ ./boost.ps1
 - ps: dir

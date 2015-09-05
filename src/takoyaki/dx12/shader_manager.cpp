@@ -28,6 +28,7 @@
 #include "DXUtility.h"
 #include "DX12DeviceContext.h"
 #include "../io.h"
+#include "../ThreadPool.h"
 #include "../utility/log.h"
 #include "../utility/winUtility.h"
 
@@ -205,7 +206,7 @@ namespace Takoyaki
         }
     }
 
-    void ShaderManager::initialize(IO* io, std::weak_ptr<DX12DeviceContext> context)
+    void ShaderManager::initialize(IO* io, ThreadPool* threadPool, std::weak_ptr<DX12DeviceContext> context)
     {
         // shaders are processed in a different thread
         auto thread = std::thread{ std::bind(&ShaderManager::mainCompiler, this, std::placeholders::_1, std::placeholders::_2), io, context };

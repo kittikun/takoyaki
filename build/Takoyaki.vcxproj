@@ -343,6 +343,8 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
     <ClInclude Include="..\src\takoyaki\public\definitions.h" />
     <ClInclude Include="..\src\takoyaki\public\framework.h" />
     <ClInclude Include="..\src\takoyaki\public\platform.h" />
+    <ClInclude Include="..\src\takoyaki\ThreadPool.h" />
+    <ClInclude Include="..\src\takoyaki\TSQueue.h" />
     <ClInclude Include="..\src\takoyaki\utility\log.h" />
     <ClInclude Include="..\src\takoyaki\utility\winUtility.h" />
   </ItemGroup>
@@ -369,6 +371,7 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\public\framework.cpp" />
+    <ClCompile Include="..\src\takoyaki\ThreadPool.cpp" />
     <ClCompile Include="..\src\takoyaki\utility\log.cpp" />
     <ClCompile Include="..\src\takoyaki\utility\winUtility.cpp" />
   </ItemGroup>

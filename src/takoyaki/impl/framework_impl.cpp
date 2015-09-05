@@ -21,7 +21,6 @@
 #include "pch.h"
 #include "framework_impl.h"
 
-#include "../io.h"
 #include "../dx12/DX12Device.h"
 #include "../dx12/DX12DeviceContext.h"
 #include "../dx12/DX12Texture.h"
@@ -33,8 +32,7 @@
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
-        : io_{ std::make_unique<IO>() }
-        , shaderManager_{ std::make_unique<ShaderManager>() }
+        : shaderManager_{ std::make_unique<ShaderManager>() }
     {
 #ifdef USE_LOG
         Log::Initialize();
@@ -52,15 +50,15 @@ namespace Takoyaki
         }
 
         device_->create(desc);
-        io_->initialize(desc);
-        shaderManager_->initialize(io_.get(), device_->getContext());
+        io_.initialize(desc);
+        shaderManager_->initialize(&io_, &threadPool_, device_->getContext());
 
         LOGC_INDENT_END << "Initialization complete.";
     }
 
     void FrameworkImpl::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
     {
-        io_->loadAsyncFileResult(makeUnixPath(filename), res);
+        io_.loadAsyncFileResult(makeUnixPath(filename), res);
     }
 
     void FrameworkImpl::present()

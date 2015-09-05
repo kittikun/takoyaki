@@ -20,13 +20,14 @@
 
 #pragma once
 
+#include "../io.h"
+#include "../ThreadPool.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki
 {
     struct FrameworkDesc;
     class DX12Device;
-    class IO;
     class ShaderManager;
 
     class FrameworkImpl
@@ -49,8 +50,9 @@ namespace Takoyaki
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
 
     private:
+        IO io_;
+        ThreadPool threadPool_;
         std::shared_ptr<DX12Device> device_;
-        std::unique_ptr<IO> io_;
         std::unique_ptr<ShaderManager> shaderManager_;
     };
 

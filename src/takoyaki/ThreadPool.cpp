@@ -18,41 +18,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "ThreadPool.h"
 
-#include <boost/thread.hpp>
+#include "utility/winUtility.h"
 
 namespace Takoyaki
 {
-    class DX12DeviceContext;
-    class IO;
-    class ThreadPool;
-    struct ProgramDesc;
-
-    struct Program
+    ThreadPool::ThreadPool()
+        : done_(false)
+        , joiner(threads)
     {
-        D3D12_SHADER_BYTECODE vs;
-        D3D12_SHADER_BYTECODE ps;
-    };
+        auto threadCount = std::thread::hardware_concurrency();
+        try {
+            for (unsigned i = 0; i < threadCount; ++i) {
+                auto thread = std::thread(&ThreadPool::workerMain, this);
+                auto fmt = boost::format("Worker thread %1%") % i;
 
-    class ShaderManager
+                setThreadName(thread.native_handle(), boost::str(fmt));
+                threads.push_back(std::move(thread));
+            }
+        } catch (...) {
+            done_ = true;
+            throw new std::runtime_error("Could not create ThreadPool");
+        }
+    }
+
+    ThreadPool::~ThreadPool()
     {
-        ShaderManager(const ShaderManager&) = delete;
-        ShaderManager& operator=(const ShaderManager&) = delete;
-        ShaderManager(ShaderManager&&) = delete;
-        ShaderManager& operator=(ShaderManager&&) = delete;
+        done_ = true;
+    }
 
-    public:
-        ShaderManager();
-        ~ShaderManager();
+    void ThreadPool::workerMain()
+    {
+        while (!done_) {
+            MoveOnlyFunc task;
 
-        void initialize(IO*, ThreadPool*, std::weak_ptr<DX12DeviceContext>);
-
-    private:
-        void mainCompiler(IO*, std::weak_ptr<DX12DeviceContext>);
-        void compileShaders(IO*, const std::vector<ProgramDesc>&, std::weak_ptr<DX12DeviceContext>);
-        void getShaderResources(ID3DBlob*, std::weak_ptr<DX12DeviceContext>);
-        std::string getDXShaderType(const std::string&) const;
-        void parseShaderList(const std::string&, std::vector<ProgramDesc>&) const;
-    };
+            if (workQueue_.tryPop(task)) {
+                task();
+            } else {
+                std::this_thread::yield();
+            }
+        }
+    }
 } // namespace Takoyaki

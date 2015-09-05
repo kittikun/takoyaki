@@ -60,6 +60,9 @@
     <ClCompile Include="..\src\takoyaki\dx12\DX12ConstantBuffer.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\ThreadPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\pch.h">
@@ -106,6 +109,12 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h">
       <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\TSQueue.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\ThreadPool.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

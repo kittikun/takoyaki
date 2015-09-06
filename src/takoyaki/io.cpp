@@ -25,19 +25,16 @@
 
 #include "public/definitions.h"
 #include "public/framework.h"
-#include "utility/winUtility.h"
+#include "utility/win_utility.h"
 
 namespace Takoyaki
 {
     IO::IO() = default;
     IO::~IO() = default;
 
-    void IO::initialize(const FrameworkDesc& desc)
+    void IO::initialize(const LoadFileAsyncFunc& func)
     {
-        if (!desc.loadAsyncFunc)
-            throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
-
-        loadFileAsyncFunc_ = desc.loadAsyncFunc;
+        loadFileAsyncFunc_ = func;
     }
 
     std::string IO::loadFile(const std::string& path)

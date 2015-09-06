@@ -20,20 +20,13 @@
 
 #pragma once
 
-#include <boost/thread.hpp>
+#include "shader_compiler.h"
 
 namespace Takoyaki
 {
     class DX12DeviceContext;
     class IO;
     class ThreadPool;
-    struct ProgramDesc;
-
-    struct Program
-    {
-        D3D12_SHADER_BYTECODE vs;
-        D3D12_SHADER_BYTECODE ps;
-    };
 
     class ShaderManager
     {
@@ -49,10 +42,6 @@ namespace Takoyaki
         void initialize(IO*, ThreadPool*, std::weak_ptr<DX12DeviceContext>);
 
     private:
-        void mainCompiler(IO*, std::weak_ptr<DX12DeviceContext>);
-        void compileShaders(IO*, const std::vector<ProgramDesc>&, std::weak_ptr<DX12DeviceContext>);
-        void getShaderResources(ID3DBlob*, std::weak_ptr<DX12DeviceContext>);
-        std::string getDXShaderType(const std::string&) const;
-        void parseShaderList(const std::string&, std::vector<ProgramDesc>&) const;
+        ShaderCompiler compiler_;
     };
 } // namespace Takoyaki

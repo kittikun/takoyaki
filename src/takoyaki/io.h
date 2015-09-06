@@ -42,7 +42,7 @@ namespace Takoyaki
         IO();
         ~IO();
 
-        void initialize(const FrameworkDesc&);
+        void initialize(const LoadFileAsyncFunc&);
 
         // Blocking load a file
         std::string loadFile(const std::string&);

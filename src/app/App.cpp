@@ -94,6 +94,7 @@ namespace TakoyakiApp
         desc.bufferCount = 3;
         desc.nativeOrientation = DisplayOrientationsToTakoyaki(disp->NativeOrientation);
         desc.currentOrientation = DisplayOrientationsToTakoyaki(disp->CurrentOrientation);
+        desc.numWorkerThreads = 4;
         desc.type = Takoyaki::EDeviceType::DX12;
         desc.windowHandle = reinterpret_cast<void*>(window);
         desc.windowSize.x = window->Bounds.Width;

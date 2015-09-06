@@ -19,9 +19,10 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "ThreadPool.h"
+#include "thread_pool.h"
 
-#include "utility/winUtility.h"
+#include "utility/win_utility.h"
+#include "utility/log.h"
 
 namespace Takoyaki
 {
@@ -29,24 +30,36 @@ namespace Takoyaki
         : done_(false)
         , joiner(threads)
     {
-        auto threadCount = std::thread::hardware_concurrency();
+    }
+
+    ThreadPool::~ThreadPool()
+    {
+        done_ = true;
+    }
+
+    void ThreadPool::initialize(uint_fast32_t threadCount)
+    {
+        auto hardMax = std::thread::hardware_concurrency();
+
+        if (threadCount > hardMax)
+            threadCount = hardMax;
+
+        auto fmt = boost::format{ "Initializing thread pool with %1% threads" } % threadCount;
+
+        LOGC << boost::str(fmt);
+            
         try {
             for (unsigned i = 0; i < threadCount; ++i) {
-                auto thread = std::thread(&ThreadPool::workerMain, this);
-                auto fmt = boost::format("Worker thread %1%") % i;
+                auto thread = std::thread{ &ThreadPool::workerMain, this };
+                auto fmt = boost::format{ "Worker thread %1%" } % i;
 
                 setThreadName(thread.native_handle(), boost::str(fmt));
                 threads.push_back(std::move(thread));
             }
         } catch (...) {
             done_ = true;
-            throw new std::runtime_error("Could not create ThreadPool");
+            throw new std::runtime_error{ "Could not create ThreadPool" };
         }
-    }
-
-    ThreadPool::~ThreadPool()
-    {
-        done_ = true;
     }
 
     void ThreadPool::workerMain()

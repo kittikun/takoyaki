@@ -27,7 +27,7 @@
 #include "../dx12/shader_manager.h"
 #include "../public/framework.h"
 #include "../utility/log.h"
-#include "../utility/winUtility.h"
+#include "../utility/win_utility.h"
 
 namespace Takoyaki
 {
@@ -50,8 +50,13 @@ namespace Takoyaki
         }
 
         device_->create(desc);
-        io_.initialize(desc);
+
+        if (!desc.loadAsyncFunc)
+            throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
+
+        io_.initialize(desc.loadAsyncFunc);
         shaderManager_->initialize(&io_, &threadPool_, device_->getContext());
+        threadPool_.initialize(desc.numWorkerThreads);
 
         LOGC_INDENT_END << "Initialization complete.";
     }

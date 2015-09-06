@@ -26,15 +26,15 @@
 namespace Takoyaki
 {
     template<typename T>
-    class TSQueue
+    class ThreadSafeQueue
     {
-        TSQueue(const TSQueue&) = delete;
-        TSQueue& operator=(const TSQueue&) = delete;
-        TSQueue(TSQueue&&) = delete;
-        TSQueue& operator=(TSQueue&&) = delete;
+        ThreadSafeQueue(const ThreadSafeQueue&) = delete;
+        ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete;
+        ThreadSafeQueue(ThreadSafeQueue&&) = delete;
+        ThreadSafeQueue& operator=(ThreadSafeQueue&&) = delete;
 
     public:
-        TSQueue() = default;
+        ThreadSafeQueue() = default;
 
         bool empty() const
         {
@@ -45,7 +45,7 @@ namespace Takoyaki
         void push(T value)
         {
             std::lock_guard<std::mutex> lock(mutex_);
-            queue_.push(std::move(data));
+            queue_.push(std::move(value));
             cond_.notify_one();
         }
 

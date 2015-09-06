@@ -25,6 +25,7 @@
 namespace Takoyaki
 {
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
+    extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
 
     DX12DeviceContext::DX12DeviceContext(std::weak_ptr<DX12Device> owner)
         : owner_{ owner_ }
@@ -34,11 +35,16 @@ namespace Takoyaki
 
     }
 
-    DX12ConstantBuffer& DX12DeviceContext::CreateConstanBuffer()
+    DX12ConstantBuffer& DX12DeviceContext::CreateConstanBuffer(const std::string& name)
     {
-        constantBuffers_.push_back(DX12ConstantBuffer{ shared_from_this() });
+        auto found = constantBuffers_.find(name);
 
-        return constantBuffers_.back();
+        if (found != constantBuffers_.end())
+            throw new std::runtime_error{"Constant buffers names must be unique"};
+
+        auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ shared_from_this() }));
+
+        return res.first->second;
     }
 
     DX12Texture& DX12DeviceContext::CreateTexture()

@@ -21,7 +21,7 @@
 #pragma once
 
 #include "../io.h"
-#include "../ThreadPool.h"
+#include "../thread_pool.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki

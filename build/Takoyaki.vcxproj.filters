@@ -54,14 +54,17 @@
     <ClCompile Include="..\src\takoyaki\dx12\DXUtility.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\utility\winUtility.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\DX12ConstantBuffer.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\ThreadPool.cpp">
+    <ClCompile Include="..\src\takoyaki\thread_pool.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\utility\win_utility.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp">
+      <Filter>Source Files\dx12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -104,17 +107,20 @@
     <ClInclude Include="..\src\takoyaki\dx12\DXUtility.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\utility\winUtility.h">
-      <Filter>Source Files\utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\TSQueue.h">
+    <ClInclude Include="..\src\takoyaki\thread_pool.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\ThreadPool.h">
+    <ClInclude Include="..\src\takoyaki\thread_safe_queue.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\utility\win_utility.h">
+      <Filter>Source Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
+      <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

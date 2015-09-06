@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -20,31 +20,38 @@
 
 #pragma once
 
-#include <d3d12.h>
-#include <memory>
+#include <d3dcompiler.h>
 
 namespace Takoyaki
 {
     class DX12DeviceContext;
+    class IO;
+    struct ProgramDesc;
+    class ThreadPool;
 
-    class DX12Texture
+    struct Program
     {
-        DX12Texture(const DX12Texture&) = delete;
-        DX12Texture& operator=(const DX12Texture&) = delete;
-        DX12Texture& operator=(DX12Texture&&) = delete;
+        D3D12_SHADER_BYTECODE vs;
+        D3D12_SHADER_BYTECODE ps;
+    };
 
+    class ShaderCompiler
+    {
+        ShaderCompiler(const ShaderCompiler&) = delete;
+        ShaderCompiler& operator=(const ShaderCompiler&) = delete;
+        ShaderCompiler(ShaderCompiler&&) = delete;
+        ShaderCompiler& operator=(ShaderCompiler&&) = delete;
     public:
-        DX12Texture(std::weak_ptr<DX12DeviceContext>);
-        DX12Texture(DX12Texture&&) noexcept;
-        ~DX12Texture();
+        ShaderCompiler();
+        ~ShaderCompiler();
 
-        // For external initialization, swap buffer only ?
-        Microsoft::WRL::ComPtr<ID3D12Resource>& getResource() { return resource_; }
-        const D3D12_CPU_DESCRIPTOR_HANDLE& getRenderTargetView();
+        void main(IO*, std::weak_ptr<DX12DeviceContext>);
 
     private:
-        std::weak_ptr<DX12DeviceContext> owner_;
-        Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
-        D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
+        void compileShaders(IO*, const std::vector<ProgramDesc>&, std::weak_ptr<DX12DeviceContext>);
+        void getShaderResources(ID3DBlob*, std::weak_ptr<DX12DeviceContext>);
+        std::string getDXShaderType(const std::string&) const;
+        void parseConstantBuffers(ID3D12ShaderReflection*, const D3D12_SHADER_DESC&, std::weak_ptr<DX12DeviceContext>);
+        void parseShaderList(const std::string&, std::vector<ProgramDesc>&) const;
     };
 } // namespace Takoyaki

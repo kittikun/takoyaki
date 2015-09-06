@@ -45,7 +45,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>& getRTVDescHeapCollection() { return descHeapRTV_; }
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>& getSRVDescHeapCollection() { return descHeapSRV_; }
 
-        DX12ConstantBuffer& CreateConstanBuffer();
+        DX12ConstantBuffer& CreateConstanBuffer(const std::string&);
         DX12Texture& CreateTexture();
 
     private:
@@ -53,7 +53,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV> descHeapRTV_;
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV> descHeapSRV_;
 
-        std::vector<DX12ConstantBuffer> constantBuffers_;
+        std::unordered_map<std::string, DX12ConstantBuffer> constantBuffers_;
         std::vector<DX12Texture> textures_;
     };
 } // namespace Takoyaki

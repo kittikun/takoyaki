@@ -38,11 +38,23 @@ namespace Takoyaki
         DX12ConstantBuffer(DX12ConstantBuffer&&) noexcept;
         ~DX12ConstantBuffer();
 
-        D3D12_CPU_DESCRIPTOR_HANDLE getConstantBufferView();
+        const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView() { return rtv_; }
 
     private:
+        void addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size);
+
+    private:
+        struct CBVariable
+        {
+            uint_fast32_t offset;
+            uint_fast32_t size;
+        };
+
         std::weak_ptr<DX12DeviceContext> owner_;
         std::vector<uint8_t> buffer_;
+        std::unordered_map<std::string, CBVariable> offsetMap_;
         D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
+
+        friend class ShaderCompiler;
     };
 } // namespace Takoyaki

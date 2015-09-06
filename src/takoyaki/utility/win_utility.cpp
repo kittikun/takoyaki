@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "winUtility.h"
+#include "win_utility.h"
 
 #include "../utility/log.h"
 

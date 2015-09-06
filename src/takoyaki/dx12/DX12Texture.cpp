@@ -47,7 +47,7 @@ namespace Takoyaki
         }
     }
 
-    D3D12_CPU_DESCRIPTOR_HANDLE DX12Texture::getRenderTargetView()
+    const D3D12_CPU_DESCRIPTOR_HANDLE& DX12Texture::getRenderTargetView()
     {
         if (rtv_.ptr == ULONG_PTR_MAX)
             rtv_ = owner_.lock()->getRTVDescHeapCollection().createOne();

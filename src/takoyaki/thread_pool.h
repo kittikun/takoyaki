@@ -20,12 +20,19 @@
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable : 4521)
+
 #include <future>
 
-#include "TSQueue.h"
+#include "thread_safe_queue.h"
 
 namespace Takoyaki
 {
+    class MoveOnlyFunc;
+    struct FrameworkDesc;
+
+    // Allows the threads to be properly joined even if an exception occured with the thread pool
     class JoinThreads
     {
         std::vector<std::thread>& threads;
@@ -44,6 +51,7 @@ namespace Takoyaki
         }
     };
 
+    // Wrapper to allow function pointers to be stored in a template container
     class MoveOnlyFunc
     {
         MoveOnlyFunc(const MoveOnlyFunc&) = delete;
@@ -99,15 +107,22 @@ namespace Takoyaki
         ThreadPool();
         ~ThreadPool();
 
-        template<typename FunctionType>
-        std::future<typename std::result_of<FunctionType()>::type> submit(FunctionType f)
+        void initialize(uint_fast32_t);
+
+        template<typename Func>
+        std::future<std::result_of_t<Func()>> submitWithResult(Func f)
         {
-            typedef typename std::result_of<FunctionType()>::type result_type;
-            std::packaged_task<result_type()> task(std::move(f));
-            std::future<result_type> res(task.get_future());
+            std::packaged_task<std::result_of_t<Func()>> task(std::move(f));
+            std::future<std::result_of_t<Func()>> res(task.get_future());
 
             workQueue_.push(std::move(task));
             return res;
+        }
+
+        template<typename Func>
+        void submit(Func f)
+        {
+            workQueue_.push(std::move(f));
         }
 
     private:
@@ -115,8 +130,10 @@ namespace Takoyaki
 
     private:
         std::atomic<bool> done_;
-        TSQueue<MoveOnlyFunc> workQueue_;
+        ThreadSafeQueue<MoveOnlyFunc> workQueue_;
         std::vector<std::thread> threads;
         JoinThreads joiner;
     };
 } // namespace Takoyaki
+
+#pragma warning(pop) 

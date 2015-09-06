@@ -40,6 +40,7 @@ namespace Takoyaki
         uint_fast32_t           bufferCount;
         EDisplayOrientation     currentOrientation;
         EDisplayOrientation     nativeOrientation;
+        uint_fast32_t           numWorkerThreads;
         EDeviceType             type;
         void*                   windowHandle;
         glm::vec2               windowSize;

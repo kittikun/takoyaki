@@ -30,7 +30,7 @@ namespace Takoyaki
     DX12ConstantBuffer::DX12ConstantBuffer(std::weak_ptr<DX12DeviceContext> owner)
         : owner_{ owner }
     {
-        rtv_.ptr = ULONG_PTR_MAX;
+        rtv_ = owner_.lock()->getSRVDescHeapCollection().createOne();
     }
 
     DX12ConstantBuffer::DX12ConstantBuffer(DX12ConstantBuffer&& other) noexcept
@@ -47,12 +47,13 @@ namespace Takoyaki
         }
     }
 
-    D3D12_CPU_DESCRIPTOR_HANDLE DX12ConstantBuffer::getConstantBufferView()
+    void DX12ConstantBuffer::addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size)
     {
-        if (rtv_.ptr == ULONG_PTR_MAX)
-            rtv_ = owner_.lock()->getSRVDescHeapCollection().createOne();
+        CBVariable var;
 
-        return rtv_;
+        var.offset = offset;
+        var.size = size;
+
+        offsetMap_.insert(std::make_pair(name, std::move(var)));
     }
-
 } // namespace Takoyaki

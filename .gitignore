@@ -31,3 +31,7 @@ build/out/
 build/ipch/
 *.opensdf
 bin/
+src/unit_tests/UnitTests/x64/
+build/x64/Release/UnitTests/ilc/_Resources/5.rsrc
+build/x64/Release/UnitTests/ilc/
+build/x64/

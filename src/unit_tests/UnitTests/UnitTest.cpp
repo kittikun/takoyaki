@@ -3,6 +3,8 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+#include "framework.h"
+
 namespace UnitTests
 {
     TEST_CLASS(UnitTest1)
@@ -10,6 +12,8 @@ namespace UnitTests
     public:
         TEST_METHOD(TestMethod1)
         {
+            Takoyaki::Framework frmk;
+
             Assert::AreEqual(1, 1);
         }
     };

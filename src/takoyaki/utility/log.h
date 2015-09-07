@@ -48,7 +48,9 @@
 #define LOGS std::cout
 #define LOGW std::cout
 #define LOGC_INDENT_START std::cout 
+#define LOGS_INDENT_START std::cout 
 #define LOGC_INDENT_END std::cout
+#define LOGS_INDENT_END std::cout
 
 #endif
 

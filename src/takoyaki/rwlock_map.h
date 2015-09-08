@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -20,41 +20,24 @@
 
 #pragma once
 
-#include "../io.h"
-#include "../dx12/shader_manager.h"
-#include "../public/definitions.h"
+#include <unordered_map>
+#include <boost/thread.hpp>
 
 namespace Takoyaki
 {
-    struct FrameworkDesc;
-    class DX12Device;
-    class ThreadPool;
-
-    class FrameworkImpl
+    // Not thread-safe by itself, just provide a convenience RW mutex
+    template<   class Key,                                              // unordered_map::key_type
+                class T,                                                // unordered_map::mapped_type
+                class Hash = std::hash<Key>,                            // unordered_map::hasher
+                class Pred = std::equal_to<Key>,                        // unordered_map::key_equal
+                class Alloc = std::allocator<std::pair<const Key, T>>>  // unordered_map::allocator_type>
+    class RWLockMap final : public std::unordered_map<Key, T, Hash, Pred, Alloc>
     {
-        FrameworkImpl(const FrameworkImpl&) = delete;
-        FrameworkImpl& operator=(const FrameworkImpl&) = delete;
-        FrameworkImpl(FrameworkImpl&&) = delete;
-        FrameworkImpl& operator=(FrameworkImpl&&) = delete;
-
     public:
-        FrameworkImpl();
-         ~FrameworkImpl();
-
-        void initialize(const FrameworkDesc&);
-        void setProperty(EPropertyID, const boost::any&);
-        void present();
-        void terminate();
-        void validateDevice() const;
-
-        void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
+        std::unique_lock<boost::shared_mutex> getWriteLock() { return std::unique_lock<boost::shared_mutex>{rwMutex_}; }
+        boost::shared_lock<boost::shared_mutex> getReadLock() { return boost::shared_lock<boost::shared_mutex>{rwMutex_}; }
 
     private:
-        IO io_;
-        std::shared_ptr<ThreadPool> threadPool_;
-        std::shared_ptr<DX12Device> device_;
-        ShaderManager shaderManager_;
+        mutable boost::shared_mutex rwMutex_;
     };
-
 } // namespace Takoyaki
-

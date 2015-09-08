@@ -38,7 +38,7 @@ namespace Takoyaki
         std::vector<std::thread>& threads;
     public:
         explicit JoinThreads(std::vector<std::thread>& threads_)
-            : threads(threads_)
+            : threads{ threads_ }
         {
         }
 

@@ -31,7 +31,7 @@ namespace Takoyaki
 {
     class DX12Device;
 
-    static const size_t MAX_DESCRIPTOR_HEAP_SIZE = 128;
+    constexpr size_t MAX_DESCRIPTOR_HEAP_SIZE = 128;
 
     struct DX12DescriptorHeap
     {
@@ -64,6 +64,7 @@ namespace Takoyaki
 
         D3D12_CPU_DESCRIPTOR_HANDLE createOne()
         {
+            std::lock_guard<std::mutex> lock{ mutex_ };
             D3D12_CPU_DESCRIPTOR_HANDLE res;
             bool found = false;
             size_t i = 0;
@@ -95,7 +96,11 @@ namespace Takoyaki
 
         void releaseOne(D3D12_CPU_DESCRIPTOR_HANDLE handle)
         {
+            std::lock_guard<std::mutex> lock{ mutex_ };
             auto container = containerMap_[handle.ptr];
+
+            if (containerMap_.erase(handle.ptr) != 1)
+                throw new std::runtime_error("DX12DescriptorHeapCollection::releaseOne, containerMap_ nothing erased");
 
             heaps_[container].freelist_.push_back((uint_fast32_t)(handle.ptr - heaps_[container].handle_.ptr) / descriptorSize_);
         }
@@ -134,6 +139,7 @@ namespace Takoyaki
         D3D12_DESCRIPTOR_HEAP_FLAGS getFlags() const;
 
     private:
+        std::mutex mutex_;
         std::weak_ptr<DX12Device> owner_;
         std::vector<DX12DescriptorHeap> heaps_;
         std::unordered_map<SIZE_T, size_t> containerMap_;

@@ -30,9 +30,7 @@ namespace Takoyaki
     {
     }
 
-    Framework::~Framework()
-    {
-    }
+    Framework::~Framework() = default;
 
     void Framework::initialize(const FrameworkDesc& desc)
     {

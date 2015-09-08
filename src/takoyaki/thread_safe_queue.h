@@ -38,20 +38,22 @@ namespace Takoyaki
 
         bool empty() const
         {
-            std::lock_guard<std::mutex> lk(mutex_);
+            std::lock_guard<std::mutex> lock{ mutex_ };
+
             return queue_.empty();
         }
 
         void push(T value)
         {
-            std::lock_guard<std::mutex> lock(mutex_);
+            std::lock_guard<std::mutex> lock{ mutex_ };
+
             queue_.push(std::move(value));
             cond_.notify_one();
         }
 
         bool tryPop(T& value)
         {
-            std::lock_guard<std::mutex> lock(mutex_);
+            std::lock_guard<std::mutex> lock{ mutex_ };
 
             if (queue_.empty())
                 return false;
@@ -63,7 +65,8 @@ namespace Takoyaki
 
         void waitPop(T& value)
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            std::unique_lock<std::mutex> lock{ mutex_ };
+
             cond_.wait(lock, [this] { return !queue_.empty(); });
             value = std::move(queue_.front());
             queue_.pop();

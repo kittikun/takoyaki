@@ -18,38 +18,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "DX12DeviceContext.h"
+#pragma once
 
+#include <vector>
+#include <mutex>
 
 namespace Takoyaki
 {
-    extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
-    extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
-
-    DX12DeviceContext::DX12DeviceContext(std::weak_ptr<DX12Device> owner)
-        : owner_{ owner_ }
-        , descHeapRTV_{ owner }
-        , descHeapSRV_{ owner }
+    template<typename T>
+    class ThreadSafeStack
     {
+        ThreadSafeStack(const ThreadSafeStack&) = delete;
+        ThreadSafeStack& operator=(const ThreadSafeStack&) = delete;
+        ThreadSafeStack(ThreadSafeStack&&) = delete;
+        ThreadSafeStack& operator=(ThreadSafeStack&&) = delete;
 
-    }
+    public:
+        ThreadSafeStack() = default;
 
-    DX12ConstantBuffer& DX12DeviceContext::CreateConstanBuffer(const std::string& name)
-    {
-        auto lock = constantBuffers_.getWriteLock();
-        auto found = constantBuffers_.find(name);
+        bool empty() const
+        {
+            std::lock_guard<std::mutex> lock{ mutex_ };
 
-        if (found != constantBuffers_.end())
-            throw new std::runtime_error{"Constant buffers names must be unique"};
+            return stack_.empty();
+        }
 
-        auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ shared_from_this() }));
+        void pop(T& value)
+        {
+            std::lock_guard<std::mutex> lock{ mutex_ };
 
-        return res.first->second;
-    }
+            if (stack_.empty())
+                throw std::runtime_error("Trying to pop when ThreadSafeStack is empty");
 
-    DX12Texture& DX12DeviceContext::CreateTexture()
-    {
-        return textures_.push(DX12Texture{ shared_from_this() });
-    }
+            value = std::move(stack_.back());
+            stack_.pop_back();
+        }
+
+        T& push(T value)
+        {
+            std::lock_guard<std::mutex> lock{ mutex_ };
+
+            stack_.push_back(std::move(value));
+
+            return stack_.back();
+        }
+
+    private:
+        mutable std::mutex mutex_;
+        std::vector<T> stack_;
+    };
 } // namespace Takoyaki

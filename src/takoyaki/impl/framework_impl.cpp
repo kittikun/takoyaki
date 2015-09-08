@@ -24,15 +24,15 @@
 #include "../dx12/DX12Device.h"
 #include "../dx12/DX12DeviceContext.h"
 #include "../dx12/DX12Texture.h"
-#include "../dx12/shader_manager.h"
 #include "../public/framework.h"
+#include "../thread_pool.h"
 #include "../utility/log.h"
 #include "../utility/win_utility.h"
 
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
-        : shaderManager_{ std::make_unique<ShaderManager>() }
+        : threadPool_{ std::make_shared<ThreadPool>() }
     {
 #ifdef USE_LOG
         Log::Initialize();
@@ -55,8 +55,8 @@ namespace Takoyaki
             throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
 
         io_.initialize(desc.loadAsyncFunc);
-        shaderManager_->initialize(&io_, &threadPool_, device_->getContext());
-        threadPool_.initialize(desc.numWorkerThreads);
+        threadPool_->initialize(desc.numWorkerThreads);
+        shaderManager_.initialize(&io_, threadPool_, device_->getContext());
 
         LOGC_INDENT_END << "Initialization complete.";
     }

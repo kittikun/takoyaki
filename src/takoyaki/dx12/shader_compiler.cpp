@@ -51,55 +51,53 @@ namespace Takoyaki
     ShaderCompiler::ShaderCompiler() = default;
     ShaderCompiler::~ShaderCompiler() = default;
 
-    void ShaderCompiler::compileShaders(IO* io, const std::vector<ProgramDesc>& programList, std::weak_ptr<DX12DeviceContext> context)
+    void ShaderCompiler::compileProgram(IO* io, const ProgramDesc& programDesc, std::weak_ptr<DX12DeviceContext> context)
     {
-        for (auto programDesc : programList) {
-            auto fmt = boost::format("Compiling program \"%1%\"") % programDesc.name;
-            LOGS_INDENT_START << boost::str(fmt);
+        auto fmt = boost::format("Compiling program \"%1%\"") % programDesc.name;
+        LOGS_INDENT_START << boost::str(fmt);
 
-            Program prog;
+        Program prog;
 
-            for (auto shaderDesc : programDesc.shaders) {
-                auto fmt = boost::format("Path: %1%, Type: %2%, Entry: %3%") % shaderDesc.path % shaderDesc.type % shaderDesc.main;
+        for (auto shaderDesc : programDesc.shaders) {
+            auto fmt = boost::format("Path: %1%, Type: %2%, Entry: %3%") % shaderDesc.path % shaderDesc.type % shaderDesc.main;
 
-                LOGS << boost::str(fmt);
+            LOGS << boost::str(fmt);
 
-                auto buffer = io->loadFile(shaderDesc.path);
+            auto buffer = io->loadFile(shaderDesc.path);
 
-                ID3DBlob* shaderBlob = nullptr;
-                ID3DBlob* errorBlob = nullptr;
+            ID3DBlob* shaderBlob = nullptr;
+            ID3DBlob* errorBlob = nullptr;
 
-                auto hr = D3DCompile(buffer.c_str(), buffer.size(), shaderDesc.path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, shaderDesc.main.c_str(), getDXShaderType(shaderDesc.type).c_str(), shaderDesc.flags, 0, &shaderBlob, &errorBlob);
+            auto hr = D3DCompile(buffer.c_str(), buffer.size(), shaderDesc.path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, shaderDesc.main.c_str(), getDXShaderType(shaderDesc.type).c_str(), shaderDesc.flags, 0, &shaderBlob, &errorBlob);
 
-                if (FAILED(hr)) {
-                    if (errorBlob != nullptr) {
-                        LOGE << "Compilation failed" << std::endl << static_cast<char*>(errorBlob->GetBufferPointer());
-                        errorBlob->Release();
-                    }
-
-                    if (shaderBlob != nullptr)
-                        shaderBlob->Release();
-
-                    fmt = boost::format("Shader compilation failed: %1%") % shaderDesc.path;
-
-                    throw new std::runtime_error(boost::str(fmt));
+            if (FAILED(hr)) {
+                if (errorBlob != nullptr) {
+                    LOGE << "Compilation failed" << std::endl << static_cast<char*>(errorBlob->GetBufferPointer());
+                    errorBlob->Release();
                 }
 
-                D3D12_SHADER_BYTECODE bc;
+                if (shaderBlob != nullptr)
+                    shaderBlob->Release();
 
-                bc.BytecodeLength = shaderBlob->GetBufferSize();
-                bc.pShaderBytecode = shaderBlob->GetBufferPointer();
+                fmt = boost::format("Shader compilation failed: %1%") % shaderDesc.path;
 
-                if (shaderDesc.type == "vs")
-                    prog.vs = bc;
-                else if (shaderDesc.type == "ps")
-                    prog.ps = bc;
-
-                getShaderResources(shaderBlob, context);
+                throw new std::runtime_error(boost::str(fmt));
             }
 
-            LOGS_INDENT_END << "Program done.";
+            D3D12_SHADER_BYTECODE bc;
+
+            bc.BytecodeLength = shaderBlob->GetBufferSize();
+            bc.pShaderBytecode = shaderBlob->GetBufferPointer();
+
+            if (shaderDesc.type == "vs")
+                prog.vs = bc;
+            else if (shaderDesc.type == "ps")
+                prog.ps = bc;
+
+            getShaderResources(shaderBlob, context);
         }
+
+        LOGS_INDENT_END << "Program done.";
     }
 
     std::string ShaderCompiler::getDXShaderType(const std::string& type) const
@@ -188,7 +186,7 @@ namespace Takoyaki
         }
     }
 
-    void ShaderCompiler::main(IO* io, std::weak_ptr<DX12DeviceContext> context)
+    void ShaderCompiler::main(IO* io, std::weak_ptr<ThreadPool> threadPool, std::weak_ptr<DX12DeviceContext> context)
     {
         LOGS_INDENT_START << "Starting shaders compilation..";
 
@@ -197,7 +195,11 @@ namespace Takoyaki
         std::vector<ProgramDesc> programList;
 
         parseShaderList(buffer, programList);
-        compileShaders(io, programList, context);
+        auto pool = threadPool.lock();
+
+        for (auto& programDesc : programList) {
+            pool->submit(std::bind(&ShaderCompiler::compileProgram, this, io, programDesc, context));
+        }
 
         LOGS_INDENT_END << "Shader compilation done.";
     }

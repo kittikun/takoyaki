@@ -31,8 +31,10 @@ namespace Takoyaki
     ShaderManager::ShaderManager() = default;
     ShaderManager::~ShaderManager() = default;
 
-    void ShaderManager::initialize(IO* io, ThreadPool* threadPool, std::weak_ptr<DX12DeviceContext> context)
+    void ShaderManager::initialize(IO* io, std::weak_ptr<ThreadPool> threadPool, std::weak_ptr<DX12DeviceContext> context)
     {
-        threadPool->submit(std::bind(&ShaderCompiler::main, &compiler_, io, context));
+        auto pool = threadPool.lock();
+
+        pool->submit(std::bind(&ShaderCompiler::main, &compiler_, io, threadPool, context));
     }
 } // namespace Takoyaki

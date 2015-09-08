@@ -45,10 +45,10 @@ namespace Takoyaki
         ShaderCompiler();
         ~ShaderCompiler();
 
-        void main(IO*, std::weak_ptr<DX12DeviceContext>);
+        void main(IO*, std::weak_ptr<ThreadPool>, std::weak_ptr<DX12DeviceContext>);
 
     private:
-        void compileShaders(IO*, const std::vector<ProgramDesc>&, std::weak_ptr<DX12DeviceContext>);
+        void compileProgram(IO*, const ProgramDesc&, std::weak_ptr<DX12DeviceContext>);
         void getShaderResources(ID3DBlob*, std::weak_ptr<DX12DeviceContext>);
         std::string getDXShaderType(const std::string&) const;
         void parseConstantBuffers(ID3D12ShaderReflection*, const D3D12_SHADER_DESC&, std::weak_ptr<DX12DeviceContext>);

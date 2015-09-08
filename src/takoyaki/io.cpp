@@ -61,7 +61,7 @@ namespace Takoyaki
     {
         // only protect access to the map
         {
-            std::lock_guard<std::mutex> lock(mutex_);
+            auto lock = mapQueued_.getWriteLock();
 
             mapQueued_.insert({ filename, func });
         }
@@ -71,7 +71,7 @@ namespace Takoyaki
 
     void IO::loadAsyncFileResult(const std::string& filename, const std::vector<uint8_t>& res)
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        auto lock = mapQueued_.getWriteLock();
         auto found = mapQueued_.find(filename);
 
         if (found != mapQueued_.end()) {
@@ -80,7 +80,6 @@ namespace Takoyaki
             lock.unlock();
             func(res);
         } else {
-            lock.unlock();
             throw new std::runtime_error("IO::loadAsyncFileResult, key not found");
         }
     }

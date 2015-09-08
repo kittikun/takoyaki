@@ -122,5 +122,11 @@
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\takoyaki\thread_safe_stack.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\rwlock_map.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

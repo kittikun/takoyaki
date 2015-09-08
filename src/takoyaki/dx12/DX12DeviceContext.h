@@ -28,6 +28,8 @@
 #include "DX12DescriptorHeap.h"
 #include "DX12Texture.h"
 
+#include "../rwlock_map.h"
+#include "../thread_safe_stack.h"
 
 namespace Takoyaki
 {
@@ -53,7 +55,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV> descHeapRTV_;
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV> descHeapSRV_;
 
-        std::unordered_map<std::string, DX12ConstantBuffer> constantBuffers_;
-        std::vector<DX12Texture> textures_;
+        RWLockMap<std::string, DX12ConstantBuffer> constantBuffers_;
+        ThreadSafeStack<DX12Texture> textures_;
     };
 } // namespace Takoyaki

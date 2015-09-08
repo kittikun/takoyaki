@@ -27,8 +27,8 @@
 namespace Takoyaki
 {
     ThreadPool::ThreadPool()
-        : done_(false)
-        , joiner(threads)
+        : done_{ false }
+        , joiner{ threads }
     {
     }
 

@@ -26,8 +26,10 @@
 namespace Takoyaki
 {
     // Instance template here and use them elsewhere as extern
-    template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
     template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
+    template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_DSV>;
+    template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER>;
+    template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
 
     // Specializations
     boost::wformat DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV >::getFormatString()

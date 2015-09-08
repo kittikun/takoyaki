@@ -27,7 +27,7 @@ namespace Takoyaki
 {
     std::string GetDXError(HRESULT code)
     {
-        std::unordered_map<HRESULT, std::string> map = {
+        static std::unordered_map<HRESULT, std::string> map = {
             { D3D11_ERROR_FILE_NOT_FOUND, "D3D11_ERROR_FILE_NOT_FOUND" },
             { D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS, "D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS" },
             { D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS, "D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS" },
@@ -70,7 +70,7 @@ namespace Takoyaki
     float ConvertDipsToPixels(float dips, float dpi)
     {
         // https://en.wikipedia.org/wiki/Device_independent_pixel
-        static const float dipsPerInch = 96.0f;
+        constexpr float dipsPerInch = 96.0f;
 
         return std::max(floorf(dips * dpi / dipsPerInch + 0.5f), 1.f);
     }

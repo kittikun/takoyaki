@@ -49,6 +49,7 @@
 // Boost
 #include <boost/any.hpp>
 #include <boost/format.hpp>
+#include <boost/thread.hpp>
 
 // Maths
 #include <glm/glm.hpp>

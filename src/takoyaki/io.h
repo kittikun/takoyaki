@@ -21,8 +21,8 @@
 #pragma once
 
 #include <thread>
-#include <unordered_map>
 
+#include "rwlock_map.h"
 #include "public/definitions.h"
 
 namespace Takoyaki
@@ -54,7 +54,7 @@ namespace Takoyaki
         void loadAsyncFileResult(const std::string&, const std::vector<uint8_t>&);
     private:
         std::mutex mutex_;
-        std::unordered_map<std::string, LoadResultFunc> mapQueued_;
+        RWLockMap<std::string, LoadResultFunc> mapQueued_;
         LoadFileAsyncFunc loadFileAsyncFunc_;
     };
 } // namespace Takoyaki

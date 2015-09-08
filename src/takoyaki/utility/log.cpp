@@ -74,7 +74,7 @@ namespace Takoyaki
 
 		std::ostream& operator<<(std::ostream& strm, ELogLevel level)
 		{
-			static const char* strings[] =
+            constexpr const char* strings[] =
 			{
 				"Core",
                 "ERROR",

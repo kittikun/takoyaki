@@ -301,6 +301,7 @@ xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
       <PreprocessorDefinitions>_EXPORT_TAKOYAKI_API;USE_LOG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <EnablePREfast>true</EnablePREfast>
+      <AdditionalOptions>-Zm134 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

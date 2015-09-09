@@ -1,29 +1,30 @@
-version: 0.0.{build}
+version: 0.0.0.{build}
 os: Visual Studio 2015
-configuration: AppVeyor
+configuration:
+- AppVeyor
+- Release
 platform: x64
 environment:
-  BOOST_ROOT: C:\projects\takoyaki\boost_1_59_0
+  BOOST_ROOT: $(APPVEYOR_BUILD_FOLDER)\boost_1_59_0
 before_build:
 - ps: >-
     Add-Type -assembly "system.io.compression.filesystem"
-
-
+    $path = $Env:APPVEYOR_BUILD_FOLDER
+    $type = $Env:CONFIGURATION
+    Write-Host "CONFIGURATION="$type
+    Write-Host "APPVEYOR_BUILD_FOLDER="$path
     Write-Host "Downloading boost.."
-
-    (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "C:\projects\takoyaki\boost_1_59_0.zip")
-
+    (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
     Write-Host "Extracting archive.."
-
-    [io.compression.zipfile]::ExtractToDirectory("C:\projects\takoyaki\boost_1_59_0.zip", "C:\projects\takoyaki\")
-
-    Set-Location "C:\projects\takoyaki\boost_1_59_0"
-
+    [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)
+    Set-Location "$path\boost_1_59_0"
     Write-Host "Building boost.."
-
-    & ".\bootstrap.bat"
-
+    & .\bootstrap.bat
+    if ($type -eq "Release") {
+    & .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
+    } else {
     & .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
+    }
 build:
   project: C:\projects\takoyaki\build\Takoyaki.sln
   verbosity: minimal

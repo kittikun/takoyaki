@@ -303,7 +303,7 @@
       <AdditionalDependencies>d3d12.lib</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
-      <Command>xcopy $(SolutionDir)..\data $(Outdir)AppX\data /s /e /f /i /y</Command>
+      <Command>powershell.exe -ExecutionPolicy ByPass -NoLogo -NonInteractive -Command .'$(ProjectDir)postbuild.ps1' -src $(SolutionDir)..\data -dst $(Outdir)AppX\data</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -323,6 +323,9 @@
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d12.lib</AdditionalDependencies>
     </Lib>
+    <PostBuildEvent>
+      <Command>powershell.exe -ExecutionPolicy ByPass -NoLogo -NonInteractive -Command .'$(ProjectDir)postbuild.ps1' -src $(SolutionDir)..\data -dst $(Outdir)AppX\data</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AppVeyor|x64'">
     <ClCompile>
@@ -341,6 +344,9 @@
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d12.lib</AdditionalDependencies>
     </Lib>
+    <PostBuildEvent>
+      <Command>powershell.exe -ExecutionPolicy ByPass -NoLogo -NonInteractive -Command .'$(ProjectDir)postbuild.ps1' -src $(SolutionDir)..\data -dst $(Outdir)AppX\data</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

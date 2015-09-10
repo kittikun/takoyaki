@@ -48,7 +48,7 @@ namespace Takoyaki
         LoadFileAsyncFunc       loadAsyncFunc;
     };
 
-    class TAKOYAKI_API Framework
+    class Framework
     {
         Framework(const Framework&) = delete;
         Framework& operator=(const Framework&) = delete;

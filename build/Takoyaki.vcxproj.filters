@@ -1,96 +1,96 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{b9023203-9ffd-4d91-9453-e64a16608d85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\utility">
-      <UniqueIdentifier>{e3b14c5b-d374-46b8-815b-138878a6bb8e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\impl">
-      <UniqueIdentifier>{46dbb61f-f4b8-4a6c-8f17-fb412e172b2d}</UniqueIdentifier>
+      <UniqueIdentifier>{8a2fa2ec-4d06-4d9e-8040-592fba0967f7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\dx12">
-      <UniqueIdentifier>{e3c58ddb-aab7-4035-a91f-777791cbed42}</UniqueIdentifier>
+      <UniqueIdentifier>{27f80454-4493-4963-bdf6-204fc0ee6245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\impl">
+      <UniqueIdentifier>{3b7ad090-6bac-4bdf-b708-be176192c50e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\public">
-      <UniqueIdentifier>{0515ce8f-c386-433c-a362-b07503340b5f}</UniqueIdentifier>
+      <UniqueIdentifier>{2dffe112-5689-434c-90af-3baab3ac70f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utility">
+      <UniqueIdentifier>{65f5ab64-b6b8-4377-904f-1ddc6337fafd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\takoyaki\dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\utility\log.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp">
-      <Filter>Source Files\impl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp">
+    <ClCompile Include="..\src\takoyaki\dx12\DX12ConstantBuffer.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\DX12DescriptorHeap.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp">
+    <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\public\framework.cpp">
-      <Filter>Source Files\public</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\io.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp">
+    <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\DXUtility.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12ConstantBuffer.cpp">
+    <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\thread_pool.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp">
+      <Filter>Source Files\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\public\framework.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\utility\log.cpp">
+      <Filter>Source Files\utility</Filter>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\utility\win_utility.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp">
-      <Filter>Source Files\dx12</Filter>
+    <ClCompile Include="..\src\takoyaki\io.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\thread_pool.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\takoyaki\pch.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\utility\log.h">
-      <Filter>Source Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\impl\framework_impl.h">
-      <Filter>Source Files\impl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h">
+    <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h">
+    <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\DXUtility.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\shader_manager.h">
       <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\impl\framework_impl.h">
+      <Filter>Source Files\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\public\definitions.h">
       <Filter>Source Files\public</Filter>
@@ -98,17 +98,20 @@
     <ClInclude Include="..\src\takoyaki\public\framework.h">
       <Filter>Source Files\public</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\public\platform.h">
-      <Filter>Source Files\public</Filter>
+    <ClInclude Include="..\src\takoyaki\utility\log.h">
+      <Filter>Source Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\utility\win_utility.h">
+      <Filter>Source Files\utility</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\io.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DXUtility.h">
-      <Filter>Source Files\dx12</Filter>
+    <ClInclude Include="..\src\takoyaki\pch.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h">
-      <Filter>Source Files\dx12</Filter>
+    <ClInclude Include="..\src\takoyaki\rwlock_map.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\thread_pool.h">
       <Filter>Source Files</Filter>
@@ -116,16 +119,7 @@
     <ClInclude Include="..\src\takoyaki\thread_safe_queue.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\utility\win_utility.h">
-      <Filter>Source Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\thread_safe_stack.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\rwlock_map.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

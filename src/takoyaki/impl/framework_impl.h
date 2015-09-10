@@ -28,6 +28,7 @@ namespace Takoyaki
 {
     struct FrameworkDesc;
     class DX12Device;
+    class Framework;
     class ThreadPool;
 
     class FrameworkImpl
@@ -41,7 +42,7 @@ namespace Takoyaki
         FrameworkImpl();
          ~FrameworkImpl();
 
-        void initialize(const FrameworkDesc&);
+        void initialize(const FrameworkDesc&, std::weak_ptr<Framework>);
         void setProperty(EPropertyID, const boost::any&);
         void present();
         void terminate();

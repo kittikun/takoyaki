@@ -6,13 +6,13 @@
 
 #include <framework.h>
 
-namespace TakoyakiApp
+namespace AppMain
 {
 	// Main entry point for our app. Connects the app with the Windows shell and handles application lifecycle events.
-	ref class App sealed : public Windows::ApplicationModel::Core::IFrameworkView
+	ref class Main sealed : public Windows::ApplicationModel::Core::IFrameworkView
 	{
 	public:
-		App();
+		Main();
 
 		// IFrameworkView methods.
 		virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView);
@@ -42,13 +42,13 @@ namespace TakoyakiApp
         Concurrency::task<std::vector<byte>> loadFileAsync(const std::wstring&);
 
 	private:
-        std::unique_ptr<Takoyaki::Framework> framework_;
+        std::shared_ptr<Takoyaki::Framework> framework_;
 		bool mWindowClosed;
 		bool mWindowVisible;
 	};
 }
 
-ref class TakoyakiView sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
+ref class AppMainView sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
 {
 public:
 	virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView();

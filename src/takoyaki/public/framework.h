@@ -48,7 +48,7 @@ namespace Takoyaki
         LoadFileAsyncFunc       loadAsyncFunc;
     };
 
-    class Framework
+    class Framework : public std::enable_shared_from_this<Framework>
     {
         Framework(const Framework&) = delete;
         Framework& operator=(const Framework&) = delete;

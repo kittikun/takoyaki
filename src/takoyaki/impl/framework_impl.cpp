@@ -29,6 +29,8 @@
 #include "../utility/log.h"
 #include "../utility/win_utility.h"
 
+extern void appMain(std::weak_ptr<Takoyaki::Framework>);
+
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
@@ -41,7 +43,7 @@ namespace Takoyaki
 
     FrameworkImpl::~FrameworkImpl() = default;
 
-    void FrameworkImpl::initialize(const FrameworkDesc& desc)
+    void FrameworkImpl::initialize(const FrameworkDesc& desc, std::weak_ptr<Framework> framework)
     {
         LOGC_INDENT_START << "Initializing Takoyaki Framework..";
 
@@ -59,6 +61,11 @@ namespace Takoyaki
         shaderManager_.initialize(&io_, threadPool_, device_->getContext());
 
         LOGC_INDENT_END << "Initialization complete.";
+
+        LOGC << "Launching application...";
+
+        auto func = std::bind(appMain, framework);
+        threadPool_->submit(func);
     }
 
     void FrameworkImpl::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)

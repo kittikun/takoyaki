@@ -1,4 +1,4 @@
-﻿#include "App.h"
+﻿#include "main.h"
 
 #include <functional>
 #include <ppltasks.h>
@@ -19,26 +19,27 @@ using namespace Windows::Graphics::Display;
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
-    auto app = ref new TakoyakiView();
+    auto app = ref new AppMainView();
     CoreApplication::Run(app);
 
     return 0;
 }
 
-IFrameworkView^ TakoyakiView::CreateView()
+IFrameworkView^ AppMainView::CreateView()
 {
-    return ref new TakoyakiApp::App();
+    return ref new AppMain::Main();
 }
 
-namespace TakoyakiApp
+namespace AppMain
 {
-    App::App() :
-        mWindowClosed(false),
-        mWindowVisible(true)
+    Main::Main()
+        : framework_{std::make_shared<Takoyaki::Framework >()}
+        , mWindowClosed{ false }
+        , mWindowVisible{ true }
     {
     }
 
-    Takoyaki::EDisplayOrientation App::DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations orientation)
+    Takoyaki::EDisplayOrientation Main::DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations orientation)
     {
         switch (orientation) {
             case Windows::Graphics::Display::DisplayOrientations::Landscape:
@@ -58,34 +59,32 @@ namespace TakoyakiApp
     }
 
     // The first method called when the IFrameworkView is being created.
-    void App::Initialize(CoreApplicationView^ applicationView)
+    void Main::Initialize(CoreApplicationView^ applicationView)
     {
         // Register event handlers for app life cycle. This example includes Activated, so that we
         // can make the CoreWindow active and start rendering on the window.
-        applicationView->Activated += ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &App::OnActivated);
-        CoreApplication::Suspending += ref new EventHandler<SuspendingEventArgs^>(this, &App::OnSuspending);
-        CoreApplication::Resuming += ref new EventHandler<Platform::Object^>(this, &App::OnResuming);
+        applicationView->Activated += ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &Main::OnActivated);
+        CoreApplication::Suspending += ref new EventHandler<SuspendingEventArgs^>(this, &Main::OnSuspending);
+        CoreApplication::Resuming += ref new EventHandler<Platform::Object^>(this, &Main::OnResuming);
     }
 
     // Called when the CoreWindow object is created (or re-created).
-    void App::SetWindow(CoreWindow^ window)
+    void Main::SetWindow(CoreWindow^ window)
     {
-        window->SizeChanged += ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &App::OnWindowSizeChanged);
-        window->VisibilityChanged += ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &App::OnVisibilityChanged);
-        window->Closed += ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &App::OnWindowClosed);
+        window->SizeChanged += ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &Main::OnWindowSizeChanged);
+        window->VisibilityChanged += ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &Main::OnVisibilityChanged);
+        window->Closed += ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &Main::OnWindowClosed);
 
         DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
 
-        currentDisplayInformation->DpiChanged += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnDpiChanged);
-        currentDisplayInformation->OrientationChanged += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnOrientationChanged);
-        DisplayInformation::DisplayContentsInvalidated += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnDisplayContentsInvalidated);
+        currentDisplayInformation->DpiChanged += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &Main::OnDpiChanged);
+        currentDisplayInformation->OrientationChanged += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &Main::OnOrientationChanged);
+        DisplayInformation::DisplayContentsInvalidated += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &Main::OnDisplayContentsInvalidated);
     }
 
     // Initializes scene resources, or loads a previously saved app state.
-    void App::Load(Platform::String^ entryPoint)
+    void Main::Load(Platform::String^ entryPoint)
     {
-        framework_.reset(new Takoyaki::Framework());
-
         auto window = CoreWindow::GetForCurrentThread();
         DisplayInformation^ disp = DisplayInformation::GetForCurrentView();
 
@@ -113,7 +112,7 @@ namespace TakoyakiApp
     }
 
     // This method is called after the window becomes active.
-    void App::Run()
+    void Main::Run()
     {
         while (!mWindowClosed) {
             if (mWindowVisible) {
@@ -129,19 +128,19 @@ namespace TakoyakiApp
     // Required for IFrameworkView.
     // Terminate events do not cause Uninitialize to be called. It will be called if your IFrameworkView
     // class is torn down while the app is in the foreground.
-    void App::Uninitialize()
+    void Main::Uninitialize()
     {
     }
 
     // Application lifecycle event handlers.
 
-    void App::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
+    void Main::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
     {
         // Run() won't start until the CoreWindow is activated.
         CoreWindow::GetForCurrentThread()->Activate();
     }
 
-    void App::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
+    void Main::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
     {
         // Save app state asynchronously after requesting a deferral. Holding a deferral
         // indicates that the application is busy performing suspending operations. Be
@@ -158,7 +157,7 @@ namespace TakoyakiApp
         });
     }
 
-    void App::OnResuming(Platform::Object^ sender, Platform::Object^ args)
+    void Main::OnResuming(Platform::Object^ sender, Platform::Object^ args)
     {
         // Restore any data or state that was unloaded on suspend. By default, data
         // and state are persisted when resuming from suspend. Note that this event
@@ -170,39 +169,39 @@ namespace TakoyakiApp
 
     // Window event handlers.
 
-    void App::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
+    void Main::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
     {
         glm::vec2 size(sender->Bounds.Width, sender->Bounds.Height);
 
         framework_->setProperty(Takoyaki::EPropertyID::WINDOW_SIZE, size);
     }
 
-    void App::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
+    void Main::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
     {
         mWindowVisible = args->Visible;
     }
 
-    void App::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
+    void Main::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
     {
         mWindowClosed = true;
     }
 
-    void App::OnDpiChanged(DisplayInformation^ sender, Object^ args)
+    void Main::OnDpiChanged(DisplayInformation^ sender, Object^ args)
     {
         framework_->setProperty(Takoyaki::EPropertyID::WINDOW_DPI, sender->LogicalDpi);
     }
 
-    void App::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
+    void Main::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
     {
         framework_->setProperty(Takoyaki::EPropertyID::WINDOW_ORIENTATION, sender->CurrentOrientation);
     }
 
-    void App::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
+    void Main::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
     {
         framework_->validateDevice();
     }
 
-    Concurrency::task<std::vector<byte>> App::loadFileAsync(const std::wstring& filename)
+    Concurrency::task<std::vector<byte>> Main::loadFileAsync(const std::wstring& filename)
     {
         using namespace Windows::Storage;
         using namespace Concurrency;

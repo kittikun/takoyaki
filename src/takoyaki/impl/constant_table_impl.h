@@ -18,20 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
+
 #include <memory>
 
-#include <framework.h>
-#include <IRenderable.h>
-
-class Test final : public Takoyaki::IRenderable
+namespace Takoyaki
 {
-    void render(const Takoyaki::Renderer& renderer)
+    class DX12ConstantBuffer;
+
+    class ConstantTableImpl
     {
+        ConstantTableImpl(const ConstantTableImpl&) = delete;
+        ConstantTableImpl& operator=(const ConstantTableImpl&) = delete;
+        ConstantTableImpl(ConstantTableImpl&&) = delete;
+        ConstantTableImpl& operator=(ConstantTableImpl&&) = delete;
 
-    }
-};
+    public:
+        ConstantTableImpl(DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>);
+        ~ConstantTableImpl();
 
-void appMain(std::weak_ptr<Takoyaki::Framework> framework)
-{
-    int i = 0;
+        void setMatrix4x4(const std::string&, const glm::mat4x4&);
+
+    private:
+        DX12ConstantBuffer& cbuffer_;
+        boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
+    };
 }
+// namespace Takoyaki

@@ -18,20 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
+
 #include <memory>
 
-#include <framework.h>
-#include <IRenderable.h>
-
-class Test final : public Takoyaki::IRenderable
+namespace Takoyaki
 {
-    void render(const Takoyaki::Renderer& renderer)
+    class ConstantTableImpl;
+
+    class ConstantTable
     {
+        ConstantTable(const ConstantTable&) = delete;
+        ConstantTable& operator=(const ConstantTable&) = delete;
+        ConstantTable(ConstantTable&&) = delete;
+        ConstantTable& operator=(ConstantTable&&) = delete;
 
-    }
-};
+    public:
+        ConstantTable(std::unique_ptr<ConstantTableImpl>);
+        ~ConstantTable();
 
-void appMain(std::weak_ptr<Takoyaki::Framework> framework)
-{
-    int i = 0;
+        void setMatrix4x4(const std::string&, const glm::mat4x4&);
+
+    private:
+        std::unique_ptr<ConstantTableImpl> impl_;
+    };
 }
+// namespace Takoyaki

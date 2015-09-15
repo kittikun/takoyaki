@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -18,20 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <memory>
+#include "pch.h"
+#include "renderer_impl.h"
 
-#include <framework.h>
-#include <IRenderable.h>
+#include "constant_table_impl.h"
+#include "../dx12/DX12DeviceContext.h"
 
-class Test final : public Takoyaki::IRenderable
+namespace Takoyaki
 {
-    void render(const Takoyaki::Renderer& renderer)
+    RendererImpl::RendererImpl()
     {
 
     }
-};
 
-void appMain(std::weak_ptr<Takoyaki::Framework> framework)
-{
-    int i = 0;
+    RendererImpl::~RendererImpl() = default;
+
+    std::unique_ptr<ConstantTableImpl> RendererImpl::GetConstantBuffer(const std::string& name)
+    {
+        auto pair = context_->getConstantBuffer(name);
+
+        return std::make_unique<ConstantTableImpl>(pair.first, std::move(pair.second));
+    }
 }
+// namespace Takoyaki

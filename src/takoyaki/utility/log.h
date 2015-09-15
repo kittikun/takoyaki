@@ -20,7 +20,7 @@
 
 #pragma once
 
-#ifdef USE_LOG
+#ifdef _DEBUG
 
 #include <boost/log/expressions/keyword.hpp>
 #include <boost/log/sources/logger.hpp>
@@ -39,8 +39,29 @@
 #define LOGC_INDENT_END Takoyaki::Log::EndIndent(Takoyaki::Log::Log_Core); ## LOGC
 #define LOGS_INDENT_END Takoyaki::Log::EndIndent(Takoyaki::Log::Log_Shader); ## LOGS
 
-#else
+namespace Takoyaki
+{
+    namespace Log
+    {
+        enum ELogLevel
+        {
+            Log_Core,
+            Log_Error,
+            Log_Shader,
+            Log_Warning,
+            Log_Level_Count
+        };
 
+        BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(boost_log, boost::log::sources::severity_logger_mt<ELogLevel>);
+
+        void Initialize();
+        void StartIndent(ELogLevel);
+        void EndIndent(ELogLevel);
+        std::string GetIndent(ELogLevel);
+    } // namespace Log
+} // namespace Takoyaki
+
+#else
 #include <iostream>
 
 #define LOGC std::cout
@@ -53,28 +74,3 @@
 #define LOGS_INDENT_END std::cout
 
 #endif
-
-namespace Takoyaki
-{
-
-#if USE_LOG
-	namespace Log
-	{
-		enum ELogLevel
-		{
-			Log_Core,
-			Log_Error,
-            Log_Shader,
-            Log_Warning,
-            Log_Level_Count
-		};
-
-		BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(boost_log, boost::log::sources::severity_logger_mt<ELogLevel>);
-
-		void Initialize();
-        void StartIndent(ELogLevel);
-        void EndIndent(ELogLevel);
-        std::string GetIndent(ELogLevel);
-	} // namespace Log
-#endif
-} // namespace Takoyaki

@@ -18,20 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
+
 #include <memory>
 
-#include <framework.h>
-#include <IRenderable.h>
-
-class Test final : public Takoyaki::IRenderable
+namespace Takoyaki
 {
-    void render(const Takoyaki::Renderer& renderer)
+    class ConstantTableImpl;
+    class DX12DeviceContext;
+
+    class RendererImpl
     {
+        RendererImpl(const RendererImpl&) = delete;
+        RendererImpl& operator=(const RendererImpl&) = delete;
+        RendererImpl(RendererImpl&&) = delete;
+        RendererImpl& operator=(RendererImpl&&) = delete;
 
-    }
-};
+    public:
+        RendererImpl();
+        ~RendererImpl();
 
-void appMain(std::weak_ptr<Takoyaki::Framework> framework)
-{
-    int i = 0;
+        std::unique_ptr<ConstantTableImpl> GetConstantBuffer(const std::string&);
+
+    private:
+        std::shared_ptr<DX12DeviceContext> context_;
+    };
 }
+// namespace Takoyaki

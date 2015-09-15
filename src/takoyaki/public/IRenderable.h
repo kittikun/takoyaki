@@ -18,20 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <memory>
+#pragma once
 
-#include <framework.h>
-#include <IRenderable.h>
+#include "renderer.h"
 
-class Test final : public Takoyaki::IRenderable
+namespace Takoyaki
 {
-    void render(const Takoyaki::Renderer& renderer)
+    class IRenderable
     {
-
-    }
-};
-
-void appMain(std::weak_ptr<Takoyaki::Framework> framework)
-{
-    int i = 0;
+        virtual void render(const Renderer&) = 0;
+    };
 }
+// namespace Takoyaki

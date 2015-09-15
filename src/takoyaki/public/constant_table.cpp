@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -18,20 +18,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <memory>
+#include "pch.h"
+#include "constant_table.h"
 
-#include <framework.h>
-#include <IRenderable.h>
+#include "../impl/constant_table_impl.h"
 
-class Test final : public Takoyaki::IRenderable
+namespace Takoyaki
 {
-    void render(const Takoyaki::Renderer& renderer)
+    ConstantTable::ConstantTable(std::unique_ptr<ConstantTableImpl> ct)
+        : impl_{ std::move(ct) }
     {
-
     }
-};
 
-void appMain(std::weak_ptr<Takoyaki::Framework> framework)
-{
-    int i = 0;
+    ConstantTable::~ConstantTable() = default;
+
+    void ConstantTable::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
+    {
+        impl_->setMatrix4x4(name, value);
+    }
 }
+// namespace Takoyaki

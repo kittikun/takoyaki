@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "log.h"
 
-#ifdef USE_LOG
+#ifdef _DEBUG
 
 #include <iostream>
 #include <boost/date_time.hpp>

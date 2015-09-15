@@ -4,7 +4,7 @@
 #ifndef GLOBAL_HLSL
 #define GLOBAL_HLSL
 
-cbuffer CBModelViewProjection : register(b0)
+cbuffer CBModelViewProjection
 {
 	float4x4 matViewProjection;
 };

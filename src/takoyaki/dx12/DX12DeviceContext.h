@@ -44,11 +44,16 @@ namespace Takoyaki
     public:
         DX12DeviceContext(std::weak_ptr<DX12Device>);
 
+        // resource creation
+        DX12ConstantBuffer& CreateConstanBuffer(const std::string&);
+        DX12Texture& CreateTexture();
+
+        // Get Heap collections
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>& getRTVDescHeapCollection() { return descHeapRTV_; }
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>& getSRVDescHeapCollection() { return descHeapSRV_; }
 
-        DX12ConstantBuffer& CreateConstanBuffer(const std::string&);
-        DX12Texture& CreateTexture();
+        // Get
+        std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>> getConstantBuffer(const std::string&);
 
     private:
         std::weak_ptr<DX12Device> owner_;

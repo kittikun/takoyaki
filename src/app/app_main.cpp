@@ -21,17 +21,32 @@
 #include <memory>
 
 #include <framework.h>
-#include <IRenderable.h>
+#include <glm/glm.hpp>
+#include <render_component.h>
 
-class Test final : public Takoyaki::IRenderable
+class Test final : public Takoyaki::RenderComponent
 {
-    void render(const Takoyaki::Renderer& renderer)
-    {
+    Test(const Test&) = delete;
+    Test& operator=(const Test&) = delete;
+    Test(Test&&) = delete;
+    Test& operator=(Test&&) = delete;
+public:
+    Test::Test() = default;
 
+    void render(Takoyaki::Renderer& renderer)
+    {
+        auto viewProj = renderer.GetConstantBuffer("CBModelViewProjection");      
+
+        if (viewProj)
+            viewProj->setMatrix4x4("matViewProjection", glm::mat4x4());
+
+        int i = 0;
     }
 };
 
-void appMain(std::weak_ptr<Takoyaki::Framework> framework)
+void appMain(std::weak_ptr<Takoyaki::Framework> frmwk)
 {
-    int i = 0;
+    auto framework = frmwk.lock();
+
+    framework->addRenderComponent(std::make_unique<Test>());
 }

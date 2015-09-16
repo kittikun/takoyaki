@@ -26,8 +26,8 @@
 
 namespace Takoyaki
 {
-    Renderer::Renderer()
-        : impl_{ std::make_unique<RendererImpl>() }
+    Renderer::Renderer(std::unique_ptr<RendererImpl> impl)
+        : impl_{ std::move(impl) }
     {
     }
 

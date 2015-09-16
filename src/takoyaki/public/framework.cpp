@@ -32,6 +32,11 @@ namespace Takoyaki
 
     Framework::~Framework() = default;
 
+    void Framework::addRenderComponent(std::shared_ptr<RenderComponent>&& component)
+    {
+        impl_->addRenderComponent(std::move(component));
+    }
+
     void Framework::initialize(const FrameworkDesc& desc)
     {
         impl_->initialize(desc, shared_from_this());
@@ -42,9 +47,9 @@ namespace Takoyaki
         impl_->loadAsyncFileResult(filename, res);
     }
 
-    void Framework::present()
+    void Framework::render()
     {
-        impl_->present();
+        impl_->render();
     }
 
     void Framework::setProperty(EPropertyID id, const boost::any& value)

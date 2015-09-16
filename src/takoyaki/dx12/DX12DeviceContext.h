@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <boost/optional.hpp>
 #include <d3d12.h>
 #include <memory>
 
@@ -41,6 +42,8 @@ namespace Takoyaki
         DX12DeviceContext(DX12DeviceContext&&) = delete;
         DX12DeviceContext& operator=(DX12DeviceContext&&) = delete;
 
+        using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
+
     public:
         DX12DeviceContext(std::weak_ptr<DX12Device>);
 
@@ -53,7 +56,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>& getSRVDescHeapCollection() { return descHeapSRV_; }
 
         // Get
-        std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>> getConstantBuffer(const std::string&);
+        auto getConstantBuffer(const std::string&) -> ConstantBufferReturn;
 
     private:
         std::weak_ptr<DX12Device> owner_;

@@ -29,6 +29,7 @@ namespace Takoyaki
     struct FrameworkDesc;
     class DX12Device;
     class Framework;
+    class RenderComponent;
     class ThreadPool;
 
     class FrameworkImpl
@@ -42,9 +43,10 @@ namespace Takoyaki
         FrameworkImpl();
          ~FrameworkImpl();
 
+        void addRenderComponent(std::shared_ptr<RenderComponent>&&);
         void initialize(const FrameworkDesc&, std::weak_ptr<Framework>);
         void setProperty(EPropertyID, const boost::any&);
-        void present();
+        void render();
         void terminate();
         void validateDevice() const;
 
@@ -55,6 +57,7 @@ namespace Takoyaki
         std::shared_ptr<ThreadPool> threadPool_;
         std::shared_ptr<DX12Device> device_;
         ShaderManager shaderManager_;
+        std::vector<std::shared_ptr<RenderComponent>> renderable_;
     };
 
 } // namespace Takoyaki

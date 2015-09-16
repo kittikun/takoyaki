@@ -23,6 +23,7 @@
 
 #include <boost/format.hpp>
 
+#include "../utility/log.h"
 
 namespace Takoyaki
 {
@@ -55,20 +56,22 @@ namespace Takoyaki
         return textures_.push(DX12Texture{ shared_from_this() });
     }
 
-    std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>> DX12DeviceContext::getConstantBuffer(const std::string& name)
+    auto DX12DeviceContext::getConstantBuffer(const std::string& name) -> ConstantBufferReturn
     {
         auto lock = constantBuffers_.getReadLock();
         auto found = constantBuffers_.find(name);
 
         if (found == constantBuffers_.end()) {
             auto fmt = boost::format("DX12DeviceContext::getConstantBuffer, cannot find key \"%1%\"") % name;
-            throw new std::runtime_error(boost::str(fmt));
+
+            LOGW << boost::str(fmt);
+            return ConstantBufferReturn();
         }
 
         // somehow make_pair is not happy here..
         // transfer the lock to the ConstantTableImpl to avoid removal while in use
         // it will be released once the user is done with it
-        return std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>{found->second, std::move(lock)};
+        return ConstantBufferReturn(std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock)));
     }
 
 } // namespace Takoyaki

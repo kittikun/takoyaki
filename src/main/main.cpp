@@ -118,7 +118,7 @@ namespace AppMain
             if (mWindowVisible) {
                 CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-                framework_->present();
+                framework_->render();
             } else {
                 CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
             }

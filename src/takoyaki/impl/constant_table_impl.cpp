@@ -35,9 +35,9 @@ namespace Takoyaki
 
     ConstantTableImpl::~ConstantTableImpl() = default;
 
-    void setMatrix4x4(const std::string& name, const glm::mat4x4& value)
+    void ConstantTableImpl::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
     {
-
+        int i = 0;
     }
 }
 // namespace Takoyaki

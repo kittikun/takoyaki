@@ -67,7 +67,7 @@
     <ClInclude Include="..\src\takoyaki\public\constant_table.h" />
     <ClInclude Include="..\src\takoyaki\public\definitions.h" />
     <ClInclude Include="..\src\takoyaki\public\framework.h" />
-    <ClInclude Include="..\src\takoyaki\public\IRenderable.h" />
+    <ClInclude Include="..\src\takoyaki\public\render_component.h" />
     <ClInclude Include="..\src\takoyaki\public\renderer.h" />
     <ClInclude Include="..\src\takoyaki\rwlock_map.h" />
     <ClInclude Include="..\src\takoyaki\thread_pool.h" />

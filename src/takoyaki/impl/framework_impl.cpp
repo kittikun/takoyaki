@@ -24,7 +24,9 @@
 #include "../dx12/DX12Device.h"
 #include "../dx12/DX12DeviceContext.h"
 #include "../dx12/DX12Texture.h"
+#include "../impl/renderer_impl.h"
 #include "../public/framework.h"
+#include "../public/render_component.h"
 #include "../thread_pool.h"
 #include "../utility/log.h"
 #include "../utility/win_utility.h"
@@ -36,12 +38,17 @@ namespace Takoyaki
     FrameworkImpl::FrameworkImpl()
         : threadPool_{ std::make_shared<ThreadPool>() }
     {
-#ifdef USE_LOG
+#ifdef _DEBUG
         Log::Initialize();
 #endif
     }
 
     FrameworkImpl::~FrameworkImpl() = default;
+
+    void FrameworkImpl::addRenderComponent(std::shared_ptr<RenderComponent>&& component)
+    {
+        renderable_.push_back(std::move(component));
+    }
 
     void FrameworkImpl::initialize(const FrameworkDesc& desc, std::weak_ptr<Framework> framework)
     {
@@ -73,8 +80,13 @@ namespace Takoyaki
         io_.loadAsyncFileResult(makeUnixPath(filename), res);
     }
 
-    void FrameworkImpl::present()
+    void FrameworkImpl::render()
     {
+        Renderer renderer{ std::make_unique<RendererImpl>(device_->getContext().lock()) };
+
+        for (auto& renderable : renderable_)
+            renderable->render(renderer);
+
         device_->present();
     }
 

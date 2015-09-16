@@ -35,7 +35,7 @@ namespace Takoyaki
         RendererImpl& operator=(RendererImpl&&) = delete;
 
     public:
-        RendererImpl();
+        RendererImpl(const std::shared_ptr<DX12DeviceContext>&);
         ~RendererImpl();
 
         std::unique_ptr<ConstantTableImpl> GetConstantBuffer(const std::string&);

@@ -34,6 +34,7 @@
 namespace Takoyaki
 {
     class FrameworkImpl;
+    class RenderComponent;
 
     struct FrameworkDesc
     {
@@ -61,11 +62,13 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc&);
         void setProperty(EPropertyID, const boost::any&);
-        void present();
+        void render();
         void terminate();
         void validateDevice() const;
 
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
+
+        void addRenderComponent(std::shared_ptr<RenderComponent>&&);
 
     private:
         std::unique_ptr<FrameworkImpl> impl_;

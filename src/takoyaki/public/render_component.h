@@ -24,9 +24,10 @@
 
 namespace Takoyaki
 {
-    class IRenderable
+    class RenderComponent
     {
-        virtual void render(const Renderer&) = 0;
+    public:
+        virtual void render(Renderer&) = 0;
     };
 }
 // namespace Takoyaki

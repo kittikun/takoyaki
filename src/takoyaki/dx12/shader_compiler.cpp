@@ -206,26 +206,31 @@ namespace Takoyaki
 
     void ShaderCompiler::parseConstantBuffers(ID3D12ShaderReflection* reflect, const D3D12_SHADER_DESC& progDesc, std::weak_ptr<DX12DeviceContext> context)
     {
+        auto fmt = boost::format("Number of constant buffers %1%") % progDesc.ConstantBuffers;
+        LOGS << boost::str(fmt);
+
         for (uint_fast32_t i = 0; i < progDesc.ConstantBuffers; ++i) {
             auto cb = reflect->GetConstantBufferByIndex(i);
             D3D12_SHADER_BUFFER_DESC cbDesc;
 
             cb->GetDesc(&cbDesc);
 
-            LOGS << "Constant buffer : " << cbDesc.Name;
+            if (cbDesc.Type == D3D_CT_CBUFFER) {
+                LOGS << "Constant buffer : " << cbDesc.Name;
 
-            auto& cbuffer = context.lock()->CreateConstanBuffer(cbDesc.Name);
+                auto& cbuffer = context.lock()->CreateConstanBuffer(cbDesc.Name);
 
-            for (uint_fast32_t j = 0; j < cbDesc.Variables; ++j) {
-                auto var = cb->GetVariableByIndex(j);
-                D3D12_SHADER_VARIABLE_DESC vardesc;
+                for (uint_fast32_t j = 0; j < cbDesc.Variables; ++j) {
+                    auto var = cb->GetVariableByIndex(j);
 
-                var->GetDesc(&vardesc);
+                    D3D12_SHADER_VARIABLE_DESC vardesc;
 
-                auto fmt = boost::format("CB var : %1%, Offset: %2%, Size: %3%") % vardesc.Name % vardesc.StartOffset % vardesc.Size;
-                LOGS << boost::str(fmt);
+                    var->GetDesc(&vardesc);
+                    auto fmt = boost::format("CB var : %1%, Offset: %2%, Size: %3%") % vardesc.Name % vardesc.StartOffset % vardesc.Size;
+                    LOGS << boost::str(fmt);
 
-                cbuffer.addVariable(vardesc.Name, vardesc.StartOffset, vardesc.Size);
+                    cbuffer.addVariable(vardesc.Name, vardesc.StartOffset, vardesc.Size);
+                }
             }
         }
     }

@@ -36,7 +36,7 @@ namespace Takoyaki
         Renderer& operator=(Renderer&&) = delete;
 
     public:
-        Renderer();
+        Renderer(std::unique_ptr<RendererImpl>);
         ~Renderer();
 
         std::unique_ptr<ConstantTable> GetConstantBuffer(const std::string&);

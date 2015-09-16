@@ -26,7 +26,8 @@
 
 namespace Takoyaki
 {
-    RendererImpl::RendererImpl()
+    RendererImpl::RendererImpl(const std::shared_ptr<DX12DeviceContext>& context)
+        : context_(context)
     {
 
     }
@@ -37,7 +38,10 @@ namespace Takoyaki
     {
         auto pair = context_->getConstantBuffer(name);
 
-        return std::make_unique<ConstantTableImpl>(pair.first, std::move(pair.second));
+        if (pair)
+            return std::make_unique<ConstantTableImpl>(pair->first, std::move(pair->second));
+        else
+            return nullptr;
     }
 }
 // namespace Takoyaki

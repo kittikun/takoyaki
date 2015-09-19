@@ -52,6 +52,7 @@ namespace Takoyaki
 
     void FrameworkImpl::initialize(const FrameworkDesc& desc, std::weak_ptr<Framework> framework)
     {
+        LOG_IDENTIFY_THREAD;
         LOGC_INDENT_START << "Initializing Takoyaki Framework..";
 
         if (desc.type == EDeviceType::DX12) {
@@ -71,7 +72,7 @@ namespace Takoyaki
 
         LOGC << "Launching application...";
 
-        auto func = std::bind(appMain, framework);
+        auto func = std::bind(&FrameworkImpl::localAppMain, this, framework);
         threadPool_->submit(func);
     }
 
@@ -80,8 +81,16 @@ namespace Takoyaki
         io_.loadAsyncFileResult(makeUnixPath(filename), res);
     }
 
+    void FrameworkImpl::localAppMain(std::weak_ptr<Framework> framework)
+    {
+        LOG_IDENTIFY_THREAD;
+
+        appMain(framework);
+    }
+
     void FrameworkImpl::render()
     {
+        LOG_IDENTIFY_THREAD;
         Renderer renderer{ std::make_unique<RendererImpl>(device_->getContext().lock()) };
 
         for (auto& renderable : renderable_)

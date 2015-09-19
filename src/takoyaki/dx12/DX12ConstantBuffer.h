@@ -22,6 +22,7 @@
 
 #include <d3d12.h>
 #include <memory>
+#include <unordered_map>
 
 namespace Takoyaki
 {
@@ -40,6 +41,8 @@ namespace Takoyaki
 
         const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView() { return rtv_; }
 
+        void setMatrix4x4(const std::string&, const glm::mat4x4&);
+
     private:
         void addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size);
 
@@ -52,7 +55,7 @@ namespace Takoyaki
 
         std::weak_ptr<DX12DeviceContext> owner_;
         std::vector<uint8_t> buffer_;
-        std::unordered_map<std::string, CBVariable> offsetMap_;
+        std::unordered_map<std::string, CBVariable> offsetMap_;     // TODO: thread unsafe
         D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
 
         friend class ShaderCompiler;

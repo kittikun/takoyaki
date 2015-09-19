@@ -104,8 +104,9 @@ namespace Takoyaki
 			boost::shared_ptr<sinks::synchronous_sink< sinks::debug_output_backend>> debugSink(new sinks::synchronous_sink<sinks::debug_output_backend>());
 
 			debugSink->set_filter(expr::is_debugger_present());
-			debugSink->set_formatter(expr::format("%1%: [%2%] %3%\n")
+			debugSink->set_formatter(expr::format("%1%: (%2%) [%3%] %4%\n")
 				% expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
+                % expr::attr<std::thread::id>("ThreadID")
 				% severity
 				% expr::message);
 

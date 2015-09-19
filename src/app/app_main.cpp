@@ -37,6 +37,7 @@ public:
     {
         auto viewProj = renderer.GetConstantBuffer("CBModelViewProjection");      
 
+        // cbuffer might by empty is shader hasn't been loaded yet
         if (viewProj)
             viewProj->setMatrix4x4("matViewProjection", glm::mat4x4());
 

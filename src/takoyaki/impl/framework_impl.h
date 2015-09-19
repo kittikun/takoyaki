@@ -53,6 +53,9 @@ namespace Takoyaki
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
 
     private:
+        void localAppMain(std::weak_ptr<Framework>);
+
+    private:
         IO io_;
         std::shared_ptr<ThreadPool> threadPool_;
         std::shared_ptr<DX12Device> device_;

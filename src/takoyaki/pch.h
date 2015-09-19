@@ -50,6 +50,12 @@
 #include <boost/any.hpp>
 #include <boost/format.hpp>
 #include <boost/thread.hpp>
+#include <boost/log/attributes/scoped_attribute.hpp>
+#include <boost/log/expressions/keyword.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/sources/severity_logger.hpp>
 
 // Maths
 #include <glm/glm.hpp>

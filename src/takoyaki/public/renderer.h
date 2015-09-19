@@ -21,11 +21,12 @@
 #pragma once
 
 #include <memory>
-
-#include "constant_table.h"
+#include <string>
 
 namespace Takoyaki
 {
+    class ConstantTable;
+    class InputLayout;
     class RendererImpl;
 
     class Renderer
@@ -36,13 +37,15 @@ namespace Takoyaki
         Renderer& operator=(Renderer&&) = delete;
 
     public:
-        Renderer(std::unique_ptr<RendererImpl>);
+        Renderer(std::shared_ptr<RendererImpl>&);
         ~Renderer();
+
+        std::unique_ptr<InputLayout> CreateInputLayout(const std::string&);
 
         std::unique_ptr<ConstantTable> GetConstantBuffer(const std::string&);
 
     private:
-        std::unique_ptr<RendererImpl> impl_;
+        std::shared_ptr<RendererImpl> impl_;
     };
 }
 // namespace Takoyaki

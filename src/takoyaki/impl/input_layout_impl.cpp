@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -18,33 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "input_layout_impl.h"
 
-#include <memory>
+#include "../dx12/DX12InputLayout.h"
 
 namespace Takoyaki
 {
-    class ConstantTableImpl;
-    class InputLayoutImpl;
-    class DX12DeviceContext;
-
-    class RendererImpl
+    InputLayoutImpl::InputLayoutImpl(DX12InputLayout& layout, boost::shared_lock<boost::shared_mutex> lock)
+        : layout_(layout)
+        , bufferLock_(std::move(lock))
     {
-        RendererImpl(const RendererImpl&) = delete;
-        RendererImpl& operator=(const RendererImpl&) = delete;
-        RendererImpl(RendererImpl&&) = delete;
-        RendererImpl& operator=(RendererImpl&&) = delete;
 
-    public:
-        RendererImpl(const std::shared_ptr<DX12DeviceContext>&);
-        ~RendererImpl();
+    }
 
-        std::unique_ptr<InputLayoutImpl> CreateInputLayout(const std::string&);
+    InputLayoutImpl::~InputLayoutImpl() = default;
 
-        std::unique_ptr<ConstantTableImpl> GetConstantBuffer(const std::string&);
-
-    private:
-        std::shared_ptr<DX12DeviceContext> context_;
-    };
+    void InputLayoutImpl::addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep)
+    {
+        layout_.addInput(name, format, instanceStep);
+    }
 }
 // namespace Takoyaki

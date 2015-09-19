@@ -60,6 +60,7 @@ namespace Takoyaki
         }
 
         device_->create(desc);
+        renderer_.reset(new RendererImpl(device_->getContext().lock()));
 
         if (!desc.loadAsyncFunc)
             throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
@@ -83,6 +84,7 @@ namespace Takoyaki
 
     void FrameworkImpl::localAppMain(std::weak_ptr<Framework> framework)
     {
+        // Do any extra initialization before calling the app main
         LOG_IDENTIFY_THREAD;
 
         appMain(framework);
@@ -91,7 +93,7 @@ namespace Takoyaki
     void FrameworkImpl::render()
     {
         LOG_IDENTIFY_THREAD;
-        Renderer renderer{ std::make_unique<RendererImpl>(device_->getContext().lock()) };
+        Renderer renderer{ renderer_ };
 
         for (auto& renderable : renderable_)
             renderable->render(renderer);

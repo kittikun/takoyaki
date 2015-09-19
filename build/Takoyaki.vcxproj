@@ -31,12 +31,14 @@
     <ClCompile Include="..\src\takoyaki\dx12\DX12DescriptorHeap.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\DX12InputLayout.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\DXUtility.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\constant_table_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
+    <ClCompile Include="..\src\takoyaki\impl\input_layout_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\renderer_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\io.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">
@@ -45,6 +47,7 @@
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\public\constant_table.cpp" />
     <ClCompile Include="..\src\takoyaki\public\framework.cpp" />
+    <ClCompile Include="..\src\takoyaki\public\input_layout.cpp" />
     <ClCompile Include="..\src\takoyaki\public\renderer.cpp" />
     <ClCompile Include="..\src\takoyaki\thread_pool.cpp" />
     <ClCompile Include="..\src\takoyaki\utility\log.cpp" />
@@ -55,18 +58,21 @@
     <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\DX12InputLayout.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h" />
     <ClInclude Include="..\src\takoyaki\dx12\DXUtility.h" />
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h" />
     <ClInclude Include="..\src\takoyaki\dx12\shader_manager.h" />
     <ClInclude Include="..\src\takoyaki\impl\constant_table_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
+    <ClInclude Include="..\src\takoyaki\impl\input_layout_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\renderer_impl.h" />
     <ClInclude Include="..\src\takoyaki\io.h" />
     <ClInclude Include="..\src\takoyaki\pch.h" />
     <ClInclude Include="..\src\takoyaki\public\constant_table.h" />
     <ClInclude Include="..\src\takoyaki\public\definitions.h" />
     <ClInclude Include="..\src\takoyaki\public\framework.h" />
+    <ClInclude Include="..\src\takoyaki\public\input_layout.h" />
     <ClInclude Include="..\src\takoyaki\public\render_component.h" />
     <ClInclude Include="..\src\takoyaki\public\renderer.h" />
     <ClInclude Include="..\src\takoyaki\rwlock_map.h" />

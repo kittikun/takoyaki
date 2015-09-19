@@ -21,6 +21,7 @@
 #include "pch.h"
 #include "framework.h"
 
+#include "renderer.h"
 #include "../impl/framework_impl.h"
 
 namespace Takoyaki
@@ -35,6 +36,11 @@ namespace Takoyaki
     void Framework::addRenderComponent(std::shared_ptr<RenderComponent>&& component)
     {
         impl_->addRenderComponent(std::move(component));
+    }
+
+    std::unique_ptr<Renderer> Framework::getRenderer()
+    {
+        return std::make_unique<Renderer>(impl_->getRenderer());
     }
 
     void Framework::initialize(const FrameworkDesc& desc)

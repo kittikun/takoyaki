@@ -27,6 +27,7 @@
 #include "DX12ConstantBuffer.h"
 #include "DX12Device.h"
 #include "DX12DescriptorHeap.h"
+#include "DX12InputLayout.h"
 #include "DX12Texture.h"
 
 #include "../rwlock_map.h"
@@ -42,10 +43,11 @@ namespace Takoyaki
         DX12DeviceContext(DX12DeviceContext&&) = delete;
         DX12DeviceContext& operator=(DX12DeviceContext&&) = delete;
 
-        using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
-
     public:
         DX12DeviceContext(std::weak_ptr<DX12Device>);
+
+        //////////////////////////////////////////////////////////////////////////
+        // Internal usage:
 
         // resource creation
         DX12ConstantBuffer& CreateConstanBuffer(const std::string&);
@@ -55,7 +57,19 @@ namespace Takoyaki
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>& getRTVDescHeapCollection() { return descHeapRTV_; }
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>& getSRVDescHeapCollection() { return descHeapSRV_; }
 
+        //////////////////////////////////////////////////////////////////////////
+        // Internal & External
+
+        void createInputLayout(const std::string&);
+
+        using InputLayoutReturn = std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>;
+        auto getInputLayout(const std::string&) -> InputLayoutReturn;
+
+        //////////////////////////////////////////////////////////////////////////
+        // External usage: 
         // Get
+
+        using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
         auto getConstantBuffer(const std::string&) -> ConstantBufferReturn;
 
     private:
@@ -64,6 +78,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV> descHeapSRV_;
 
         RWLockMap<std::string, DX12ConstantBuffer> constantBuffers_;
+        RWLockMap<std::string, DX12InputLayout> inputLayouts_;
         ThreadSafeStack<DX12Texture> textures_;
     };
 } // namespace Takoyaki

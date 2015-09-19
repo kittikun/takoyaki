@@ -20,8 +20,11 @@
 
 #pragma once
 
+#include "../public/definitions.h"
+
 namespace Takoyaki
 {
     void DXCheckThrow(HRESULT);
+    DXGI_FORMAT FormatToDXGIFormat(EFormat);
     float ConvertDipsToPixels(float dips, float dpi);
 } // namespace Takoyaki

@@ -20,31 +20,26 @@
 
 #pragma once
 
-#include <memory>
+#include <d3d12.h>
+
+#include "../public/definitions.h"
 
 namespace Takoyaki
 {
-    class ConstantTableImpl;
-    class InputLayoutImpl;
-    class DX12DeviceContext;
-
-    class RendererImpl
+    class DX12InputLayout
     {
-        RendererImpl(const RendererImpl&) = delete;
-        RendererImpl& operator=(const RendererImpl&) = delete;
-        RendererImpl(RendererImpl&&) = delete;
-        RendererImpl& operator=(RendererImpl&&) = delete;
+        DX12InputLayout(const DX12InputLayout&) = delete;
+        DX12InputLayout& operator=(const DX12InputLayout&) = delete;
+        DX12InputLayout& operator=(DX12InputLayout&&) = delete;
 
     public:
-        RendererImpl(const std::shared_ptr<DX12DeviceContext>&);
-        ~RendererImpl();
+        DX12InputLayout();
+        DX12InputLayout(DX12InputLayout&&);
+        ~DX12InputLayout();
 
-        std::unique_ptr<InputLayoutImpl> CreateInputLayout(const std::string&);
-
-        std::unique_ptr<ConstantTableImpl> GetConstantBuffer(const std::string&);
+        void addInput(const std::string&, EFormat, uint_fast32_t);
 
     private:
-        std::shared_ptr<DX12DeviceContext> context_;
+        std::vector<D3D12_INPUT_ELEMENT_DESC> inputs_;
     };
-}
-// namespace Takoyaki
+} // namespace Takoyaki

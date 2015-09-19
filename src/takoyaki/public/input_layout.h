@@ -22,29 +22,27 @@
 
 #include <memory>
 
+#include "definitions.h"
+
 namespace Takoyaki
 {
-    class ConstantTableImpl;
     class InputLayoutImpl;
-    class DX12DeviceContext;
 
-    class RendererImpl
+    class InputLayout
     {
-        RendererImpl(const RendererImpl&) = delete;
-        RendererImpl& operator=(const RendererImpl&) = delete;
-        RendererImpl(RendererImpl&&) = delete;
-        RendererImpl& operator=(RendererImpl&&) = delete;
+        InputLayout(const InputLayout&) = delete;
+        InputLayout& operator=(const InputLayout&) = delete;
+        InputLayout(InputLayout&&) = delete;
+        InputLayout& operator=(InputLayout&&) = delete;
 
     public:
-        RendererImpl(const std::shared_ptr<DX12DeviceContext>&);
-        ~RendererImpl();
+        InputLayout(std::unique_ptr<InputLayoutImpl>);
+        ~InputLayout();
 
-        std::unique_ptr<InputLayoutImpl> CreateInputLayout(const std::string&);
-
-        std::unique_ptr<ConstantTableImpl> GetConstantBuffer(const std::string&);
+        void addInput(const std::string&, EFormat, uint_fast32_t);
 
     private:
-        std::shared_ptr<DX12DeviceContext> context_;
+        std::unique_ptr<InputLayoutImpl> impl_;
     };
 }
 // namespace Takoyaki

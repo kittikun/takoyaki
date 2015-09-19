@@ -28,12 +28,12 @@
 #include <boost/any.hpp>
 #include <glm/glm.hpp>
 
-#include "platform.h"
 #include "definitions.h"
 
 namespace Takoyaki
 {
     class FrameworkImpl;
+    class Renderer;
     class RenderComponent;
 
     struct FrameworkDesc
@@ -60,15 +60,22 @@ namespace Takoyaki
         Framework();
         ~Framework();
 
+        //////////////////////////////////////////////////////////////////////////
+        // To be used by main only
+
         void initialize(const FrameworkDesc&);
         void setProperty(EPropertyID, const boost::any&);
         void render();
         void terminate();
         void validateDevice() const;
-
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
 
+
+        //////////////////////////////////////////////////////////////////////////
+        // App should use those
+
         void addRenderComponent(std::shared_ptr<RenderComponent>&&);
+        std::unique_ptr<Renderer> getRenderer();
 
     private:
         std::unique_ptr<FrameworkImpl> impl_;

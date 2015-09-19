@@ -19,25 +19,45 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "constant_table.h"
+#include "DX12InputLayout.h"
 
-#include <glm/glm.hpp>
-
-#include "../impl/constant_table_impl.h"
+#include "DXUtility.h"
 
 namespace Takoyaki
 {
-    ConstantTable::ConstantTable(std::unique_ptr<ConstantTableImpl> ct)
-        : impl_{ std::move(ct) }
+    DX12InputLayout::DX12InputLayout() = default;
+
+    DX12InputLayout::DX12InputLayout(DX12InputLayout&& other)
+        : inputs_{ std::move(other.inputs_) }
     {
+
     }
 
-    ConstantTable::~ConstantTable() = default;
+    DX12InputLayout::~DX12InputLayout() = default;
 
-    void ConstantTable::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
+    void DX12InputLayout::addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep)
     {
-        if (impl_)
-            impl_->setMatrix4x4(name, value);
+        D3D12_INPUT_ELEMENT_DESC desc = {};
+
+        // Semantics names need to conform
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/bb509647(v=vs.85).aspx
+        desc.SemanticName = name.c_str();
+
+        // For example POSITION[n], ignore for now
+        desc.SemanticIndex = 0;
+
+        // For MRT, ignore for now
+        desc.InputSlot = 0;
+        desc.AlignedByteOffset = 0;
+
+        desc.Format = FormatToDXGIFormat(format);
+
+        if (instanceStep > 0) {
+            desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+            desc.InstanceDataStepRate = instanceStep;
+        } else {
+            desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+            desc.InstanceDataStepRate = 0;
+        }
     }
-}
-// namespace Takoyaki
+} // namespace Takoyaki

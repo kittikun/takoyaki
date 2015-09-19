@@ -25,6 +25,14 @@
 
 namespace Takoyaki
 {
+    DXGI_FORMAT FormatToDXGIFormat(EFormat format)
+    {
+        switch (format) {
+            case EFormat::R32G32B32_FLOAT:
+                return DXGI_FORMAT_R32G32B32_FLOAT;
+        }
+    }
+
     std::string GetDXError(HRESULT code)
     {
         static std::unordered_map<HRESULT, std::string> map = {

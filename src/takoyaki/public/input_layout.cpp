@@ -18,10 +18,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "input_layout.h"
 
-#if defined _EXPORT_TAKOYAKI_API
-#define TAKOYAKI_API __declspec(dllexport)
-#else
-#define TAKOYAKI_API __declspec(dllimport)
-#endif
+#include "../impl/input_layout_impl.h"
+
+namespace Takoyaki
+{
+    InputLayout::InputLayout(std::unique_ptr<InputLayoutImpl> ct)
+        : impl_{ std::move(ct) }
+    {
+    }
+
+    InputLayout::~InputLayout() = default;
+
+    void InputLayout::addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep)
+    {
+        impl_->addInput(name, format, instanceStep);
+    }
+}
+// namespace Takoyaki

@@ -75,6 +75,15 @@
     <ClCompile Include="..\src\takoyaki\impl\constant_table_impl.cpp">
       <Filter>Source Files\impl</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\DX12InputLayout.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\public\input_layout.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\impl\input_layout_impl.cpp">
+      <Filter>Source Files\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h">
@@ -148,6 +157,15 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\public\render_component.h">
       <Filter>Source Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\DX12InputLayout.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\public\input_layout.h">
+      <Filter>Source Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\impl\input_layout_impl.h">
+      <Filter>Source Files\impl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

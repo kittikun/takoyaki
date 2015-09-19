@@ -22,6 +22,7 @@
 #include "renderer_impl.h"
 
 #include "constant_table_impl.h"
+#include "input_layout_impl.h"
 #include "../dx12/DX12DeviceContext.h"
 
 namespace Takoyaki
@@ -34,10 +35,21 @@ namespace Takoyaki
 
     RendererImpl::~RendererImpl() = default;
 
+    std::unique_ptr<InputLayoutImpl> RendererImpl::CreateInputLayout(const std::string& name)
+    {
+        context_->createInputLayout(name);
+
+        auto pair = context_->getInputLayout(name);
+
+        return std::make_unique<InputLayoutImpl>(pair.first, std::move(pair.second));
+    }
+
     std::unique_ptr<ConstantTableImpl> RendererImpl::GetConstantBuffer(const std::string& name)
     {
         auto pair = context_->getConstantBuffer(name);
 
+        // is it possible that the constant haven't been added yet if the corresponding shader
+        // hasn't been compiled yet
         if (pair)
             return std::make_unique<ConstantTableImpl>(pair->first, std::move(pair->second));
         else

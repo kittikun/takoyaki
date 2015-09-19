@@ -20,7 +20,10 @@
 
 #include <memory>
 
+#include <constant_table.h>
 #include <framework.h>
+#include <input_layout.h>
+
 #include <glm/glm.hpp>
 #include <render_component.h>
 
@@ -36,10 +39,12 @@ public:
     void render(Takoyaki::Renderer& renderer)
     {
         auto viewProj = renderer.GetConstantBuffer("CBModelViewProjection");      
+        Test test;
 
         // cbuffer might by empty is shader hasn't been loaded yet
-        if (viewProj)
+        if (viewProj) {
             viewProj->setMatrix4x4("matViewProjection", glm::mat4x4());
+        }
 
         int i = 0;
     }
@@ -48,6 +53,12 @@ public:
 void appMain(std::weak_ptr<Takoyaki::Framework> frmwk)
 {
     auto framework = frmwk.lock();
+    auto renderer = framework->getRenderer();
 
     framework->addRenderComponent(std::make_unique<Test>());
+
+    auto layout = renderer->CreateInputLayout("SimpleVertex");
+
+    layout->addInput("POSITION", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
+    layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
 }

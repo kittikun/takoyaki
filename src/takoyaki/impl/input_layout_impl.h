@@ -21,30 +21,28 @@
 #pragma once
 
 #include <memory>
+#include "../public/definitions.h"
 
 namespace Takoyaki
 {
-    class ConstantTableImpl;
-    class InputLayoutImpl;
-    class DX12DeviceContext;
+    class DX12InputLayout;
 
-    class RendererImpl
+    class InputLayoutImpl
     {
-        RendererImpl(const RendererImpl&) = delete;
-        RendererImpl& operator=(const RendererImpl&) = delete;
-        RendererImpl(RendererImpl&&) = delete;
-        RendererImpl& operator=(RendererImpl&&) = delete;
+        InputLayoutImpl(const InputLayoutImpl&) = delete;
+        InputLayoutImpl& operator=(const InputLayoutImpl&) = delete;
+        InputLayoutImpl(InputLayoutImpl&&) = delete;
+        InputLayoutImpl& operator=(InputLayoutImpl&&) = delete;
 
     public:
-        RendererImpl(const std::shared_ptr<DX12DeviceContext>&);
-        ~RendererImpl();
+        InputLayoutImpl(DX12InputLayout&, boost::shared_lock<boost::shared_mutex>);
+        ~InputLayoutImpl();
 
-        std::unique_ptr<InputLayoutImpl> CreateInputLayout(const std::string&);
-
-        std::unique_ptr<ConstantTableImpl> GetConstantBuffer(const std::string&);
+        void addInput(const std::string&, EFormat, uint_fast32_t);
 
     private:
-        std::shared_ptr<DX12DeviceContext> context_;
+        DX12InputLayout& layout_;
+        boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
     };
 }
 // namespace Takoyaki

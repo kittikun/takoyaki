@@ -3,7 +3,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// to use, copy, modify, merge, publish, distribute, sub license, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
 //
@@ -21,17 +21,25 @@
 #include "pch.h"
 #include "renderer.h"
 
+#include "constant_table.h"
+#include "input_layout.h"
 #include "../impl/renderer_impl.h"
 #include "../impl/constant_table_impl.h"
+#include "../impl/input_layout_impl.h"
 
 namespace Takoyaki
 {
-    Renderer::Renderer(std::unique_ptr<RendererImpl> impl)
-        : impl_{ std::move(impl) }
+    Renderer::Renderer(std::shared_ptr<RendererImpl>& impl)
+        : impl_{ impl }
     {
     }
 
     Renderer::~Renderer() = default;
+
+    std::unique_ptr<InputLayout> Renderer::CreateInputLayout(const std::string& name)
+    {
+        return std::make_unique<InputLayout>(impl_->CreateInputLayout(name));
+    }
 
     std::unique_ptr<ConstantTable> Renderer::GetConstantBuffer(const std::string& name)
     {

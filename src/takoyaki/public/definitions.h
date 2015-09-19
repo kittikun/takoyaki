@@ -41,6 +41,11 @@ namespace Takoyaki
         PORTRAIT_FLIPPED
     };
 
+    enum class EFormat
+    {
+        R32G32B32_FLOAT
+    };
+
     enum class EPropertyID
     {
         WINDOW_SIZE,            // glm::vec2

@@ -51,6 +51,12 @@ namespace Takoyaki
         return res.first->second;
     }
 
+    void DX12DeviceContext::createInputLayout(const std::string& name)
+    {
+        auto lock = inputLayouts_.getWriteLock();
+        inputLayouts_.insert(std::make_pair(name, DX12InputLayout()));
+    }
+
     DX12Texture& DX12DeviceContext::CreateTexture()
     {
         return textures_.push(DX12Texture{ shared_from_this() });
@@ -68,10 +74,24 @@ namespace Takoyaki
             return ConstantBufferReturn();
         }
 
-        // somehow make_pair is not happy here..
-        // transfer the lock to the ConstantTableImpl to avoid removal while in use
+        // Transfer the lock to the ConstantTableImpl to avoid removal while in use
         // it will be released once the user is done with it
+        // somehow make_pair is not happy here..
         return ConstantBufferReturn(std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock)));
+    }
+
+    auto DX12DeviceContext::getInputLayout(const std::string& name) -> InputLayoutReturn
+    {
+        auto lock = inputLayouts_.getReadLock();
+        auto found = inputLayouts_.find(name);
+
+        if (found == inputLayouts_.end()) {
+            auto fmt = boost::format("DX12DeviceContext::getInputLayout, cannot find key \"%1%\"") % name;
+
+            throw new std::runtime_error(boost::str(fmt));
+        }
+
+        return std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
     }
 
 } // namespace Takoyaki

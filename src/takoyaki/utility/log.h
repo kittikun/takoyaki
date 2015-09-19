@@ -67,6 +67,7 @@ namespace Takoyaki
 #else
 #include <iostream>
 
+#define LOG_IDENTIFY_THREAD
 #define LOGC std::cout
 #define LOGE std::cout
 #define LOGS std::cout

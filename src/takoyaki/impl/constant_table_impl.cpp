@@ -22,7 +22,7 @@
 #include "renderer_impl.h"
 
 #include "constant_table_impl.h"
-#include "../dx12/DX12DeviceContext.h"
+#include "../dx12/device_context.h"
 
 namespace Takoyaki
 {

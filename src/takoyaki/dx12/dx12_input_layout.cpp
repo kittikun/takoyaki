@@ -19,40 +19,45 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "DX12Texture.h"
+#include "dx12_input_layout.h"
 
-#include <intsafe.h>
-
-#include "DX12DeviceContext.h"
+#include "dxutility.h"
 
 namespace Takoyaki
 {
-    DX12Texture::DX12Texture(std::weak_ptr<DX12DeviceContext> owner)
-        : owner_{ owner }
-    {
-        rtv_.ptr = ULONG_PTR_MAX;
-    }
+    DX12InputLayout::DX12InputLayout() = default;
 
-    DX12Texture::DX12Texture(DX12Texture&& other) noexcept
-        : owner_{ std::move(other.owner_) }
-        , rtv_{ std::move(other.rtv_) }
+    DX12InputLayout::DX12InputLayout(DX12InputLayout&& other)
+        : inputs_{ std::move(other.inputs_) }
     {
 
     }
 
-    DX12Texture::~DX12Texture()
+    DX12InputLayout::~DX12InputLayout() = default;
+
+    void DX12InputLayout::addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep)
     {
-        if ((rtv_.ptr != ULONG_PTR_MAX) && (!owner_.expired())) {
-            owner_.lock()->getRTVDescHeapCollection().releaseOne(rtv_);
+        D3D12_INPUT_ELEMENT_DESC desc = {};
+
+        // Semantics names need to conform
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/bb509647(v=vs.85).aspx
+        desc.SemanticName = name.c_str();
+
+        // For example POSITION[n], ignore for now
+        desc.SemanticIndex = 0;
+
+        // For MRT, ignore for now
+        desc.InputSlot = 0;
+        desc.AlignedByteOffset = 0;
+
+        desc.Format = FormatToDXGIFormat(format);
+
+        if (instanceStep > 0) {
+            desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+            desc.InstanceDataStepRate = instanceStep;
+        } else {
+            desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+            desc.InstanceDataStepRate = 0;
         }
     }
-
-    const D3D12_CPU_DESCRIPTOR_HANDLE& DX12Texture::getRenderTargetView()
-    {
-        if (rtv_.ptr == ULONG_PTR_MAX)
-            rtv_ = owner_.lock()->getRTVDescHeapCollection().createOne();
-
-        return rtv_;
-    }
-
 } // namespace Takoyaki

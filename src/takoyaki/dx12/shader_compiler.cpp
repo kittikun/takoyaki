@@ -24,8 +24,8 @@
 #include <boost/format.hpp>
 #include <rapidjson/document.h>
 
-#include "DXUtility.h"
-#include "DX12DeviceContext.h"
+#include "dxutility.h"
+#include "device_context.h"
 #include "../io.h"
 #include "../thread_pool.h"
 #include "../utility/log.h"

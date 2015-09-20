@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "DX12DescriptorHeap.h"
+#include "descriptor_heap.h"
 
 #include <numeric>
 

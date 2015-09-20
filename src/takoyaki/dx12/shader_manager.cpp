@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "shader_manager.h"
 
-#include "DX12DeviceContext.h"
+#include "device_context.h"
 #include "../io.h"
 #include "../thread_pool.h"
 #include "../utility/log.h"

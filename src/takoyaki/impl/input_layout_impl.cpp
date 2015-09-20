@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "input_layout_impl.h"
 
-#include "../dx12/DX12InputLayout.h"
+#include "../dx12/dx12_input_layout.h"
 
 namespace Takoyaki
 {

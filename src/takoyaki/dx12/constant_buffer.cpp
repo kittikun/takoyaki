@@ -19,13 +19,13 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "DX12ConstantBuffer.h"
+#include "constant_buffer.h"
 
 #include <intsafe.h>
 #include <glm/glm.hpp>
 #include <boost/format.hpp>
 
-#include "DX12DeviceContext.h"
+#include "device_context.h"
 #include "../utility/log.h"
 
 namespace Takoyaki

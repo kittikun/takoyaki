@@ -24,11 +24,11 @@
 #include <d3d12.h>
 #include <memory>
 
-#include "DX12ConstantBuffer.h"
-#include "DX12Device.h"
-#include "DX12DescriptorHeap.h"
-#include "DX12InputLayout.h"
-#include "DX12Texture.h"
+#include "constant_buffer.h"
+#include "device.h"
+#include "descriptor_heap.h"
+#include "dx12_input_layout.h"
+#include "texture.h"
 
 #include "../rwlock_map.h"
 #include "../thread_safe_stack.h"

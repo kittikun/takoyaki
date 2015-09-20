@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "DXUtility.h"
+#include "dxutility.h"
 
 #include "../utility/log.h"
 
@@ -31,6 +31,8 @@ namespace Takoyaki
             case EFormat::R32G32B32_FLOAT:
                 return DXGI_FORMAT_R32G32B32_FLOAT;
         }
+
+        return DXGI_FORMAT_UNKNOWN;
     }
 
     std::string GetDXError(HRESULT code)

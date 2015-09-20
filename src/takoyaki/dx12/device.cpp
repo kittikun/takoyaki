@@ -19,14 +19,14 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "DX12Device.h"
+#include "device.h"
 
 #include <thread>
 
-#include "DX12DeviceContext.h"
-#include "DX12DescriptorHeap.h"
-#include "DX12Texture.h"
-#include "DXUtility.h"
+#include "device_context.h"
+#include "descriptor_heap.h"
+#include "texture.h"
+#include "dxutility.h"
 #include "../utility/log.h"
 #include "../public/framework.h"
 

@@ -18,24 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12ConstantBuffer.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12DescriptorHeap.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DXUtility.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
@@ -75,35 +57,35 @@
     <ClCompile Include="..\src\takoyaki\impl\constant_table_impl.cpp">
       <Filter>Source Files\impl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12InputLayout.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\takoyaki\public\input_layout.cpp">
       <Filter>Source Files\public</Filter>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\impl\input_layout_impl.cpp">
       <Filter>Source Files\impl</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\constant_buffer.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\descriptor_heap.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\device.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\device_context.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\texture.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\dxutility.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_input_layout.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DXUtility.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
@@ -158,14 +140,35 @@
     <ClInclude Include="..\src\takoyaki\public\render_component.h">
       <Filter>Source Files\public</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12InputLayout.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\public\input_layout.h">
       <Filter>Source Files\public</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\impl\input_layout_impl.h">
       <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\pipeline_state.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\constant_buffer.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\descriptor_heap.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\device.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\device_context.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\texture.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\dxutility.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_input_layout.h">
+      <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

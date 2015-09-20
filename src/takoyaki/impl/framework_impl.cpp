@@ -21,9 +21,9 @@
 #include "pch.h"
 #include "framework_impl.h"
 
-#include "../dx12/DX12Device.h"
-#include "../dx12/DX12DeviceContext.h"
-#include "../dx12/DX12Texture.h"
+#include "../dx12/device.h"
+#include "../dx12/device_context.h"
+#include "../dx12/texture.h"
 #include "../impl/renderer_impl.h"
 #include "../public/framework.h"
 #include "../public/render_component.h"

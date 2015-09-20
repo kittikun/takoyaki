@@ -27,13 +27,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\takoyaki\dx12\DX12ConstantBuffer.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\DX12DescriptorHeap.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\DX12Device.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\DX12DeviceContext.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\DX12InputLayout.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\DX12Texture.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\DXUtility.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\constant_buffer.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\descriptor_heap.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\device.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\device_context.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dxutility.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_input_layout.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\texture.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\constant_table_impl.cpp" />
@@ -54,13 +54,14 @@
     <ClCompile Include="..\src\takoyaki\utility\win_utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\takoyaki\dx12\DX12ConstantBuffer.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\DX12DescriptorHeap.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\DX12Device.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\DX12DeviceContext.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\DX12InputLayout.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\DX12Texture.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\DXUtility.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\constant_buffer.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\descriptor_heap.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\device.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\device_context.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\dxutility.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_input_layout.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\texture.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\pipeline_state.h" />
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h" />
     <ClInclude Include="..\src\takoyaki\dx12\shader_manager.h" />
     <ClInclude Include="..\src\takoyaki\impl\constant_table_impl.h" />

@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 kittikun
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -19,3 +19,29 @@
 // THE SOFTWARE.
 
 #include "pch.h"
+#include "descriptor_ranges.h"
+
+namespace Takoyaki
+{
+    DX12DescriptorRanges::DX12DescriptorRanges() = default;
+    DX12DescriptorRanges::~DX12DescriptorRanges() = default;
+
+    DX12DescriptorRanges::DX12DescriptorRanges(DX12DescriptorRanges&& other)
+        : descs_(std::move(other.descs_))
+    {
+
+    }
+
+    void DX12DescriptorRanges::add(D3D12_DESCRIPTOR_RANGE_TYPE rangeType, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister)
+    {
+        D3D12_DESCRIPTOR_RANGE desc;
+
+        desc.RangeType = rangeType;
+        desc.NumDescriptors = numDescriptors;
+        desc.BaseShaderRegister = baseShaderRegister;
+        desc.RegisterSpace = 0;
+        desc.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+        descs_.push_back(std::move(desc));
+    }
+} // namespace Takoyaki

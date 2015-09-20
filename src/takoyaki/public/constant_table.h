@@ -39,7 +39,7 @@ namespace Takoyaki
         ConstantTable(std::unique_ptr<ConstantTableImpl>);
         ~ConstantTable();
 
-        void setMatrix4x4(const std::string&, const glm::mat4x4&);
+        void setMatrix4x4(const std::string& name, const glm::mat4x4& value);
 
     private:
         std::unique_ptr<ConstantTableImpl> impl_;

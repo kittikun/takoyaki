@@ -106,9 +106,9 @@ namespace Takoyaki
         std::string res;
 
         if (type == "vs")
-            res = "vs_5_0";
+            res = "vs_5_1";
         else if (type == "ps")
-            res = "ps_5_0";
+            res = "ps_5_1";
         else
             throw new std::runtime_error("ShaderCompiler::getDXShaderType, unknown type");
 
@@ -289,7 +289,7 @@ namespace Takoyaki
                         if (flags == 0)
                             shader.flags = D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
 
-                        program.shaders.push_back(shader);
+                        program.shaders.push_back(std::move(shader));
                     } else {
                         throw new std::runtime_error("Shaderlist expected an object to describe shader");
                     }
@@ -298,7 +298,7 @@ namespace Takoyaki
                 throw new std::runtime_error("Shaderlist expected an array after program name");
             }
 
-            programList.push_back(program);
+            programList.push_back(std::move(program));
         }
     }
 

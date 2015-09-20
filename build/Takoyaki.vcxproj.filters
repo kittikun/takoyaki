@@ -84,6 +84,12 @@
     <ClCompile Include="..\src\takoyaki\dx12\dx12_input_layout.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_root_signature.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\descriptor_ranges.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
@@ -146,9 +152,6 @@
     <ClInclude Include="..\src\takoyaki\impl\input_layout_impl.h">
       <Filter>Source Files\impl</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\pipeline_state.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\constant_buffer.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
@@ -168,6 +171,15 @@
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\dx12_input_layout.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_pipeline_state.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_root_signature.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\descriptor_ranges.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>

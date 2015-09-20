@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 kittikun
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -18,4 +18,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
+#pragma once
+
+#include <d3d12.h>
+
+#include "../public/definitions.h"
+
+namespace Takoyaki
+{
+    class DX12DescriptorRanges
+    {
+        DX12DescriptorRanges(const DX12DescriptorRanges&) = delete;
+        DX12DescriptorRanges& operator=(const DX12DescriptorRanges&) = delete;
+        DX12DescriptorRanges& operator=(DX12DescriptorRanges&&) = delete;
+
+    public:
+        DX12DescriptorRanges();
+        DX12DescriptorRanges(DX12DescriptorRanges&&);
+        ~DX12DescriptorRanges();
+
+        void add(D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
+
+        uint_fast32_t size() const { return static_cast<uint_fast32_t>(descs_.size()); }
+        D3D12_DESCRIPTOR_RANGE* getDescs() { return &descs_.front(); }
+
+    private:
+        std::vector<D3D12_DESCRIPTOR_RANGE> descs_;
+    };
+} // namespace Takoyaki

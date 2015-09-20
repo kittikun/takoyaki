@@ -63,18 +63,18 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // To be used by main only
 
-        void initialize(const FrameworkDesc&);
-        void setProperty(EPropertyID, const boost::any&);
+        void initialize(const FrameworkDesc& desc);
+        void setProperty(EPropertyID id, const boost::any& value);
         void render();
         void terminate();
         void validateDevice() const;
-        void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
+        void loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& result);
 
 
         //////////////////////////////////////////////////////////////////////////
         // App should use those
 
-        void addRenderComponent(std::shared_ptr<RenderComponent>&&);
+        void addRenderComponent(std::shared_ptr<RenderComponent>&& component);
         std::unique_ptr<Renderer> getRenderer();
 
     private:

@@ -39,9 +39,9 @@ namespace Takoyaki
         RendererImpl(const std::shared_ptr<DX12DeviceContext>&);
         ~RendererImpl();
 
-        std::unique_ptr<InputLayoutImpl> CreateInputLayout(const std::string&);
+        std::unique_ptr<InputLayoutImpl> CreateInputLayout(const std::string& name);
 
-        std::unique_ptr<ConstantTableImpl> GetConstantBuffer(const std::string&);
+        std::unique_ptr<ConstantTableImpl> GetConstantBuffer(const std::string& name);
 
     private:
         std::shared_ptr<DX12DeviceContext> context_;

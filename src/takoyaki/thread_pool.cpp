@@ -51,7 +51,7 @@ namespace Takoyaki
         try {
             for (unsigned i = 0; i < threadCount; ++i) {
                 auto thread = std::thread{ &ThreadPool::workerMain, this };
-                auto fmt = boost::format{ "Worker thread %1%" } % i;
+                auto fmt = boost::format{ "Takoyaki Worker %1%" } % i;
 
                 setThreadName(thread.native_handle(), boost::str(fmt));
                 threads.push_back(std::move(thread));
@@ -64,6 +64,8 @@ namespace Takoyaki
 
     void ThreadPool::workerMain()
     {
+        LOG_IDENTIFY_THREAD;
+
         while (!done_) {
             MoveOnlyFunc task;
 

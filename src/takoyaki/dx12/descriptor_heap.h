@@ -55,7 +55,7 @@ namespace Takoyaki
 
     public:
         DX12DescriptorHeapCollection(std::weak_ptr<DX12Device> device)
-            : owner_{ device }
+            : device_{ device }
             , descriptorSize_{ UINT_FAST32_MAX }
         {
         }
@@ -120,7 +120,7 @@ namespace Takoyaki
 
             // Not thread-safe so lock device
             {
-                auto device = owner_.lock();
+                auto device = device_.lock();
                 auto lock = device->getLock();
 
                 if (descriptorSize_ == UINT_FAST32_MAX)
@@ -140,7 +140,7 @@ namespace Takoyaki
 
     private:
         std::mutex mutex_;
-        std::weak_ptr<DX12Device> owner_;
+        std::weak_ptr<DX12Device> device_;
         std::vector<DX12DescriptorHeap> heaps_;
         std::unordered_map<SIZE_T, size_t> containerMap_;
         uint_fast32_t descriptorSize_;

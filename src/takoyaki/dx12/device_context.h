@@ -28,6 +28,7 @@
 #include "device.h"
 #include "descriptor_heap.h"
 #include "dx12_input_layout.h"
+#include "dx12_root_signature.h"
 #include "texture.h"
 
 #include "../rwlock_map.h"
@@ -44,13 +45,17 @@ namespace Takoyaki
         DX12DeviceContext& operator=(DX12DeviceContext&&) = delete;
 
     public:
+        using InputLayoutReturn = std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>;
+        using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
+        using RootSignatureReturn = std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>;
+
         DX12DeviceContext(std::weak_ptr<DX12Device>);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
 
         // resource creation
-        DX12ConstantBuffer& CreateConstanBuffer(const std::string&);
+        DX12ConstantBuffer& createConstanBuffer(const std::string&);
         DX12Texture& CreateTexture();
 
         // Get Heap collections
@@ -61,15 +66,15 @@ namespace Takoyaki
         // Internal & External
 
         void createInputLayout(const std::string&);
+        void createRootSignature(const std::string&);
 
-        using InputLayoutReturn = std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>;
         auto getInputLayout(const std::string&) -> InputLayoutReturn;
+        auto getRootSignature(const std::string&) ->RootSignatureReturn;
 
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
-        // Get
 
-        using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
+        void commit();
         auto getConstantBuffer(const std::string&) -> ConstantBufferReturn;
 
     private:
@@ -79,6 +84,7 @@ namespace Takoyaki
 
         RWLockMap<std::string, DX12ConstantBuffer> constantBuffers_;
         RWLockMap<std::string, DX12InputLayout> inputLayouts_;
+        RWLockMap<std::string, DX12RootSignature> rootSignatures_;
         ThreadSafeStack<DX12Texture> textures_;
     };
 } // namespace Takoyaki

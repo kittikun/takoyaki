@@ -53,7 +53,6 @@ namespace Takoyaki
 
     void ShaderCompiler::compileProgram(IO* io, const ProgramDesc& programDesc, std::weak_ptr<DX12DeviceContext> context)
     {
-        LOG_IDENTIFY_THREAD;
         auto fmt = boost::format("Compiling program \"%1%\"") % programDesc.name;
         LOGS_INDENT_START << boost::str(fmt);
 
@@ -189,7 +188,6 @@ namespace Takoyaki
 
     void ShaderCompiler::main(IO* io, std::weak_ptr<ThreadPool> threadPool, std::weak_ptr<DX12DeviceContext> context)
     {
-        LOG_IDENTIFY_THREAD;
         LOGS_INDENT_START << "Starting shaders compilation..";
 
         auto buffer = io->loadFile("data/shaderlist.json");
@@ -222,7 +220,7 @@ namespace Takoyaki
                 {
                     LOGS << "Constant buffer : " << cbDesc.Name;
 
-                    auto& cbuffer = context.lock()->CreateConstanBuffer(cbDesc.Name);
+                    auto& cbuffer = context.lock()->createConstanBuffer(cbDesc.Name);
 
                     for (uint_fast32_t j = 0; j < cbDesc.Variables; ++j) {
                         auto var = cb->GetVariableByIndex(j);

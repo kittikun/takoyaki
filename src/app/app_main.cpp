@@ -21,11 +21,12 @@
 #include <memory>
 
 #include <constant_table.h>
+#include <d3d12.h>
 #include <framework.h>
-#include <input_layout.h>
-
 #include <glm/glm.hpp>
+#include <input_layout.h>
 #include <render_component.h>
+#include <root_signature.h>
 
 class Test final : public Takoyaki::RenderComponent
 {
@@ -38,7 +39,7 @@ public:
 
     void render(Takoyaki::Renderer& renderer)
     {
-        auto viewProj = renderer.GetConstantBuffer("CBModelViewProjection");      
+        auto viewProj = renderer.getConstantBuffer("CBModelViewProjection");      
         Test test;
 
         // cbuffer might by empty is shader hasn't been loaded yet
@@ -52,13 +53,28 @@ public:
 
 void appMain(std::weak_ptr<Takoyaki::Framework> frmwk)
 {
-    auto framework = frmwk.lock();
-    auto renderer = framework->getRenderer();
+    auto renderer = frmwk.lock()->getRenderer();
 
-    framework->addRenderComponent(std::make_unique<Test>());
+    // create root signature
+    auto rs = renderer->createRootSignature("SimpleSignature");
+    D3D12_ROOT_SIGNATURE_FLAGS rsFlags =
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | // Only the input assembler stage needs access to the constant buffer.
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
 
-    auto layout = renderer->CreateInputLayout("SimpleVertex");
+    auto index = rs->addDescriptorTable();
+    rs->addDescriptorRange(index, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+    rs->setFlags(rsFlags);
 
+    renderer->commit();
+
+    // create vertex layout
+    auto layout = renderer->createInputLayout("SimpleVertex");
     layout->addInput("POSITION", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
     layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
+
+    renderer->addRenderComponent(std::make_unique<Test>());
+
 }

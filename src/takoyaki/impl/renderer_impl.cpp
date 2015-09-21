@@ -23,19 +23,39 @@
 
 #include "constant_table_impl.h"
 #include "input_layout_impl.h"
+#include "root_signature_impl.h"
+#include "../thread_pool.h"
 #include "../dx12/device_context.h"
+#include "../public/render_component.h"
 
 namespace Takoyaki
 {
-    RendererImpl::RendererImpl(const std::shared_ptr<DX12DeviceContext>& context)
-        : context_(context)
+    RendererImpl::RendererImpl(const std::shared_ptr<DX12DeviceContext>& context, const std::shared_ptr<ThreadPool>& threadPool )
+        : context_{ context }
+        , threadPool_{ threadPool }
     {
 
     }
 
     RendererImpl::~RendererImpl() = default;
 
-    std::unique_ptr<InputLayoutImpl> RendererImpl::CreateInputLayout(const std::string& name)
+    void RendererImpl::addRenderComponent(std::shared_ptr<RenderComponent>&& component)
+    {
+        renderable_.push_back(std::move(component));
+    }
+
+    void RendererImpl::commit()
+    {
+        // run creation on another thread
+        threadPool_->submit(std::bind(&RendererImpl::commitMain, this));
+    }
+
+    void RendererImpl::commitMain()
+    {
+        context_->commit();
+    }
+
+    std::unique_ptr<InputLayoutImpl> RendererImpl::createInputLayout(const std::string& name)
     {
         context_->createInputLayout(name);
 
@@ -44,7 +64,16 @@ namespace Takoyaki
         return std::make_unique<InputLayoutImpl>(pair.first, std::move(pair.second));
     }
 
-    std::unique_ptr<ConstantTableImpl> RendererImpl::GetConstantBuffer(const std::string& name)
+    std::unique_ptr<RootSignatureImpl> RendererImpl::createRootSignature(const std::string& name)
+    {
+        context_->createRootSignature(name);
+
+        auto pair = context_->getRootSignature(name);
+
+        return std::make_unique<RootSignatureImpl>(pair.first, std::move(pair.second));
+    }
+
+    std::unique_ptr<ConstantTableImpl> RendererImpl::getConstantBuffer(const std::string& name)
     {
         auto pair = context_->getConstantBuffer(name);
 
@@ -54,6 +83,14 @@ namespace Takoyaki
             return std::make_unique<ConstantTableImpl>(pair->first, std::move(pair->second));
         else
             return nullptr;
+    }
+
+    void RendererImpl::processComponents()
+    {
+        Renderer renderer{ shared_from_this() };
+
+        for (auto& renderable : renderable_)
+            renderable->render(renderer);
     }
 }
 // namespace Takoyaki

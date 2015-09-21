@@ -26,6 +26,7 @@
 
 namespace Takoyaki
 {
+    class DX12Device;
     class DX12DescriptorRanges;
 
     class DX12RootSignature
@@ -33,25 +34,31 @@ namespace Takoyaki
         DX12RootSignature(const DX12RootSignature&) = delete;
         DX12RootSignature& operator=(const DX12RootSignature&) = delete;
         DX12RootSignature& operator=(DX12RootSignature&&) = delete;
-        DX12RootSignature(DX12RootSignature&&) = delete;
 
     public:
-        DX12RootSignature(D3D12_ROOT_SIGNATURE_FLAGS = D3D12_ROOT_SIGNATURE_FLAG_NONE);
+        DX12RootSignature();
+        DX12RootSignature(DX12RootSignature&&);
         ~DX12RootSignature();
 
-        void addConstant(uint_fast32_t, uint_fast32_t, D3D12_SHADER_VISIBILITY);
-        void addDescriptorConstantBuffer(uint_fast32_t, D3D12_SHADER_VISIBILITY);
-        void addDescriptorUnorderedAccess(uint_fast32_t, D3D12_SHADER_VISIBILITY);
-        void addDescriptorShaderResource(uint_fast32_t, D3D12_SHADER_VISIBILITY);
-        uint_fast32_t addDescriptorTable(D3D12_SHADER_VISIBILITY);
+        void addConstant(uint_fast32_t, uint_fast32_t);
+        void addDescriptorConstantBuffer(uint_fast32_t);
+        void addDescriptorUnorderedAccess(uint_fast32_t);
+        void addDescriptorShaderResource(uint_fast32_t);
+        uint_fast32_t addDescriptorTable();
 
+        // only when using descriptor tables
         void addDescriptorRange(uint_fast32_t, D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
-        void create();
+
+        void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags) { flags_ = flags; }
+
+        // device has already been locked from context
+        bool create(const std::shared_ptr<DX12Device>&);
+
 
     private:
+        Microsoft::WRL::ComPtr<ID3D12RootSignature>	rootSignature_;
         std::vector<D3D12_ROOT_PARAMETER> params_;
         std::vector<DX12DescriptorRanges> ranges_;
-
         D3D12_ROOT_SIGNATURE_FLAGS flags_;
 
         // The maximum size of a root signature is 64 DWORDs.

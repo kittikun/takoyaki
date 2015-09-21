@@ -34,7 +34,6 @@ namespace Takoyaki
 {
     class FrameworkImpl;
     class Renderer;
-    class RenderComponent;
 
     struct FrameworkDesc
     {
@@ -74,7 +73,6 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // App should use those
 
-        void addRenderComponent(std::shared_ptr<RenderComponent>&& component);
         std::unique_ptr<Renderer> getRenderer();
 
     private:

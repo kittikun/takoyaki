@@ -33,11 +33,6 @@ namespace Takoyaki
 
     Framework::~Framework() = default;
 
-    void Framework::addRenderComponent(std::shared_ptr<RenderComponent>&& component)
-    {
-        impl_->addRenderComponent(std::move(component));
-    }
-
     std::unique_ptr<Renderer> Framework::getRenderer()
     {
         return std::make_unique<Renderer>(impl_->getRenderer());

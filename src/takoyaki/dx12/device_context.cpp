@@ -31,14 +31,34 @@ namespace Takoyaki
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
 
     DX12DeviceContext::DX12DeviceContext(std::weak_ptr<DX12Device> owner)
-        : owner_{ owner_ }
+        : owner_ { owner }
         , descHeapRTV_{ owner }
         , descHeapSRV_{ owner }
     {
-
     }
 
-    DX12ConstantBuffer& DX12DeviceContext::CreateConstanBuffer(const std::string& name)
+    void DX12DeviceContext::commit()
+    {
+        auto device = owner_.lock();
+        auto lock = device->getLock();
+
+        // create all root signatures
+        {
+            auto lock = rootSignatures_.getReadLock();
+
+            for (auto& rs : rootSignatures_) {
+                auto res = rs.second.create(device);
+
+                if (!res) {
+                    auto fmt = boost::format("RootSignature contains no parameters: %1%") % rs.first;
+
+                    LOGW << boost::str(fmt);
+                }
+            }
+        }
+    }
+
+    DX12ConstantBuffer& DX12DeviceContext::createConstanBuffer(const std::string& name)
     {
         auto lock = constantBuffers_.getWriteLock();
         auto found = constantBuffers_.find(name);
@@ -54,7 +74,15 @@ namespace Takoyaki
     void DX12DeviceContext::createInputLayout(const std::string& name)
     {
         auto lock = inputLayouts_.getWriteLock();
+
         inputLayouts_.insert(std::make_pair(name, DX12InputLayout()));
+    }
+
+    void DX12DeviceContext::createRootSignature(const std::string& name)
+    {
+        auto lock = rootSignatures_.getWriteLock();
+
+        rootSignatures_.insert(std::make_pair(name, DX12RootSignature()));
     }
 
     DX12Texture& DX12DeviceContext::CreateTexture()
@@ -94,4 +122,17 @@ namespace Takoyaki
         return std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
     }
 
+    auto DX12DeviceContext::getRootSignature(const std::string& name)->RootSignatureReturn
+    {
+        auto lock = rootSignatures_.getReadLock();
+        auto found = rootSignatures_.find(name);
+
+        if (found == rootSignatures_.end()) {
+            auto fmt = boost::format("DX12DeviceContext::getRootSignature, cannot find key \"%1%\"") % name;
+
+            throw new std::runtime_error(boost::str(fmt));
+        }
+
+        return std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
+    }
 } // namespace Takoyaki

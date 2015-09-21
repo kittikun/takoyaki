@@ -19,49 +19,56 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "renderer.h"
-
-#include "constant_table.h"
-#include "input_layout.h"
 #include "root_signature.h"
 
-#include "../impl/constant_table_impl.h"
-#include "../impl/input_layout_impl.h"
-#include "../impl/renderer_impl.h"
+#include <glm/glm.hpp>
+
 #include "../impl/root_signature_impl.h"
 
 namespace Takoyaki
 {
-    Renderer::Renderer(std::shared_ptr<RendererImpl>& impl)
-        : impl_{ impl }
+    RootSignature::RootSignature(std::unique_ptr<RootSignatureImpl> rs)
+        : impl_{ std::move(rs) }
     {
     }
 
-    Renderer::~Renderer() = default;
+    RootSignature::~RootSignature() = default;
 
-    void Renderer::addRenderComponent(std::shared_ptr<RenderComponent>&& component)
+
+    void RootSignature::addConstant(uint_fast32_t numValues, uint_fast32_t shaderRegister)
     {
-        impl_->addRenderComponent(std::move(component));
+        impl_->addConstant(numValues, shaderRegister);
     }
 
-    void Renderer::commit()
+    void RootSignature::addDescriptorConstantBuffer(uint_fast32_t shaderRegister)
     {
-        impl_->commit();
+        impl_->addDescriptorConstantBuffer(shaderRegister);
     }
 
-    std::unique_ptr<InputLayout> Renderer::createInputLayout(const std::string& name)
+    void RootSignature::addDescriptorUnorderedAccess(uint_fast32_t shaderRegister)
     {
-        return std::make_unique<InputLayout>(impl_->createInputLayout(name));
+        impl_->addDescriptorUnorderedAccess(shaderRegister);
     }
 
-    std::unique_ptr<RootSignature> Renderer::createRootSignature(const std::string& name)
+    void RootSignature::addDescriptorShaderResource(uint_fast32_t shaderRegister)
     {
-        return std::make_unique<RootSignature>(impl_->createRootSignature(name));
+        impl_->addDescriptorShaderResource(shaderRegister);
     }
 
-    std::unique_ptr<ConstantTable> Renderer::getConstantBuffer(const std::string& name)
+    uint_fast32_t RootSignature::addDescriptorTable()
     {
-        return std::make_unique<ConstantTable>(std::move(impl_->getConstantBuffer(name)));
+        return impl_->addDescriptorTable();
     }
+
+    void RootSignature::addDescriptorRange(uint_fast32_t index, D3D12_DESCRIPTOR_RANGE_TYPE type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister)
+    {
+        impl_->addDescriptorRange(index, type, numDescriptors, baseShaderRegister);
+    }
+
+    void RootSignature::setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags)
+    {
+        impl_->setFlags(flags);
+    }
+
 }
 // namespace Takoyaki

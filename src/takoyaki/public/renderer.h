@@ -27,7 +27,9 @@ namespace Takoyaki
 {
     class ConstantTable;
     class InputLayout;
+    class RenderComponent;
     class RendererImpl;
+    class RootSignature;
 
     class Renderer
     {
@@ -40,9 +42,16 @@ namespace Takoyaki
         Renderer(std::shared_ptr<RendererImpl>&);
         ~Renderer();
 
-        std::unique_ptr<InputLayout> CreateInputLayout(const std::string&);
+        void addRenderComponent(std::shared_ptr<RenderComponent>&& component);
 
-        std::unique_ptr<ConstantTable> GetConstantBuffer(const std::string&);
+        std::unique_ptr<InputLayout> createInputLayout(const std::string&);
+        std::unique_ptr<RootSignature> createRootSignature(const std::string&);
+
+        // Called once the root signatures and pipeline state objects have been defined
+        // commit should happen only once per application
+        void commit();
+
+        std::unique_ptr<ConstantTable> getConstantBuffer(const std::string&);
 
     private:
         std::shared_ptr<RendererImpl> impl_;

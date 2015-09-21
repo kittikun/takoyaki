@@ -18,25 +18,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "constant_table_impl.h"
+#pragma once
 
-#include "../dx12/device_context.h"
+#include <memory>
 
 namespace Takoyaki
 {
-    ConstantTableImpl::ConstantTableImpl(DX12ConstantBuffer& cbuffer, boost::shared_lock<boost::shared_mutex> lock)
-        : cbuffer_(cbuffer)
-        , bufferLock_(std::move(lock))
+    class DX12RootSignature;
+
+    class RootSignatureImpl
     {
+        RootSignatureImpl(const RootSignatureImpl&) = delete;
+        RootSignatureImpl& operator=(const RootSignatureImpl&) = delete;
+        RootSignatureImpl(RootSignatureImpl&&) = delete;
+        RootSignatureImpl& operator=(RootSignatureImpl&&) = delete;
 
-    }
+    public:
+        RootSignatureImpl(DX12RootSignature&, boost::shared_lock<boost::shared_mutex>);
+        ~RootSignatureImpl();
 
-    ConstantTableImpl::~ConstantTableImpl() = default;
+        void addConstant(uint_fast32_t, uint_fast32_t);
+        void addDescriptorConstantBuffer(uint_fast32_t);
+        void addDescriptorUnorderedAccess(uint_fast32_t);
+        void addDescriptorShaderResource(uint_fast32_t);
+        uint_fast32_t addDescriptorTable();
+        void addDescriptorRange(uint_fast32_t, D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
+        void setFlags(D3D12_ROOT_SIGNATURE_FLAGS);
 
-    void ConstantTableImpl::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
-    {
-        cbuffer_.setMatrix4x4(name, value);
-    }
+    private:
+        DX12RootSignature& rs_;
+        boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
+    };
 }
 // namespace Takoyaki

@@ -20,45 +20,40 @@
 
 #pragma once
 
-#include "../io.h"
-#include "../dx12/shader_manager.h"
-#include "../public/definitions.h"
+#include <memory>
+#include <string>
 
 namespace Takoyaki
 {
-    struct FrameworkDesc;
-    class DX12Device;
-    class Framework;
-    class RendererImpl;
-    class ThreadPool;
+    class RootSignatureImpl;
 
-    class FrameworkImpl
+    class RootSignature
     {
-        FrameworkImpl(const FrameworkImpl&) = delete;
-        FrameworkImpl& operator=(const FrameworkImpl&) = delete;
-        FrameworkImpl(FrameworkImpl&&) = delete;
-        FrameworkImpl& operator=(FrameworkImpl&&) = delete;
+        RootSignature(const RootSignature&) = delete;
+        RootSignature& operator=(const RootSignature&) = delete;
+        RootSignature(RootSignature&&) = delete;
+        RootSignature& operator=(RootSignature&&) = delete;
 
     public:
-        FrameworkImpl();
-         ~FrameworkImpl();
+        RootSignature(std::unique_ptr<RootSignatureImpl>);
+        ~RootSignature();
 
-        void initialize(const FrameworkDesc&, std::weak_ptr<Framework>);
-        void setProperty(EPropertyID, const boost::any&);
-        void render();
-        void terminate();
-        void validateDevice() const;
+        void addConstant(uint_fast32_t numValues, uint_fast32_t shaderRegister);
+        void addDescriptorConstantBuffer(uint_fast32_t shaderRegister);
+        void addDescriptorUnorderedAccess(uint_fast32_t shaderRegister);
+        void addDescriptorShaderResource(uint_fast32_t shaderRegister);
 
-        void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
-        std::shared_ptr<RendererImpl>& getRenderer() { return renderer_; }
+        // return an index to be used with addDescriptorRange
+        uint_fast32_t addDescriptorTable();
+
+        // only when using descriptor tables
+        void addDescriptorRange(uint_fast32_t index, D3D12_DESCRIPTOR_RANGE_TYPE type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister);
+
+        void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags);
+
 
     private:
-        IO io_;
-        std::shared_ptr<ThreadPool> threadPool_;
-        std::shared_ptr<DX12Device> device_;
-        ShaderManager shaderManager_;
-        std::shared_ptr<RendererImpl> renderer_;
+        std::unique_ptr<RootSignatureImpl> impl_;
     };
-
-} // namespace Takoyaki
-
+}
+// namespace Takoyaki

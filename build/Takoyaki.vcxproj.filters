@@ -90,6 +90,12 @@
     <ClCompile Include="..\src\takoyaki\dx12\descriptor_ranges.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\public\root_signature.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\impl\root_signature_impl.cpp">
+      <Filter>Source Files\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
@@ -181,6 +187,12 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\descriptor_ranges.h">
       <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\public\root_signature.h">
+      <Filter>Source Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\impl\root_signature_impl.h">
+      <Filter>Source Files\impl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

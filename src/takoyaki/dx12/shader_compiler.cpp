@@ -51,7 +51,7 @@ namespace Takoyaki
     ShaderCompiler::ShaderCompiler() = default;
     ShaderCompiler::~ShaderCompiler() = default;
 
-    void ShaderCompiler::compileProgram(IO* io, const ProgramDesc& programDesc, std::weak_ptr<DX12DeviceContext> context)
+    void ShaderCompiler::compileProgram(IO* io, const ProgramDesc& programDesc, std::weak_ptr<DX12Context> context)
     {
         auto fmt = boost::format("Compiling program \"%1%\"") % programDesc.name;
         LOGS_INDENT_START << boost::str(fmt);
@@ -114,7 +114,7 @@ namespace Takoyaki
         return res;
     }
 
-    void ShaderCompiler::getShaderResources(ID3DBlob* blob, std::weak_ptr<DX12DeviceContext> context)
+    void ShaderCompiler::getShaderResources(ID3DBlob* blob, std::weak_ptr<DX12Context> context)
     {
         // use reflection to extract bind info
         ID3D12ShaderReflection* reflect = nullptr;
@@ -186,7 +186,7 @@ namespace Takoyaki
         }
     }
 
-    void ShaderCompiler::main(IO* io, std::weak_ptr<ThreadPool> threadPool, std::weak_ptr<DX12DeviceContext> context)
+    void ShaderCompiler::main(IO* io, std::weak_ptr<ThreadPool> threadPool, std::weak_ptr<DX12Context> context)
     {
         LOGS_INDENT_START << "Starting shaders compilation..";
 
@@ -204,7 +204,7 @@ namespace Takoyaki
         LOGS_INDENT_END << "Shader compilation done.";
     }
 
-    void ShaderCompiler::parseConstantBuffers(ID3D12ShaderReflection* reflect, const D3D12_SHADER_DESC& progDesc, std::weak_ptr<DX12DeviceContext> context)
+    void ShaderCompiler::parseConstantBuffers(ID3D12ShaderReflection* reflect, const D3D12_SHADER_DESC& progDesc, std::weak_ptr<DX12Context> context)
     {
         auto fmt = boost::format("Number of constant buffers %1%") % progDesc.ConstantBuffers;
         LOGS << boost::str(fmt);

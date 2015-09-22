@@ -18,37 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "dx12_pipeline_state.h"
 
-#include <d3d12.h>
-
-#include "../public/definitions.h"
+#include "dxutility.h"
 
 namespace Takoyaki
 {
-    class DX12Device;
-
-    class DX12PipelineState
+    DX12PipelineState::DX12PipelineState(const std::string& rs)
+        : intermediate_{ std::make_unique<Intermediate>() }
     {
-        DX12PipelineState(const DX12PipelineState&) = delete;
-        DX12PipelineState& operator=(const DX12PipelineState&) = delete;
-        DX12PipelineState& operator=(DX12PipelineState&&) = delete;
+        intermediate_->rootSignature = rs;
+    }
 
-    public:
-        DX12PipelineState(const std::string&);
-        DX12PipelineState(DX12PipelineState&&);
-        ~DX12PipelineState();
+    DX12PipelineState::DX12PipelineState(DX12PipelineState&& other)
+        : state_{std::move(other.state_)}
+        , intermediate_{ std::move(other.intermediate_) }
+    {
 
-        // device has already been locked from context
-        bool create(const std::shared_ptr<DX12Device>&);
+    }
 
-    private:
-        struct Intermediate
-        {
-            std::string rootSignature;
-        };
+    DX12PipelineState::~DX12PipelineState() = default;
 
-        Microsoft::WRL::ComPtr<ID3D12PipelineState>	state_;
-        std::unique_ptr<Intermediate> intermediate_;
-    };
+    // device has already been locked from context
+    bool DX12PipelineState::create(const std::shared_ptr<DX12Device>& device)
+    {
+
+        return false;
+    }
+
 } // namespace Takoyaki

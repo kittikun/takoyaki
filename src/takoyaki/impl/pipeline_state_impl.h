@@ -20,35 +20,24 @@
 
 #pragma once
 
-#include <d3d12.h>
-
-#include "../public/definitions.h"
-
 namespace Takoyaki
 {
-    class DX12Device;
+    class DX12PipelineState;
 
-    class DX12PipelineState
+    class PipelineStateImpl
     {
-        DX12PipelineState(const DX12PipelineState&) = delete;
-        DX12PipelineState& operator=(const DX12PipelineState&) = delete;
-        DX12PipelineState& operator=(DX12PipelineState&&) = delete;
+        PipelineStateImpl(const PipelineStateImpl&) = delete;
+        PipelineStateImpl& operator=(const PipelineStateImpl&) = delete;
+        PipelineStateImpl(PipelineStateImpl&&) = delete;
+        PipelineStateImpl& operator=(PipelineStateImpl&&) = delete;
 
     public:
-        DX12PipelineState(const std::string&);
-        DX12PipelineState(DX12PipelineState&&);
-        ~DX12PipelineState();
-
-        // device has already been locked from context
-        bool create(const std::shared_ptr<DX12Device>&);
+        PipelineStateImpl(DX12PipelineState&, boost::shared_lock<boost::shared_mutex>);
+        ~PipelineStateImpl();
 
     private:
-        struct Intermediate
-        {
-            std::string rootSignature;
-        };
-
-        Microsoft::WRL::ComPtr<ID3D12PipelineState>	state_;
-        std::unique_ptr<Intermediate> intermediate_;
+        DX12PipelineState& layout_;
+        boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
     };
-} // namespace Takoyaki
+}
+// namespace Takoyaki

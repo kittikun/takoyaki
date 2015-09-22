@@ -32,7 +32,7 @@
 namespace Takoyaki
 {
     struct FrameworkDesc;
-    class DX12DeviceContext;
+    class DX12Context;
 
     class DX12Device : public std::enable_shared_from_this<DX12Device>
     {
@@ -45,13 +45,13 @@ namespace Takoyaki
         DX12Device();
         ~DX12Device() = default;
 
-        void create(const FrameworkDesc& desc);
+        void create(const FrameworkDesc& desc, std::weak_ptr<DX12Context>);
         void present();
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
-        std::weak_ptr<DX12DeviceContext> getContext() { return context_; }
-        const Microsoft::WRL::ComPtr<ID3D12Device>& getDevice() { return D3DDevice_; }
+        std::weak_ptr<DX12Context> getContext() { return context_; }
+        const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
         std::unique_lock<std::mutex> getLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
 
     private:
@@ -64,9 +64,7 @@ namespace Takoyaki
         Microsoft::WRL::ComPtr<ID3D12Device> D3DDevice_;
         Microsoft::WRL::ComPtr<IDXGIFactory4> DXGIFactory_;
         std::mutex deviceMutex_;
-
-        // Context
-        std::shared_ptr<DX12DeviceContext> context_;
+        std::weak_ptr<DX12Context> context_;
 
         // Command queue
         // TODO: Move to another thread class

@@ -30,14 +30,14 @@ namespace Takoyaki
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
 
-    DX12DeviceContext::DX12DeviceContext(std::weak_ptr<DX12Device> owner)
+    DX12Context::DX12Context(std::weak_ptr<DX12Device> owner)
         : owner_ { owner }
         , descHeapRTV_{ owner }
         , descHeapSRV_{ owner }
     {
     }
 
-    void DX12DeviceContext::commit()
+    void DX12Context::commit()
     {
         auto device = owner_.lock();
         auto lock = device->getLock();
@@ -58,7 +58,7 @@ namespace Takoyaki
         }
     }
 
-    DX12ConstantBuffer& DX12DeviceContext::createConstanBuffer(const std::string& name)
+    DX12ConstantBuffer& DX12Context::createConstanBuffer(const std::string& name)
     {
         auto lock = constantBuffers_.getWriteLock();
         auto found = constantBuffers_.find(name);
@@ -71,26 +71,33 @@ namespace Takoyaki
         return res.first->second;
     }
 
-    void DX12DeviceContext::createInputLayout(const std::string& name)
+    void DX12Context::createInputLayout(const std::string& name)
     {
         auto lock = inputLayouts_.getWriteLock();
 
-        inputLayouts_.insert(std::make_pair(name, DX12InputLayout()));
+        inputLayouts_.insert(std::make_pair(name, DX12InputLayout{}));
     }
 
-    void DX12DeviceContext::createRootSignature(const std::string& name)
+    void DX12Context::createPipelineState(const std::string& name, const std::string& rs)
+    {
+        auto lock = pipelineStates_.getWriteLock();
+
+        pipelineStates_.insert(std::make_pair(name, DX12PipelineState{ rs }));
+    }
+
+    void DX12Context::createRootSignature(const std::string& name)
     {
         auto lock = rootSignatures_.getWriteLock();
 
-        rootSignatures_.insert(std::make_pair(name, DX12RootSignature()));
+        rootSignatures_.insert(std::make_pair(name, DX12RootSignature{}));
     }
 
-    DX12Texture& DX12DeviceContext::CreateTexture()
+    DX12Texture& DX12Context::CreateTexture()
     {
         return textures_.push(DX12Texture{ shared_from_this() });
     }
 
-    auto DX12DeviceContext::getConstantBuffer(const std::string& name) -> ConstantBufferReturn
+    auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn
     {
         auto lock = constantBuffers_.getReadLock();
         auto found = constantBuffers_.find(name);
@@ -108,7 +115,7 @@ namespace Takoyaki
         return ConstantBufferReturn(std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock)));
     }
 
-    auto DX12DeviceContext::getInputLayout(const std::string& name) -> InputLayoutReturn
+    auto DX12Context::getInputLayout(const std::string& name) -> InputLayoutReturn
     {
         auto lock = inputLayouts_.getReadLock();
         auto found = inputLayouts_.find(name);
@@ -122,7 +129,21 @@ namespace Takoyaki
         return std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
     }
 
-    auto DX12DeviceContext::getRootSignature(const std::string& name)->RootSignatureReturn
+    auto DX12Context::getPipelineState(const std::string& name) -> PipelineStateReturn
+    {
+        auto lock = pipelineStates_.getReadLock();
+        auto found = pipelineStates_.find(name);
+
+        if (found == pipelineStates_.end()) {
+            auto fmt = boost::format("DX12DeviceContext::getPipelineState, cannot find key \"%1%\"") % name;
+
+            throw new std::runtime_error(boost::str(fmt));
+        }
+
+        return std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
+    }
+
+    auto DX12Context::getRootSignature(const std::string& name) -> RootSignatureReturn
     {
         auto lock = rootSignatures_.getReadLock();
         auto found = rootSignatures_.find(name);

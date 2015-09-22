@@ -124,8 +124,8 @@ namespace Takoyaki
                 auto lock = device->getLock();
 
                 if (descriptorSize_ == UINT_FAST32_MAX)
-                    descriptorSize_ = device->getDevice()->GetDescriptorHandleIncrementSize(T);
-                DXCheckThrow(device->getDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap.descriptor_)));
+                    descriptorSize_ = device->getDXDevice()->GetDescriptorHandleIncrementSize(T);
+                DXCheckThrow(device->getDXDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap.descriptor_)));
             }
 
             // Make a suitable name

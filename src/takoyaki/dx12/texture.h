@@ -25,7 +25,7 @@
 
 namespace Takoyaki
 {
-    class DX12DeviceContext;
+    class DX12Context;
 
     class DX12Texture
     {
@@ -34,7 +34,7 @@ namespace Takoyaki
         DX12Texture& operator=(DX12Texture&&) = delete;
 
     public:
-        DX12Texture(std::weak_ptr<DX12DeviceContext>);
+        DX12Texture(std::weak_ptr<DX12Context>);
         DX12Texture(DX12Texture&&) noexcept;
         ~DX12Texture();
 
@@ -43,7 +43,7 @@ namespace Takoyaki
         const D3D12_CPU_DESCRIPTOR_HANDLE& getRenderTargetView();
 
     private:
-        std::weak_ptr<DX12DeviceContext> owner_;
+        std::weak_ptr<DX12Context> owner_;
         Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
         D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
     };

@@ -27,6 +27,7 @@ namespace Takoyaki
 {
     class ConstantTable;
     class InputLayout;
+    class PipelineState;
     class RenderComponent;
     class RendererImpl;
     class RootSignature;
@@ -44,8 +45,9 @@ namespace Takoyaki
 
         void addRenderComponent(std::shared_ptr<RenderComponent>&& component);
 
-        std::unique_ptr<InputLayout> createInputLayout(const std::string&);
-        std::unique_ptr<RootSignature> createRootSignature(const std::string&);
+        std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
+        std::unique_ptr<PipelineState> createPipelineState(const std::string& name, const std::string& rootSignature);
+        std::unique_ptr<RootSignature> createRootSignature(const std::string& name);
 
         // Called once the root signatures and pipeline state objects have been defined
         // commit should happen only once per application

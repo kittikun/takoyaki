@@ -53,15 +53,17 @@ namespace Takoyaki
             device_.reset(new DX12Device());
         }
 
-        device_->create(desc);
+        context_ = std::make_shared<DX12Context>(device_);
+
+        device_->create(desc, context_);
 
         if (!desc.loadAsyncFunc)
             throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
 
         io_.initialize(desc.loadAsyncFunc);
         threadPool_->initialize(desc.numWorkerThreads);
-        shaderManager_.initialize(&io_, threadPool_, device_->getContext());
-        renderer_.reset(new RendererImpl(device_->getContext().lock(), threadPool_));
+        shaderManager_.initialize(&io_, threadPool_, context_);
+        renderer_.reset(new RendererImpl(context_, threadPool_));
 
         LOGC_INDENT_END << "Initialization complete.";
 

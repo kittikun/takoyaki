@@ -96,6 +96,15 @@
     <ClCompile Include="..\src\takoyaki\impl\root_signature_impl.cpp">
       <Filter>Source Files\impl</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_pipeline_state.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\impl\pipeline_state_impl.cpp">
+      <Filter>Source Files\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\takoyaki\public\pipeline_state.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
@@ -193,6 +202,12 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\impl\root_signature_impl.h">
       <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\impl\pipeline_state_impl.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\public\pipeline_state.h">
+      <Filter>Source Files\public</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -18,37 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "pipeline_state.h"
 
-#include <d3d12.h>
-
-#include "../public/definitions.h"
+#include "../impl/pipeline_state_impl.h"
 
 namespace Takoyaki
 {
-    class DX12Device;
-
-    class DX12PipelineState
+    PipelineState::PipelineState(std::unique_ptr<PipelineStateImpl> ct)
+        : impl_{ std::move(ct) }
     {
-        DX12PipelineState(const DX12PipelineState&) = delete;
-        DX12PipelineState& operator=(const DX12PipelineState&) = delete;
-        DX12PipelineState& operator=(DX12PipelineState&&) = delete;
+    }
 
-    public:
-        DX12PipelineState(const std::string&);
-        DX12PipelineState(DX12PipelineState&&);
-        ~DX12PipelineState();
-
-        // device has already been locked from context
-        bool create(const std::shared_ptr<DX12Device>&);
-
-    private:
-        struct Intermediate
-        {
-            std::string rootSignature;
-        };
-
-        Microsoft::WRL::ComPtr<ID3D12PipelineState>	state_;
-        std::unique_ptr<Intermediate> intermediate_;
-    };
-} // namespace Takoyaki
+    PipelineState::~PipelineState() = default;
+}
+// namespace Takoyaki

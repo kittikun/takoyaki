@@ -23,10 +23,12 @@
 
 #include "constant_table.h"
 #include "input_layout.h"
+#include "pipeline_state.h"
 #include "root_signature.h"
 
 #include "../impl/constant_table_impl.h"
 #include "../impl/input_layout_impl.h"
+#include "../impl/pipeline_state_impl.h"
 #include "../impl/renderer_impl.h"
 #include "../impl/root_signature_impl.h"
 
@@ -52,6 +54,11 @@ namespace Takoyaki
     std::unique_ptr<InputLayout> Renderer::createInputLayout(const std::string& name)
     {
         return std::make_unique<InputLayout>(impl_->createInputLayout(name));
+    }
+
+    std::unique_ptr<PipelineState> Renderer::createPipelineState(const std::string& name, const std::string& rs)
+    {
+        return std::make_unique<PipelineState>(impl_->createPipelineState(name, rs));
     }
 
     std::unique_ptr<RootSignature> Renderer::createRootSignature(const std::string& name)

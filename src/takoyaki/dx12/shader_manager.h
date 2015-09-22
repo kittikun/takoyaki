@@ -24,7 +24,7 @@
 
 namespace Takoyaki
 {
-    class DX12DeviceContext;
+    class DX12Context;
     class IO;
     class ThreadPool;
 
@@ -39,7 +39,7 @@ namespace Takoyaki
         ShaderManager();
         ~ShaderManager();
 
-        void initialize(IO*, std::weak_ptr<ThreadPool>, std::weak_ptr<DX12DeviceContext>);
+        void initialize(IO*, std::weak_ptr<ThreadPool>, std::weak_ptr<DX12Context>);
 
     private:
         ShaderCompiler compiler_;

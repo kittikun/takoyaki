@@ -20,35 +20,27 @@
 
 #pragma once
 
-#include <d3d12.h>
+#include <memory>
 
-#include "../public/definitions.h"
+#include "definitions.h"
 
 namespace Takoyaki
 {
-    class DX12Device;
+    class PipelineStateImpl;
 
-    class DX12PipelineState
+    class PipelineState
     {
-        DX12PipelineState(const DX12PipelineState&) = delete;
-        DX12PipelineState& operator=(const DX12PipelineState&) = delete;
-        DX12PipelineState& operator=(DX12PipelineState&&) = delete;
+        PipelineState(const PipelineState&) = delete;
+        PipelineState& operator=(const PipelineState&) = delete;
+        PipelineState(PipelineState&&) = delete;
+        PipelineState& operator=(PipelineState&&) = delete;
 
     public:
-        DX12PipelineState(const std::string&);
-        DX12PipelineState(DX12PipelineState&&);
-        ~DX12PipelineState();
-
-        // device has already been locked from context
-        bool create(const std::shared_ptr<DX12Device>&);
+        PipelineState(std::unique_ptr<PipelineStateImpl>);
+        ~PipelineState();
 
     private:
-        struct Intermediate
-        {
-            std::string rootSignature;
-        };
-
-        Microsoft::WRL::ComPtr<ID3D12PipelineState>	state_;
-        std::unique_ptr<Intermediate> intermediate_;
+        std::unique_ptr<PipelineStateImpl> impl_;
     };
-} // namespace Takoyaki
+}
+// namespace Takoyaki

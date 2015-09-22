@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <memory>
-
 namespace Takoyaki
 {
     class DX12ConstantBuffer;

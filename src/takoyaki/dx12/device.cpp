@@ -39,8 +39,9 @@ namespace Takoyaki
     {
     }
 
-    void DX12Device::create(const FrameworkDesc& desc)
+    void DX12Device::create(const FrameworkDesc& desc, std::weak_ptr<DX12Context> context)
     {
+        context_ = context;
         bufferCount_ = desc.bufferCount;
         window_ = reinterpret_cast<IUnknown*>(desc.windowHandle);
         currentOrientation_ = desc.currentOrientation;
@@ -97,9 +98,6 @@ namespace Takoyaki
         DXCheckThrow(D3DDevice_->CreateFence(fenceValues_[currentFrame_], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));
         fenceValues_[currentFrame_]++;
         fenceEvent_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
-
-        // Create a context for the main thread        
-        context_ = std::make_shared<DX12DeviceContext>(shared_from_this());
     }
 
     void DX12Device::createSwapChain()
@@ -181,8 +179,10 @@ namespace Takoyaki
 
         currentFrame_ = 0;
 
+        auto context = context_.lock();
+
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
-            auto& tex = context_->CreateTexture();
+            auto& tex = context->CreateTexture();
             auto& res = tex.getResource();
 
             DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&res)));            

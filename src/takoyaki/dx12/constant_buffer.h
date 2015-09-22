@@ -26,7 +26,7 @@
 
 namespace Takoyaki
 {
-    class DX12DeviceContext;
+    class DX12Context;
 
     class DX12ConstantBuffer
     {
@@ -35,7 +35,7 @@ namespace Takoyaki
         DX12ConstantBuffer& operator=(DX12ConstantBuffer&&) = delete;
 
     public:
-        DX12ConstantBuffer(std::weak_ptr<DX12DeviceContext>);
+        DX12ConstantBuffer(std::weak_ptr<DX12Context>);
         DX12ConstantBuffer(DX12ConstantBuffer&&) noexcept;
         ~DX12ConstantBuffer();
 
@@ -53,7 +53,7 @@ namespace Takoyaki
             uint_fast32_t size;
         };
 
-        std::weak_ptr<DX12DeviceContext> owner_;
+        std::weak_ptr<DX12Context> owner_;
         std::vector<uint8_t> buffer_;
         std::unordered_map<std::string, CBVariable> offsetMap_;     // TODO: thread unsafe
         D3D12_CPU_DESCRIPTOR_HANDLE rtv_;

@@ -30,7 +30,7 @@
 
 namespace Takoyaki
 {
-    DX12ConstantBuffer::DX12ConstantBuffer(std::weak_ptr<DX12DeviceContext> owner)
+    DX12ConstantBuffer::DX12ConstantBuffer(std::weak_ptr<DX12Context> owner)
         : owner_{ owner }
     {
         rtv_ = owner_.lock()->getSRVDescHeapCollection().createOne();

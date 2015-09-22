@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <memory>
 #include "../public/definitions.h"
 
 namespace Takoyaki

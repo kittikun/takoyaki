@@ -49,20 +49,26 @@ namespace Takoyaki
         // only when using descriptor tables
         void addDescriptorRange(uint_fast32_t, D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
 
-        void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags) { flags_ = flags; }
+        void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags) { intermediate_->flags = flags; }
 
         // device has already been locked from context
         bool create(const std::shared_ptr<DX12Device>&);
 
 
     private:
-        Microsoft::WRL::ComPtr<ID3D12RootSignature>	rootSignature_;
-        std::vector<D3D12_ROOT_PARAMETER> params_;
-        std::vector<DX12DescriptorRanges> ranges_;
-        D3D12_ROOT_SIGNATURE_FLAGS flags_;
+        struct Intermediate
+        {
+            Intermediate();
+            std::vector<D3D12_ROOT_PARAMETER> params;
+            std::vector<DX12DescriptorRanges> ranges;
+            D3D12_ROOT_SIGNATURE_FLAGS flags;
 
-        // The maximum size of a root signature is 64 DWORDs.
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/dn899209(v=vs.85).aspx
-        uint_fast32_t size_;
+            // The maximum size of a root signature is 64 DWORDs.
+            // https://msdn.microsoft.com/en-us/library/windows/desktop/dn899209(v=vs.85).aspx
+            uint_fast32_t size;
+        };
+
+        Microsoft::WRL::ComPtr<ID3D12RootSignature>	rootSignature_;
+        std::unique_ptr<Intermediate> intermediate_;
     };
 } // namespace Takoyaki

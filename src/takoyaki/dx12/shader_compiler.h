@@ -24,7 +24,7 @@
 
 namespace Takoyaki
 {
-    class DX12DeviceContext;
+    class DX12Context;
     class IO;
     struct ProgramDesc;
     class ThreadPool;
@@ -45,13 +45,13 @@ namespace Takoyaki
         ShaderCompiler();
         ~ShaderCompiler();
 
-        void main(IO*, std::weak_ptr<ThreadPool>, std::weak_ptr<DX12DeviceContext>);
+        void main(IO*, std::weak_ptr<ThreadPool>, std::weak_ptr<DX12Context>);
 
     private:
-        void compileProgram(IO*, const ProgramDesc&, std::weak_ptr<DX12DeviceContext>);
-        void getShaderResources(ID3DBlob*, std::weak_ptr<DX12DeviceContext>);
+        void compileProgram(IO*, const ProgramDesc&, std::weak_ptr<DX12Context>);
+        void getShaderResources(ID3DBlob*, std::weak_ptr<DX12Context>);
         std::string getDXShaderType(const std::string&) const;
-        void parseConstantBuffers(ID3D12ShaderReflection*, const D3D12_SHADER_DESC&, std::weak_ptr<DX12DeviceContext>);
+        void parseConstantBuffers(ID3D12ShaderReflection*, const D3D12_SHADER_DESC&, std::weak_ptr<DX12Context>);
         void parseShaderList(const std::string&, std::vector<ProgramDesc>&) const;
     };
 } // namespace Takoyaki

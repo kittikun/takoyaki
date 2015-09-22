@@ -27,17 +27,21 @@
 
 namespace Takoyaki
 {
+    DX12RootSignature::Intermediate::Intermediate()
+        : flags{ D3D12_ROOT_SIGNATURE_FLAG_NONE }
+        , size{ 0 }
+    {
+
+    }
+
     DX12RootSignature::DX12RootSignature()
-        : flags_(D3D12_ROOT_SIGNATURE_FLAG_NONE)
-        , size_(0)
+        : intermediate_{ std::make_unique<Intermediate>() }
     {
     }
 
     DX12RootSignature::DX12RootSignature(DX12RootSignature&& other)
-        : params_(std::move(other.params_))
-        , ranges_(std::move(other.ranges_))
-        , flags_(other.flags_)
-        , size_(other.size_)
+        : rootSignature_{ std::move(other.rootSignature_) }
+        , intermediate_{ std::move(other.intermediate_) }
     {
 
     }
@@ -55,10 +59,8 @@ namespace Takoyaki
         param.Constants.RegisterSpace = 0;
 
         // Root constants cost 1 DWORD each, since they are 32-bit values.
-        size_++;
-
-        params_.push_back(std::move(param));
-        size_ += numValues * 4;
+        intermediate_->size++;
+        intermediate_->params.push_back(std::move(param));
     }
 
     void DX12RootSignature::addDescriptorConstantBuffer(uint_fast32_t shaderRegister)
@@ -70,9 +72,8 @@ namespace Takoyaki
         param.Descriptor.ShaderRegister = shaderRegister;
 
         // Root descriptors (64-bit GPU virtual addresses) cost 2 DWORDs each.
-        size_ += 2;
-
-        params_.push_back(std::move(param));
+        intermediate_->size += 2;
+        intermediate_->params.push_back(std::move(param));
     }
 
     void DX12RootSignature::addDescriptorUnorderedAccess(uint_fast32_t shaderRegister)
@@ -84,9 +85,8 @@ namespace Takoyaki
         param.Descriptor.ShaderRegister = shaderRegister;
 
         // Root descriptors (64-bit GPU virtual addresses) cost 2 DWORDs each.
-        size_ += 2;
-
-        params_.push_back(std::move(param));
+        intermediate_->size += 2;
+        intermediate_->params.push_back(std::move(param));
     }
 
     void DX12RootSignature::addDescriptorShaderResource(uint_fast32_t shaderRegister)
@@ -98,9 +98,8 @@ namespace Takoyaki
         param.Descriptor.ShaderRegister = shaderRegister;
 
         // Root descriptors (64-bit GPU virtual addresses) cost 2 DWORDs each.
-        size_ += 2;
-
-        params_.push_back(std::move(param));
+        intermediate_->size += 2;
+        intermediate_->params.push_back(std::move(param));
     }
 
     uint_fast32_t DX12RootSignature::addDescriptorTable()
@@ -111,38 +110,38 @@ namespace Takoyaki
         param.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
         // Descriptor tables cost 1 DWORD each.
-        size_ ++;
+        intermediate_->size++;
 
-        uint_fast32_t res = static_cast<uint_fast32_t>(ranges_.size());
+        uint_fast32_t res = static_cast<uint_fast32_t>(intermediate_->ranges.size());
 
-        ranges_.resize(res + 1);
+        intermediate_->ranges.resize(res + 1);
 
         // hide index in ranges_ here
         param.DescriptorTable.NumDescriptorRanges = res;
 
-        params_.push_back(std::move(param));
+        intermediate_->params.push_back(std::move(param));
 
         return static_cast<uint_fast32_t>(res);
     }
 
     void DX12RootSignature::addDescriptorRange(uint_fast32_t index, D3D12_DESCRIPTOR_RANGE_TYPE type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister)
     {
-        auto& range = ranges_[index];
+        auto& range = intermediate_->ranges[index];
 
         range.add(type, numDescriptors, baseShaderRegister);
     }
 
     bool DX12RootSignature::create(const std::shared_ptr<DX12Device>& device)
     {
-        if (params_.size() > 0) {
-            if (size_ > 64) {
+        if ((intermediate_) && (intermediate_->params.size() > 0)) {
+            if (intermediate_->size > 64) {
                 throw new std::runtime_error("Root signature cannot be larger than 64 DWORD");
             }
 
             // the descriptors tables should be fully defined by now
-            for (auto& param : params_) {
+            for (auto& param : intermediate_->params) {
                 if (param.ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE) {
-                    auto& range = ranges_[param.DescriptorTable.NumDescriptorRanges];
+                    auto& range = intermediate_->ranges[param.DescriptorTable.NumDescriptorRanges];
 
                     param.DescriptorTable.NumDescriptorRanges = range.size();
                     param.DescriptorTable.pDescriptorRanges = range.getDescs();
@@ -151,9 +150,9 @@ namespace Takoyaki
 
             D3D12_ROOT_SIGNATURE_DESC sigDesc;
 
-            sigDesc.NumParameters = static_cast<uint_fast32_t>(params_.size());
-            sigDesc.pParameters = &params_.front();
-            sigDesc.Flags = flags_;
+            sigDesc.NumParameters = static_cast<uint_fast32_t>(intermediate_->params.size());
+            sigDesc.pParameters = &intermediate_->params.front();
+            sigDesc.Flags = intermediate_->flags;
 
             // TODO: add sampler support
             sigDesc.NumStaticSamplers = 0;
@@ -163,7 +162,9 @@ namespace Takoyaki
             Microsoft::WRL::ComPtr<ID3DBlob> pError;
 
             DXCheckThrow(D3D12SerializeRootSignature(&sigDesc, D3D_ROOT_SIGNATURE_VERSION_1, pSignature.GetAddressOf(), pError.GetAddressOf()));
-            DXCheckThrow(device->getDevice()->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&rootSignature_)));
+            DXCheckThrow(device->getDXDevice()->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&rootSignature_)));
+
+            intermediate_.reset();
 
             return true;
         }

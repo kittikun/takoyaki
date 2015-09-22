@@ -28,6 +28,7 @@
 #include "device.h"
 #include "descriptor_heap.h"
 #include "dx12_input_layout.h"
+#include "dx12_pipeline_state.h"
 #include "dx12_root_signature.h"
 #include "texture.h"
 
@@ -37,19 +38,20 @@
 namespace Takoyaki
 {
     // TODO: Not thread safe, implement some protection later
-    class DX12DeviceContext : public std::enable_shared_from_this<DX12DeviceContext>
+    class DX12Context : public std::enable_shared_from_this<DX12Context>
     {
-        DX12DeviceContext(const DX12DeviceContext&) = delete;
-        DX12DeviceContext& operator=(const DX12DeviceContext&) = delete;
-        DX12DeviceContext(DX12DeviceContext&&) = delete;
-        DX12DeviceContext& operator=(DX12DeviceContext&&) = delete;
+        DX12Context(const DX12Context&) = delete;
+        DX12Context& operator=(const DX12Context&) = delete;
+        DX12Context(DX12Context&&) = delete;
+        DX12Context& operator=(DX12Context&&) = delete;
 
     public:
         using InputLayoutReturn = std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>;
         using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
+        using PipelineStateReturn = std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>;
         using RootSignatureReturn = std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>;
 
-        DX12DeviceContext(std::weak_ptr<DX12Device>);
+        DX12Context(std::weak_ptr<DX12Device>);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
@@ -66,10 +68,12 @@ namespace Takoyaki
         // Internal & External
 
         void createInputLayout(const std::string&);
+        void createPipelineState(const std::string&, const std::string&);
         void createRootSignature(const std::string&);
 
         auto getInputLayout(const std::string&) -> InputLayoutReturn;
-        auto getRootSignature(const std::string&) ->RootSignatureReturn;
+        auto getPipelineState(const std::string&) -> PipelineStateReturn;
+        auto getRootSignature(const std::string&) -> RootSignatureReturn;
 
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
@@ -84,6 +88,7 @@ namespace Takoyaki
 
         RWLockMap<std::string, DX12ConstantBuffer> constantBuffers_;
         RWLockMap<std::string, DX12InputLayout> inputLayouts_;
+        RWLockMap<std::string, DX12PipelineState> pipelineStates_;
         RWLockMap<std::string, DX12RootSignature> rootSignatures_;
         ThreadSafeStack<DX12Texture> textures_;
     };

@@ -20,13 +20,12 @@
 
 #pragma once
 
-#include <memory>
-
 namespace Takoyaki
 {
     class ConstantTableImpl;
     class InputLayoutImpl;
-    class DX12DeviceContext;
+    class DX12Context;
+    class PipelineStateImpl;
     class RenderComponent;
     class RootSignatureImpl;
     class ThreadPool;
@@ -39,7 +38,7 @@ namespace Takoyaki
         RendererImpl& operator=(RendererImpl&&) = delete;
 
     public:
-        RendererImpl(const std::shared_ptr<DX12DeviceContext>&, const std::shared_ptr<ThreadPool>&);
+        RendererImpl(const std::shared_ptr<DX12Context>&, const std::shared_ptr<ThreadPool>&);
         ~RendererImpl();
 
         //////////////////////////////////////////////////////////////////////////
@@ -52,6 +51,7 @@ namespace Takoyaki
         void addRenderComponent(std::shared_ptr<RenderComponent>&&);
 
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
+        std::unique_ptr<PipelineStateImpl> createPipelineState(const std::string&, const std::string&);
         std::unique_ptr<RootSignatureImpl> createRootSignature(const std::string&);
 
         void commit();
@@ -62,7 +62,7 @@ namespace Takoyaki
         void commitMain();
 
     private:
-        std::shared_ptr<DX12DeviceContext> context_;
+        std::shared_ptr<DX12Context> context_;
         std::shared_ptr<ThreadPool> threadPool_;
         std::vector<std::shared_ptr<RenderComponent>> renderable_;
     };

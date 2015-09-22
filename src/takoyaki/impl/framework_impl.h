@@ -56,6 +56,7 @@ namespace Takoyaki
         IO io_;
         std::shared_ptr<ThreadPool> threadPool_;
         std::shared_ptr<DX12Device> device_;
+        std::shared_ptr<DX12Context> context_;
         ShaderManager shaderManager_;
         std::shared_ptr<RendererImpl> renderer_;
     };

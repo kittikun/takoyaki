@@ -25,6 +25,7 @@
 #include <framework.h>
 #include <glm/glm.hpp>
 #include <input_layout.h>
+#include <pipeline_state.h>
 #include <render_component.h>
 #include <root_signature.h>
 
@@ -55,10 +56,11 @@ void appMain(std::weak_ptr<Takoyaki::Framework> frmwk)
 {
     auto renderer = frmwk.lock()->getRenderer();
 
-    // create root signature
+    // create root signature that will be using the input assembler 
+    // and only allow one constant to be accessed from the vertex shader
     auto rs = renderer->createRootSignature("SimpleSignature");
     D3D12_ROOT_SIGNATURE_FLAGS rsFlags =
-        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | // Only the input assembler stage needs access to the constant buffer.
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
         D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
         D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
         D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
@@ -68,6 +70,10 @@ void appMain(std::weak_ptr<Takoyaki::Framework> frmwk)
     rs->addDescriptorRange(index, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
     rs->setFlags(rsFlags);
 
+    // one pipeline object using the previously created root signature
+    auto ps = renderer->createPipelineState("SimpleState", "SimpleSignature");
+
+    // only commit after all root signatures and pipeline states have been created
     renderer->commit();
 
     // create vertex layout

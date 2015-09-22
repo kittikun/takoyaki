@@ -21,9 +21,6 @@
     <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\shader_manager.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp">
       <Filter>Source Files\impl</Filter>
     </ClCompile>
@@ -72,9 +69,6 @@
     <ClCompile Include="..\src\takoyaki\dx12\device.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\device_context.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\texture.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
@@ -105,12 +99,12 @@
     <ClCompile Include="..\src\takoyaki\public\pipeline_state.cpp">
       <Filter>Source Files\public</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\context.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\shader_manager.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h">
@@ -176,9 +170,6 @@
     <ClInclude Include="..\src\takoyaki\dx12\device.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\device_context.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\texture.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
@@ -208,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\public\pipeline_state.h">
       <Filter>Source Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\context.h">
+      <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

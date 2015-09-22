@@ -37,6 +37,12 @@ namespace Takoyaki
         DX12InputLayout(DX12InputLayout&&);
         ~DX12InputLayout();
 
+        //////////////////////////////////////////////////////////////////////////
+        // Internal usage:
+        D3D12_INPUT_LAYOUT_DESC getInputLayout();
+
+        //////////////////////////////////////////////////////////////////////////
+        // Internal & External
         void addInput(const std::string&, EFormat, uint_fast32_t);
 
     private:

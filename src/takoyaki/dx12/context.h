@@ -31,13 +31,14 @@
 #include "dx12_pipeline_state.h"
 #include "dx12_root_signature.h"
 #include "texture.h"
-
 #include "../rwlock_map.h"
 #include "../thread_safe_stack.h"
+#include "../public/definitions.h"
 
 namespace Takoyaki
 {
-    // TODO: Not thread safe, implement some protection later
+    class ThreadPool;
+
     class DX12Context : public std::enable_shared_from_this<DX12Context>
     {
         DX12Context(const DX12Context&) = delete;
@@ -46,29 +47,33 @@ namespace Takoyaki
         DX12Context& operator=(DX12Context&&) = delete;
 
     public:
+        using DescriptorHeapRTV = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
+        using DescriptorHeapSR = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
         using InputLayoutReturn = std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>;
         using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
         using PipelineStateReturn = std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>;
         using RootSignatureReturn = std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>;
 
-        DX12Context(std::weak_ptr<DX12Device>);
+        DX12Context(const std::shared_ptr<DX12Device>&, const std::shared_ptr<ThreadPool>&);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
 
         // resource creation
+        void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
         DX12ConstantBuffer& createConstanBuffer(const std::string&);
-        DX12Texture& CreateTexture();
+        DX12Texture& createTexture();
 
-        // Get Heap collections
-        DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>& getRTVDescHeapCollection() { return descHeapRTV_; }
-        DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>& getSRVDescHeapCollection() { return descHeapSRV_; }
+        // Get
+        DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
+        DescriptorHeapSR& getSRVDescHeapCollection() { return descHeapSRV_; }
+        D3D12_SHADER_BYTECODE getShader(EShaderType, const std::string&); // warning, will yield until shader is found
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
 
         void createInputLayout(const std::string&);
-        void createPipelineState(const std::string&, const std::string&);
+        void createPipelineState(const std::string&, const PipelineStateDesc&);
         void createRootSignature(const std::string&);
 
         auto getInputLayout(const std::string&) -> InputLayoutReturn;
@@ -82,14 +87,29 @@ namespace Takoyaki
         auto getConstantBuffer(const std::string&) -> ConstantBufferReturn;
 
     private:
-        std::weak_ptr<DX12Device> owner_;
-        DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV> descHeapRTV_;
-        DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV> descHeapSRV_;
+        D3D12_SHADER_BYTECODE getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>&, const std::string&);
+        void commitMain(const std::string& name);
+
+    private:
+        std::shared_ptr<DX12Device> device_;
+        std::shared_ptr<ThreadPool> threadPool_;
+
+        DescriptorHeapRTV descHeapRTV_;
+        DescriptorHeapSR descHeapSRV_;
 
         RWLockMap<std::string, DX12ConstantBuffer> constantBuffers_;
         RWLockMap<std::string, DX12InputLayout> inputLayouts_;
         RWLockMap<std::string, DX12PipelineState> pipelineStates_;
         RWLockMap<std::string, DX12RootSignature> rootSignatures_;
+
+        // use multiples maps to allow same name in different categories
+        RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderCompute_;
+        RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderDomain_;
+        RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderHull_;
+        RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderGeometry_;
+        RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderPixel_;
+        RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderVertex_;
+
         ThreadSafeStack<DX12Texture> textures_;
     };
 } // namespace Takoyaki

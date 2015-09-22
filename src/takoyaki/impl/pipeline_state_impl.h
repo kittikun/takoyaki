@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include "../dx12/dx12_pipeline_state.h"
+
 namespace Takoyaki
 {
     class DX12PipelineState;
@@ -36,7 +38,7 @@ namespace Takoyaki
         ~PipelineStateImpl();
 
     private:
-        DX12PipelineState& layout_;
+        DX12PipelineState& state_;
         boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
     };
 }

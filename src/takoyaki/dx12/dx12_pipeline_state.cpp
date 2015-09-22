@@ -21,14 +21,17 @@
 #include "pch.h"
 #include "dx12_pipeline_state.h"
 
+#include "device.h"
 #include "dxutility.h"
+#include "context.h"
+#include "dx12_root_signature.h"
 
 namespace Takoyaki
 {
-    DX12PipelineState::DX12PipelineState(const std::string& rs)
-        : intermediate_{ std::make_unique<Intermediate>() }
+    DX12PipelineState::DX12PipelineState(const PipelineStateDesc& desc)
+        : intermediate_{ std::make_unique<PipelineStateDesc>(desc) }
     {
-        intermediate_->rootSignature = rs;
+
     }
 
     DX12PipelineState::DX12PipelineState(DX12PipelineState&& other)
@@ -41,10 +44,75 @@ namespace Takoyaki
     DX12PipelineState::~DX12PipelineState() = default;
 
     // device has already been locked from context
-    bool DX12PipelineState::create(const std::shared_ptr<DX12Device>& device)
+    void DX12PipelineState::create(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<DX12Context>& context)
     {
 
-        return false;
+        //state.InputLayout = { inputLayout, _countof(inputLayout) };
+        //state.pRootSignature = m_rootSignature.Get();
+        //state.VS = { &m_vertexShader[0], m_vertexShader.size() };
+        //state.PS = { &m_pixelShader[0], m_pixelShader.size() };
+        //state.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+        //state.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        //state.DepthStencilState.DepthEnable = FALSE;
+        //state.DepthStencilState.StencilEnable = FALSE;
+        //state.SampleMask = UINT_MAX;
+        //state.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        //state.NumRenderTargets = 1;
+        //state.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+        //state.SampleDesc.Count = 1;
+
+
+        if (intermediate_) {
+            D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
+
+            // root signature
+            {
+                auto rs = context->getRootSignature(intermediate_->rootSignature);
+
+                desc.pRootSignature = rs.first.getRootSignature();
+            }
+
+            // shaders
+            auto found = intermediate_->shaders.find(EShaderType::TYPE_DOMAIN);
+
+            if (found != intermediate_->shaders.end()) {
+                desc.DS = context->getShader(found->first, found->second);
+            }
+
+            found = intermediate_->shaders.find(EShaderType::TYPE_GEOMETRY);
+
+            if (found != intermediate_->shaders.end()) {
+                desc.GS = context->getShader(found->first, found->second);
+            }
+
+            found = intermediate_->shaders.find(EShaderType::TYPE_HULL);
+
+            if (found != intermediate_->shaders.end()) {
+                desc.HS = context->getShader(found->first, found->second);
+            }
+
+            found = intermediate_->shaders.find(EShaderType::TYPE_PIXEL);
+
+            if (found != intermediate_->shaders.end()) {
+                desc.PS = context->getShader(found->first, found->second);
+            }
+
+            found = intermediate_->shaders.find(EShaderType::TYPE_VERTEX);
+
+            if (found != intermediate_->shaders.end()) {
+                desc.VS = context->getShader(found->first, found->second);
+            }
+
+            // input layouts
+            {
+                auto layout = context->getInputLayout(intermediate_->inputLayout);
+
+                desc.InputLayout = layout.first.getInputLayout();
+            }
+
+            DXCheckThrow(device->getDXDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&state_)));
+            intermediate_.reset();
+        }
     }
 
 } // namespace Takoyaki

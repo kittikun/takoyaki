@@ -19,10 +19,11 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "device_context.h"
+#include "context.h"
 
 #include <boost/format.hpp>
 
+#include "../thread_pool.h"
 #include "../utility/log.h"
 
 namespace Takoyaki
@@ -30,24 +31,79 @@ namespace Takoyaki
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
 
-    DX12Context::DX12Context(std::weak_ptr<DX12Device> owner)
-        : owner_ { owner }
-        , descHeapRTV_{ owner }
-        , descHeapSRV_{ owner }
+    DX12Context::DX12Context(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<ThreadPool>& threadPool)
+        : device_ { device }
+        , threadPool_{ threadPool }
+        , descHeapRTV_{ device }
+        , descHeapSRV_{ device }
     {
+
+    }
+
+    void DX12Context::addShader(EShaderType type, const std::string& name, D3D12_SHADER_BYTECODE&& bc)
+    {
+        switch (type) {
+            case Takoyaki::EShaderType::TYPE_COMPUTE:
+            {
+                auto lock = shaderVertex_.getWriteLock();
+
+                shaderCompute_.insert(std::make_pair(name, std::move(bc)));
+            }
+            break;
+
+            case Takoyaki::EShaderType::TYPE_DOMAIN:
+            {
+                auto lock = shaderVertex_.getWriteLock();
+
+                shaderDomain_.insert(std::make_pair(name, std::move(bc)));
+            }
+            break;
+
+            case Takoyaki::EShaderType::TYPE_GEOMETRY:
+            {
+                auto lock = shaderVertex_.getWriteLock();
+
+                shaderGeometry_.insert(std::make_pair(name, std::move(bc)));
+            }
+            break;
+
+            case Takoyaki::EShaderType::TYPE_HULL:
+            {
+                auto lock = shaderVertex_.getWriteLock();
+
+                shaderPixel_.insert(std::make_pair(name, std::move(bc)));
+            }
+            break;
+
+            case Takoyaki::EShaderType::TYPE_PIXEL:
+            {
+                auto lock = shaderVertex_.getWriteLock();
+
+                shaderPixel_.insert(std::make_pair(name, std::move(bc)));
+
+            }
+            break;
+
+            case Takoyaki::EShaderType::TYPE_VERTEX:
+            {
+                auto lock = shaderVertex_.getWriteLock();
+
+                shaderVertex_.insert(std::make_pair(name, std::move(bc)));
+            }
+            break;
+        }
     }
 
     void DX12Context::commit()
     {
-        auto device = owner_.lock();
-        auto lock = device->getLock();
+        auto lock = device_->getLock();
 
         // create all root signatures
         {
             auto lock = rootSignatures_.getReadLock();
 
             for (auto& rs : rootSignatures_) {
-                auto res = rs.second.create(device);
+                auto res = rs.second.create(device_);
 
                 if (!res) {
                     auto fmt = boost::format("RootSignature contains no parameters: %1%") % rs.first;
@@ -56,6 +112,21 @@ namespace Takoyaki
                 }
             }
         }
+
+        // create all pipeline state
+        {
+            auto lock = pipelineStates_.getReadLock();
+
+            for (auto& state : pipelineStates_)
+                threadPool_->submit(std::bind(&DX12Context::commitMain, this, state.first));
+        }
+    }
+
+    void DX12Context::commitMain(const std::string& name)
+    {
+        auto pair = getPipelineState(name);
+
+        pair.first.create(device_, shared_from_this());
     }
 
     DX12ConstantBuffer& DX12Context::createConstanBuffer(const std::string& name)
@@ -78,11 +149,11 @@ namespace Takoyaki
         inputLayouts_.insert(std::make_pair(name, DX12InputLayout{}));
     }
 
-    void DX12Context::createPipelineState(const std::string& name, const std::string& rs)
+    void DX12Context::createPipelineState(const std::string& name, const PipelineStateDesc& desc)
     {
         auto lock = pipelineStates_.getWriteLock();
 
-        pipelineStates_.insert(std::make_pair(name, DX12PipelineState{ rs }));
+        pipelineStates_.insert(std::make_pair(name, DX12PipelineState{ desc }));
     }
 
     void DX12Context::createRootSignature(const std::string& name)
@@ -92,7 +163,7 @@ namespace Takoyaki
         rootSignatures_.insert(std::make_pair(name, DX12RootSignature{}));
     }
 
-    DX12Texture& DX12Context::CreateTexture()
+    DX12Texture& DX12Context::createTexture()
     {
         return textures_.push(DX12Texture{ shared_from_this() });
     }
@@ -155,5 +226,54 @@ namespace Takoyaki
         }
 
         return std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
+    }
+
+    D3D12_SHADER_BYTECODE DX12Context::getShader(EShaderType type, const std::string& name)
+    {
+        D3D12_SHADER_BYTECODE res;
+
+        switch (type) {
+            case Takoyaki::EShaderType::TYPE_COMPUTE:
+                res = getShaderImpl(shaderCompute_, name);
+                break;
+
+            case Takoyaki::EShaderType::TYPE_DOMAIN:
+                res = getShaderImpl(shaderDomain_, name);
+                break;
+
+            case Takoyaki::EShaderType::TYPE_GEOMETRY:
+                res = getShaderImpl(shaderGeometry_, name);
+                break;
+
+            case Takoyaki::EShaderType::TYPE_HULL:
+                res = getShaderImpl(shaderHull_, name);
+                break;
+
+            case Takoyaki::EShaderType::TYPE_PIXEL:
+                res = getShaderImpl(shaderPixel_, name);
+                break;
+
+            case Takoyaki::EShaderType::TYPE_VERTEX:
+                res = getShaderImpl(shaderVertex_, name);
+                break;
+        }
+
+        return res;
+    }
+
+    D3D12_SHADER_BYTECODE DX12Context::getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>& map, const std::string& name)
+    {
+        // called when trying to create a PSO so if needed, wait until shader is compiled
+        auto lock = map.getReadLock();
+        auto found = map.find(name);
+
+        while (found == map.end()) {
+            lock.unlock();
+            std::this_thread::yield();
+            lock.lock();
+            found = map.find(name);
+        }
+
+        return found->second;
     }
 } // namespace Takoyaki

@@ -22,6 +22,8 @@
 
 #include <functional>
 #include <string>
+#include <unordered_map>
+#include <glm/glm.hpp>
 
 namespace Takoyaki
 {
@@ -51,5 +53,44 @@ namespace Takoyaki
         WINDOW_SIZE,            // glm::vec2
         WINDOW_ORIENTATION,     // DisplayOrientation
         WINDOW_DPI
+    };
+
+    enum class EShaderType
+    {
+        TYPE_COMPUTE,
+        TYPE_DOMAIN,
+        TYPE_GEOMETRY,
+        TYPE_HULL,
+        TYPE_PIXEL,
+        TYPE_VERTEX
+    };
+
+    struct FrameworkDesc
+    {
+        uint_fast32_t           bufferCount;
+        EDisplayOrientation     currentOrientation;
+        EDisplayOrientation     nativeOrientation;
+        uint_fast32_t           numWorkerThreads;
+        EDeviceType             type;
+        void*                   windowHandle;
+        glm::vec2               windowSize;
+        float                   windowDpi;
+        LoadFileAsyncFunc       loadAsyncFunc;
+    };
+
+    struct PipelineStateDesc
+    {
+        std::string rootSignature;
+        std::string inputLayout;
+        std::unordered_map<EShaderType, std::string> shaders;
+    };
+
+    struct ShaderDesc
+    {
+        std::string name;
+        EShaderType type;
+        std::string path;
+        std::string entry;
+        bool debug;
     };
 } // namespace Takoyaki

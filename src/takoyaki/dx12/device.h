@@ -50,7 +50,6 @@ namespace Takoyaki
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
-        std::weak_ptr<DX12Context> getContext() { return context_; }
         const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
         std::unique_lock<std::mutex> getLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
 

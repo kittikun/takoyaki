@@ -59,14 +59,17 @@ namespace Takoyaki
 
     void IO::loadAsyncFile(const std::string& filename, const LoadResultFunc& func)
     {
+        size_t initial;
+
         // only protect access to the map
         {
             auto lock = mapQueued_.getWriteLock();
-
-            mapQueued_.insert({ filename, func });
+            initial = mapQueued_[filename].size();
+            mapQueued_[filename].push_back(func);
         }
 
-        loadFileAsyncFunc_(makeWinPath(filename));
+        if (initial == 0)
+            loadFileAsyncFunc_(makeWinPath(filename));
     }
 
     void IO::loadAsyncFileResult(const std::string& filename, const std::vector<uint8_t>& res)
@@ -75,12 +78,16 @@ namespace Takoyaki
         auto found = mapQueued_.find(filename);
 
         if (found != mapQueued_.end()) {
-            auto func = found->second;
+            auto funcs = found->second;
             mapQueued_.erase(found);
             lock.unlock();
-            func(res);
+
+            for (auto func : funcs)
+                func(res);
         } else {
-            throw new std::runtime_error("IO::loadAsyncFileResult, key not found");
+            auto fmt = boost::format("IO::loadAsyncFileResult, key not found %1%") % filename;
+
+            throw new std::runtime_error(boost::str(fmt));
         }
     }
 } // namespace Takoyaki

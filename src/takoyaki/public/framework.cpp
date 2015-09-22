@@ -33,6 +33,11 @@ namespace Takoyaki
 
     Framework::~Framework() = default;
 
+    void Framework::compileShader(const ShaderDesc& desc)
+    {
+        impl_->compileShader(desc);
+    }
+
     std::unique_ptr<Renderer> Framework::getRenderer()
     {
         return std::make_unique<Renderer>(impl_->getRenderer());

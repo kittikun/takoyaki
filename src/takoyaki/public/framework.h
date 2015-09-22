@@ -26,7 +26,6 @@
 #include <memory>
 #include <vector>
 #include <boost/any.hpp>
-#include <glm/glm.hpp>
 
 #include "definitions.h"
 
@@ -34,19 +33,6 @@ namespace Takoyaki
 {
     class FrameworkImpl;
     class Renderer;
-
-    struct FrameworkDesc
-    {
-        uint_fast32_t           bufferCount;
-        EDisplayOrientation     currentOrientation;
-        EDisplayOrientation     nativeOrientation;
-        uint_fast32_t           numWorkerThreads;
-        EDeviceType             type;
-        void*                   windowHandle;
-        glm::vec2               windowSize;
-        float                   windowDpi;
-        LoadFileAsyncFunc       loadAsyncFunc;
-    };
 
     class Framework : public std::enable_shared_from_this<Framework>
     {
@@ -72,6 +58,7 @@ namespace Takoyaki
 
         //////////////////////////////////////////////////////////////////////////
         // App should use those
+        void compileShader(const ShaderDesc& desc);
 
         std::unique_ptr<Renderer> getRenderer();
 

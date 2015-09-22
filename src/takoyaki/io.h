@@ -54,7 +54,7 @@ namespace Takoyaki
         void loadAsyncFileResult(const std::string&, const std::vector<uint8_t>&);
     private:
         std::mutex mutex_;
-        RWLockMap<std::string, LoadResultFunc> mapQueued_;
+        RWLockMap<std::string, std::vector<LoadResultFunc>> mapQueued_;
         LoadFileAsyncFunc loadFileAsyncFunc_;
     };
 } // namespace Takoyaki

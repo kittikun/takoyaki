@@ -21,18 +21,15 @@
 #include "pch.h"
 #include "pipeline_state_impl.h"
 
-#include "../dx12/dx12_pipeline_state.h"
-
 namespace Takoyaki
 {
-    PipelineStateImpl::PipelineStateImpl(DX12PipelineState& layout, boost::shared_lock<boost::shared_mutex> lock)
-        : layout_(layout)
+    PipelineStateImpl::PipelineStateImpl(DX12PipelineState& state, boost::shared_lock<boost::shared_mutex> lock)
+        : state_(state)
         , bufferLock_(std::move(lock))
     {
 
     }
 
     PipelineStateImpl::~PipelineStateImpl() = default;
-
 }
 // namespace Takoyaki

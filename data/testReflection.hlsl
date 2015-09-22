@@ -1,4 +1,3 @@
-// Clear color buffer
 // Just a test for d3dcompile
 
 #ifndef CLEAR_HLSL

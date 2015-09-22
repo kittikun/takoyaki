@@ -1,6 +1,9 @@
 {
-  "testReflection": [
-    { "type": "vs", "path": "data/testReflection.hlsl", "main": "VS_Main" },
-    { "type": "ps", "path": "data/testReflection.hlsl", "main": "PS_Main" }
+  "global": "debug",
+  "vs": [
+    { "name": "testVertex", "path": "data/testReflection.hlsl", "entry": "VS_Main", "flags":"debug" }
+  ],
+  "ps" : [
+    { "name": "testPixel", "path": "data/testReflection.hlsl", "entry": "PS_Main" }
   ]
 }

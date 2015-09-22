@@ -40,6 +40,15 @@ namespace Takoyaki
         DX12RootSignature(DX12RootSignature&&);
         ~DX12RootSignature();
 
+        //////////////////////////////////////////////////////////////////////////
+        // Internal usage:
+
+        bool create(const std::shared_ptr<DX12Device>&);
+        ID3D12RootSignature* getRootSignature() { return rootSignature_.Get(); }
+
+        //////////////////////////////////////////////////////////////////////////
+        // Internal & External
+
         void addConstant(uint_fast32_t, uint_fast32_t);
         void addDescriptorConstantBuffer(uint_fast32_t);
         void addDescriptorUnorderedAccess(uint_fast32_t);
@@ -50,10 +59,6 @@ namespace Takoyaki
         void addDescriptorRange(uint_fast32_t, D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
 
         void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags) { intermediate_->flags = flags; }
-
-        // device has already been locked from context
-        bool create(const std::shared_ptr<DX12Device>&);
-
 
     private:
         struct Intermediate

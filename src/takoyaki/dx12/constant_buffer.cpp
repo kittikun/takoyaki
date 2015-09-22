@@ -25,7 +25,7 @@
 #include <glm/glm.hpp>
 #include <boost/format.hpp>
 
-#include "device_context.h"
+#include "context.h"
 #include "../utility/log.h"
 
 namespace Takoyaki
@@ -57,7 +57,7 @@ namespace Takoyaki
         var.offset = offset;
         var.size = size;
 
-        offsetMap_.insert(std::make_pair(name, std::move(var)));
+        offsetMap_.insert({ name, std::move(var) });
         buffer_.resize(buffer_.size() + size);
     }
 

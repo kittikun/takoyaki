@@ -26,5 +26,6 @@ namespace Takoyaki
 {
     void DXCheckThrow(HRESULT);
     DXGI_FORMAT FormatToDXGIFormat(EFormat);
+    std::string GetDXError(HRESULT);
     float ConvertDipsToPixels(float dips, float dpi);
 } // namespace Takoyaki

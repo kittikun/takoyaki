@@ -23,17 +23,15 @@
 
 #include "constant_table_impl.h"
 #include "input_layout_impl.h"
-#include "pipeline_state_impl.h"
 #include "root_signature_impl.h"
 #include "../thread_pool.h"
-#include "../dx12/device_context.h"
+#include "../dx12/context.h"
 #include "../public/render_component.h"
 
 namespace Takoyaki
 {
-    RendererImpl::RendererImpl(const std::shared_ptr<DX12Context>& context, const std::shared_ptr<ThreadPool>& threadPool )
+    RendererImpl::RendererImpl(const std::shared_ptr<DX12Context>& context)
         : context_{ context }
-        , threadPool_{ threadPool }
     {
 
     }
@@ -47,12 +45,6 @@ namespace Takoyaki
 
     void RendererImpl::commit()
     {
-        // run creation on another thread
-        threadPool_->submit(std::bind(&RendererImpl::commitMain, this));
-    }
-
-    void RendererImpl::commitMain()
-    {
         context_->commit();
     }
 
@@ -65,13 +57,9 @@ namespace Takoyaki
         return std::make_unique<InputLayoutImpl>(pair.first, std::move(pair.second));
     }
 
-    std::unique_ptr<PipelineStateImpl> RendererImpl::createPipelineState(const std::string& name, const std::string& rs)
+    void RendererImpl::createPipelineState(const std::string& name, const PipelineStateDesc& desc)
     {
-        context_->createPipelineState(name, rs);
-
-        auto pair = context_->getPipelineState(name);
-
-        return std::make_unique<PipelineStateImpl>(pair.first, std::move(pair.second));
+        context_->createPipelineState(name, desc);
     }
 
     std::unique_ptr<RootSignatureImpl> RendererImpl::createRootSignature(const std::string& name)

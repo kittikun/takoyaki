@@ -18,10 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <array>
 #include <memory>
 
 #include <constant_table.h>
-#include <d3d12.h>
+#include <d3d12.h>  // will be removed later once vulkan abstraction has been added
 #include <framework.h>
 #include <glm/glm.hpp>
 #include <input_layout.h>
@@ -52,12 +53,33 @@ public:
     }
 };
 
-void appMain(std::weak_ptr<Takoyaki::Framework> frmwk)
+void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
 {
-    auto renderer = frmwk.lock()->getRenderer();
+    auto renderer = framework->getRenderer();
+
+    // first compile shaders for this sample
+    std::array<Takoyaki::ShaderDesc, 2> shDescs;
+
+    shDescs[0].name = "SimpleVS";
+    shDescs[0].path = "data/SimpleVS.hlsl";
+    shDescs[0].type = Takoyaki::EShaderType::TYPE_VERTEX;
+    shDescs[0].entry = "main";
+    shDescs[1].name = "SimplePS";
+    shDescs[1].path = "data/SimplePS.hlsl";
+    shDescs[1].type = Takoyaki::EShaderType::TYPE_PIXEL;
+    shDescs[1].entry = "main";
+
+    for (auto& shDesc : shDescs)
+        framework->compileShader(shDesc);
+
+    // create vertex layout
+    auto layout = renderer->createInputLayout("SimpleVertex");
+    layout->addInput("POSITION", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
+    layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
 
     // create root signature that will be using the input assembler 
     // and only allow one constant to be accessed from the vertex shader
+    // will be removed later once vulkan abstraction has been added
     auto rs = renderer->createRootSignature("SimpleSignature");
     D3D12_ROOT_SIGNATURE_FLAGS rsFlags =
         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -70,17 +92,17 @@ void appMain(std::weak_ptr<Takoyaki::Framework> frmwk)
     rs->addDescriptorRange(index, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
     rs->setFlags(rsFlags);
 
-    // one pipeline object using the previously created root signature
-    auto ps = renderer->createPipelineState("SimpleState", "SimpleSignature");
+    // one pipeline state object using the previously created data
+    Takoyaki::PipelineStateDesc psDesc = {};
 
-    // only commit after all root signatures and pipeline states have been created
+    psDesc.inputLayout = "SimpleVertex";
+    psDesc.rootSignature = "SimpleSignature";
+    psDesc.shaders[Takoyaki::EShaderType::TYPE_VERTEX] = shDescs[0].name;
+    psDesc.shaders[Takoyaki::EShaderType::TYPE_PIXEL] = shDescs[1].name;
+    renderer->createPipelineState("SimpleState", psDesc);
+
+    // compile PSO 
     renderer->commit();
 
-    // create vertex layout
-    auto layout = renderer->createInputLayout("SimpleVertex");
-    layout->addInput("POSITION", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
-    layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
-
     renderer->addRenderComponent(std::make_unique<Test>());
-
 }

@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5EF45E44-68BD-448F-8A9D-3F4E9B8C1E59}"
 	ProjectSection(SolutionItems) = preProject
-		Performance1.psess = Performance1.psess
+		..\appveyor.yml = ..\appveyor.yml
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Takoyaki", "Takoyaki.vcxproj", "{10A79E06-CADF-4496-AEDC-063E4AAA0C6F}"

@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "constant_table_impl.h"
 
-#include "../dx12/device_context.h"
+#include "../dx12/context.h"
 
 namespace Takoyaki
 {

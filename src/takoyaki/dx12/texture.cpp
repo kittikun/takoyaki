@@ -23,7 +23,7 @@
 
 #include <intsafe.h>
 
-#include "device_context.h"
+#include "context.h"
 
 namespace Takoyaki
 {

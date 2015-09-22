@@ -26,6 +26,7 @@
 
 namespace Takoyaki
 {
+    class DX12Context;
     class DX12Device;
 
     class DX12PipelineState
@@ -35,20 +36,25 @@ namespace Takoyaki
         DX12PipelineState& operator=(DX12PipelineState&&) = delete;
 
     public:
-        DX12PipelineState(const std::string&);
+        DX12PipelineState(const PipelineStateDesc&);
         DX12PipelineState(DX12PipelineState&&);
         ~DX12PipelineState();
 
+        //////////////////////////////////////////////////////////////////////////
+        // Internal usage:
+
         // device has already been locked from context
-        bool create(const std::shared_ptr<DX12Device>&);
+        void create(const std::shared_ptr<DX12Device>&, const std::shared_ptr<DX12Context>&);
+
+        //////////////////////////////////////////////////////////////////////////
+        // Internal & External
+
+        void setRootSignature(const std::string& name) { intermediate_->rootSignature = name; }
+        void setInputLayout(const std::string& name) { intermediate_->inputLayout = name; }
+        void setShader(EShaderType type, std::string& name) { intermediate_->shaders[type] = name; }
 
     private:
-        struct Intermediate
-        {
-            std::string rootSignature;
-        };
-
         Microsoft::WRL::ComPtr<ID3D12PipelineState>	state_;
-        std::unique_ptr<Intermediate> intermediate_;
+        std::unique_ptr<PipelineStateDesc> intermediate_;
     };
 } // namespace Takoyaki

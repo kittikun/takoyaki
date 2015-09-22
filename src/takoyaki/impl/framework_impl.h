@@ -21,12 +21,12 @@
 #pragma once
 
 #include "../io.h"
-#include "../dx12/shader_manager.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki
 {
     struct FrameworkDesc;
+    class DX12Context;
     class DX12Device;
     class Framework;
     class RendererImpl;
@@ -43,7 +43,7 @@ namespace Takoyaki
         FrameworkImpl();
          ~FrameworkImpl();
 
-        void initialize(const FrameworkDesc&, std::weak_ptr<Framework>);
+        void initialize(const FrameworkDesc&, const std::shared_ptr<Framework>&);
         void setProperty(EPropertyID, const boost::any&);
         void render();
         void terminate();
@@ -52,12 +52,13 @@ namespace Takoyaki
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
         std::shared_ptr<RendererImpl>& getRenderer() { return renderer_; }
 
+        void compileShader(const ShaderDesc&);
+
     private:
         IO io_;
         std::shared_ptr<ThreadPool> threadPool_;
         std::shared_ptr<DX12Device> device_;
         std::shared_ptr<DX12Context> context_;
-        ShaderManager shaderManager_;
         std::shared_ptr<RendererImpl> renderer_;
     };
 

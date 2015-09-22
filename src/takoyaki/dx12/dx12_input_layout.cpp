@@ -59,5 +59,18 @@ namespace Takoyaki
             desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
             desc.InstanceDataStepRate = 0;
         }
+
+        inputs_.push_back(desc);
     }
+
+    D3D12_INPUT_LAYOUT_DESC DX12InputLayout::getInputLayout()
+    {
+        D3D12_INPUT_LAYOUT_DESC desc;
+
+        desc.NumElements = static_cast<UINT>(inputs_.size());
+        desc.pInputElementDescs = &inputs_.front();
+
+        return desc;
+    }
+
 } // namespace Takoyaki

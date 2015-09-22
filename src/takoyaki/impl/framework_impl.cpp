@@ -22,7 +22,8 @@
 #include "framework_impl.h"
 
 #include "../dx12/device.h"
-#include "../dx12/device_context.h"
+#include "../dx12/context.h"
+#include "../dx12/shader_compiler.h"
 #include "../dx12/texture.h"
 #include "../impl/renderer_impl.h"
 #include "../public/framework.h"
@@ -30,7 +31,7 @@
 #include "../utility/log.h"
 #include "../utility/win_utility.h"
 
-extern void appMain(std::weak_ptr<Takoyaki::Framework>);
+extern void appMain(const std::shared_ptr<Takoyaki::Framework>&);
 
 namespace Takoyaki
 {
@@ -44,16 +45,24 @@ namespace Takoyaki
 
     FrameworkImpl::~FrameworkImpl() = default;
 
-    void FrameworkImpl::initialize(const FrameworkDesc& desc, std::weak_ptr<Framework> framework)
+    void FrameworkImpl::compileShader(const ShaderDesc& desc)
+    {
+        // system will use shaderlist, this is for app
+        threadPool_->submit(std::bind(&ShaderCompiler::compileShader, &io_, desc, context_));
+    }
+
+    void FrameworkImpl::initialize(const FrameworkDesc& desc, const std::shared_ptr<Framework>& framework)
     {
         LOG_IDENTIFY_THREAD;
         LOGC_INDENT_START << "Initializing Takoyaki Framework..";
+
+        threadPool_->initialize(desc.numWorkerThreads);
 
         if (desc.type == EDeviceType::DX12) {
             device_.reset(new DX12Device());
         }
 
-        context_ = std::make_shared<DX12Context>(device_);
+        context_ = std::make_shared<DX12Context>(device_, threadPool_);
 
         device_->create(desc, context_);
 
@@ -61,9 +70,11 @@ namespace Takoyaki
             throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
 
         io_.initialize(desc.loadAsyncFunc);
-        threadPool_->initialize(desc.numWorkerThreads);
-        shaderManager_.initialize(&io_, threadPool_, context_);
-        renderer_.reset(new RendererImpl(context_, threadPool_));
+
+        // start shader compilation
+        threadPool_->submit(std::bind(&ShaderCompiler::main, &io_, threadPool_, context_));
+
+        renderer_.reset(new RendererImpl(context_));
 
         LOGC_INDENT_END << "Initialization complete.";
 

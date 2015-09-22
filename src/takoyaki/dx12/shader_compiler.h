@@ -22,18 +22,14 @@
 
 #include <d3dcompiler.h>
 
+#include "../public/definitions.h"
+
 namespace Takoyaki
 {
     class DX12Context;
     class IO;
-    struct ProgramDesc;
     class ThreadPool;
-
-    struct Program
-    {
-        D3D12_SHADER_BYTECODE vs;
-        D3D12_SHADER_BYTECODE ps;
-    };
+    struct ShaderDesc;
 
     class ShaderCompiler
     {
@@ -45,13 +41,7 @@ namespace Takoyaki
         ShaderCompiler();
         ~ShaderCompiler();
 
-        void main(IO*, std::weak_ptr<ThreadPool>, std::weak_ptr<DX12Context>);
-
-    private:
-        void compileProgram(IO*, const ProgramDesc&, std::weak_ptr<DX12Context>);
-        void getShaderResources(ID3DBlob*, std::weak_ptr<DX12Context>);
-        std::string getDXShaderType(const std::string&) const;
-        void parseConstantBuffers(ID3D12ShaderReflection*, const D3D12_SHADER_DESC&, std::weak_ptr<DX12Context>);
-        void parseShaderList(const std::string&, std::vector<ProgramDesc>&) const;
+        static void main(IO*, const std::shared_ptr<ThreadPool>&, const std::shared_ptr<DX12Context>&);
+        static void compileShader(IO*, const ShaderDesc&, const std::shared_ptr<DX12Context>&);
     };
 } // namespace Takoyaki

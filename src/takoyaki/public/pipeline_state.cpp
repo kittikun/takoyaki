@@ -31,5 +31,20 @@ namespace Takoyaki
     }
 
     PipelineState::~PipelineState() = default;
+
+    void setRootSignature(const std::string&)
+    {
+
+    }
+
+    void setInputLayout(const std::string&)
+    {
+
+    }
+
+    void setShader(EShaderType, std::string&)
+    {
+
+    }
 }
 // namespace Takoyaki

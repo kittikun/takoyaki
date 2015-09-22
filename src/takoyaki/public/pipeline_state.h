@@ -39,6 +39,9 @@ namespace Takoyaki
         PipelineState(std::unique_ptr<PipelineStateImpl>);
         ~PipelineState();
 
+        void setInputLayout(const std::string&);
+        void setShader(EShaderType, std::string&);
+
     private:
         std::unique_ptr<PipelineStateImpl> impl_;
     };

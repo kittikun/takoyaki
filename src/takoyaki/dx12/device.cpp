@@ -23,12 +23,12 @@
 
 #include <thread>
 
-#include "device_context.h"
+#include "context.h"
 #include "descriptor_heap.h"
 #include "texture.h"
 #include "dxutility.h"
 #include "../utility/log.h"
-#include "../public/framework.h"
+#include "../public/definitions.h"
 
 namespace Takoyaki
 {
@@ -182,7 +182,7 @@ namespace Takoyaki
         auto context = context_.lock();
 
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
-            auto& tex = context->CreateTexture();
+            auto& tex = context->createTexture();
             auto& res = tex.getResource();
 
             DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&res)));            

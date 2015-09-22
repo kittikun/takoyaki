@@ -35,16 +35,21 @@ namespace Takoyaki
         DX12ConstantBuffer& operator=(DX12ConstantBuffer&&) = delete;
 
     public:
-        DX12ConstantBuffer(std::weak_ptr<DX12Context>);
+        explicit DX12ConstantBuffer(std::weak_ptr<DX12Context>);
         DX12ConstantBuffer(DX12ConstantBuffer&&) noexcept;
         ~DX12ConstantBuffer();
 
+        //////////////////////////////////////////////////////////////////////////
+        // Internal usage:
+
+        void addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size);
+
         const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView() { return rtv_; }
 
-        void setMatrix4x4(const std::string&, const glm::mat4x4&);
+        //////////////////////////////////////////////////////////////////////////
+        // External usage: 
 
-    private:
-        void addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size);
+        void setMatrix4x4(const std::string&, const glm::mat4x4&);
 
     private:
         struct CBVariable

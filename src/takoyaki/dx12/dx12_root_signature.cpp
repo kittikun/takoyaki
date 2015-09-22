@@ -148,22 +148,22 @@ namespace Takoyaki
                 }
             }
 
-            D3D12_ROOT_SIGNATURE_DESC sigDesc;
+            D3D12_ROOT_SIGNATURE_DESC desc;
 
-            sigDesc.NumParameters = static_cast<uint_fast32_t>(intermediate_->params.size());
-            sigDesc.pParameters = &intermediate_->params.front();
-            sigDesc.Flags = intermediate_->flags;
+            desc.NumParameters = static_cast<UINT>(intermediate_->params.size());
+            desc.pParameters = &intermediate_->params.front();
+            desc.Flags = intermediate_->flags;
 
             // TODO: add sampler support
-            sigDesc.NumStaticSamplers = 0;
-            sigDesc.pStaticSamplers = nullptr;
+            desc.NumStaticSamplers = 0;
+            desc.pStaticSamplers = nullptr;
 
             Microsoft::WRL::ComPtr<ID3DBlob> pSignature;
             Microsoft::WRL::ComPtr<ID3DBlob> pError;
 
-            DXCheckThrow(D3D12SerializeRootSignature(&sigDesc, D3D_ROOT_SIGNATURE_VERSION_1, pSignature.GetAddressOf(), pError.GetAddressOf()));
+            // device has already been locked from context
+            DXCheckThrow(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, pSignature.GetAddressOf(), pError.GetAddressOf()));
             DXCheckThrow(device->getDXDevice()->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&rootSignature_)));
-
             intermediate_.reset();
 
             return true;

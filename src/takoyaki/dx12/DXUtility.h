@@ -24,8 +24,25 @@
 
 namespace Takoyaki
 {
-    void DXCheckThrow(HRESULT);
-    DXGI_FORMAT FormatToDXGIFormat(EFormat);
-    std::string GetDXError(HRESULT);
     float ConvertDipsToPixels(float dips, float dpi);
+    void DXCheckThrow(HRESULT);
+    std::string GetDXError(HRESULT);
+
+    // enum conversions
+    D3D12_BLEND BlendToDX(EBlend);
+    D3D12_BLEND_OP BlendOpToDX(EBlendOp);
+    D3D12_COMPARISON_FUNC CompFuncToDX(ECompFunc);
+    D3D12_CULL_MODE CullModeToDX(ECullMode);
+    DXGI_FORMAT FormatToDX(EFormat);
+    D3D12_FILL_MODE FillModeToDX(EFillMode);
+    D3D12_LOGIC_OP LogicOpToDX(ELogicOp);
+    D3D12_STENCIL_OP StencilOpToDX(EStencilOp);
+    D3D12_PRIMITIVE_TOPOLOGY_TYPE TopologyToDX(ETopology);
+
+    // struct conversions
+    D3D12_BLEND_DESC BlendDescToDX(const BlendDesc&);
+    D3D12_DEPTH_STENCIL_DESC DepthStencilDescToDX(const DepthStencilDesc&);
+    DXGI_SAMPLE_DESC  MultiSampleDescToDX(const MultiSampleDesc&);
+    D3D12_RASTERIZER_DESC RasterizerDescToDX(const RasterizerDesc&);
+    D3D12_DEPTH_STENCILOP_DESC StencilOpDescToDX(const StencilOpDesc&);
 } // namespace Takoyaki

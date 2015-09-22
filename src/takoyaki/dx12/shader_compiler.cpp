@@ -33,9 +33,6 @@
 
 namespace Takoyaki
 {
-    ShaderCompiler::ShaderCompiler() = default;
-    ShaderCompiler::~ShaderCompiler() = default;
-
     std::string getDXShaderType(EShaderType type)
     {
         std::string res;

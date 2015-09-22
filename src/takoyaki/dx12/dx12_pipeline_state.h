@@ -36,7 +36,7 @@ namespace Takoyaki
         DX12PipelineState& operator=(DX12PipelineState&&) = delete;
 
     public:
-        DX12PipelineState(const PipelineStateDesc&);
+        explicit DX12PipelineState(const PipelineStateDesc&);
         DX12PipelineState(DX12PipelineState&&);
         ~DX12PipelineState();
 
@@ -52,6 +52,8 @@ namespace Takoyaki
         void setRootSignature(const std::string& name) { intermediate_->rootSignature = name; }
         void setInputLayout(const std::string& name) { intermediate_->inputLayout = name; }
         void setShader(EShaderType type, std::string& name) { intermediate_->shaders[type] = name; }
+
+    private:
 
     private:
         Microsoft::WRL::ComPtr<ID3D12PipelineState>	state_;

@@ -34,7 +34,7 @@ namespace Takoyaki
         InputLayoutImpl& operator=(InputLayoutImpl&&) = delete;
 
     public:
-        InputLayoutImpl(DX12InputLayout&, boost::shared_lock<boost::shared_mutex>);
+        explicit InputLayoutImpl(DX12InputLayout&, boost::shared_lock<boost::shared_mutex>);
         ~InputLayoutImpl();
 
         void addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep = 0);

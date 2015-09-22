@@ -50,6 +50,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\takoyaki\public\constant_table.cpp" />
+    <ClCompile Include="..\src\takoyaki\public\definition.cpp" />
     <ClCompile Include="..\src\takoyaki\public\framework.cpp" />
     <ClCompile Include="..\src\takoyaki\public\input_layout.cpp" />
     <ClCompile Include="..\src\takoyaki\public\pipeline_state.cpp" />

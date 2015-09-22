@@ -54,7 +54,7 @@ namespace Takoyaki
         using PipelineStateReturn = std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>;
         using RootSignatureReturn = std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>;
 
-        DX12Context(const std::shared_ptr<DX12Device>&, const std::shared_ptr<ThreadPool>&);
+        explicit DX12Context(const std::shared_ptr<DX12Device>&, const std::shared_ptr<ThreadPool>&);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:

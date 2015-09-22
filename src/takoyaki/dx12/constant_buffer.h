@@ -62,7 +62,5 @@ namespace Takoyaki
         std::vector<uint8_t> buffer_;
         std::unordered_map<std::string, CBVariable> offsetMap_;     // TODO: thread unsafe
         D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
-
-        friend class ShaderCompiler;
     };
 } // namespace Takoyaki

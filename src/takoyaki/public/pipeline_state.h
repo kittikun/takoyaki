@@ -36,7 +36,7 @@ namespace Takoyaki
         PipelineState& operator=(PipelineState&&) = delete;
 
     public:
-        PipelineState(std::unique_ptr<PipelineStateImpl>);
+        explicit PipelineState(std::unique_ptr<PipelineStateImpl>);
         ~PipelineState();
 
         void setInputLayout(const std::string&);

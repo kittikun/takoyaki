@@ -46,22 +46,6 @@ namespace Takoyaki
     // device has already been locked from context
     void DX12PipelineState::create(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<DX12Context>& context)
     {
-
-        //state.InputLayout = { inputLayout, _countof(inputLayout) };
-        //state.pRootSignature = m_rootSignature.Get();
-        //state.VS = { &m_vertexShader[0], m_vertexShader.size() };
-        //state.PS = { &m_pixelShader[0], m_pixelShader.size() };
-        //state.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-        //state.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        //state.DepthStencilState.DepthEnable = FALSE;
-        //state.DepthStencilState.StencilEnable = FALSE;
-        //state.SampleMask = UINT_MAX;
-        //state.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        //state.NumRenderTargets = 1;
-        //state.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
-        //state.SampleDesc.Count = 1;
-
-
         if (intermediate_) {
             D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 
@@ -109,6 +93,17 @@ namespace Takoyaki
 
                 desc.InputLayout = layout.first.getInputLayout();
             }
+
+            desc.BlendState = BlendDescToDX(intermediate_->blendState);
+            desc.DepthStencilState = DepthStencilDescToDX(intermediate_->depthStencilState);
+            desc.RasterizerState = RasterizerDescToDX(intermediate_->rasterizerState);
+            desc.SampleMask = intermediate_->sampleMask;
+            desc.PrimitiveTopologyType = TopologyToDX(intermediate_->topology);
+            desc.NumRenderTargets = intermediate_->numRenderTargets;
+            desc.SampleDesc = MultiSampleDescToDX(intermediate_->multiSampleState);
+            
+            for (size_t i = 0; i < intermediate_->formatRenderTarget.size(); ++i)
+                desc.RTVFormats[i] = FormatToDX(intermediate_->formatRenderTarget[i]);
 
             DXCheckThrow(device->getDXDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&state_)));
             intermediate_.reset();

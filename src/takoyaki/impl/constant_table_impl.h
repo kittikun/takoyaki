@@ -32,7 +32,7 @@ namespace Takoyaki
         ConstantTableImpl& operator=(ConstantTableImpl&&) = delete;
 
     public:
-        ConstantTableImpl(DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>);
+        explicit ConstantTableImpl(DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>);
         ~ConstantTableImpl();
 
         void setMatrix4x4(const std::string&, const glm::mat4x4&);

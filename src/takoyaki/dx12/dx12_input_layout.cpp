@@ -30,7 +30,8 @@ namespace Takoyaki
     DX12InputLayout::DX12InputLayout(DX12InputLayout&& other)
         : inputs_{ std::move(other.inputs_) }
     {
-
+        // kind of a waste but D3D12_INPUT_ELEMENT_DESC.SemanticName requires a LPCSTR
+        names_.reserve(16);
     }
 
     DX12InputLayout::~DX12InputLayout() = default;
@@ -41,7 +42,8 @@ namespace Takoyaki
 
         // Semantics names need to conform
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb509647(v=vs.85).aspx
-        desc.SemanticName = name.c_str();
+        names_.push_back(name);
+        desc.SemanticName = names_[names_.size() - 1].c_str();
 
         // For example POSITION[n], ignore for now
         desc.SemanticIndex = 0;
@@ -50,7 +52,7 @@ namespace Takoyaki
         desc.InputSlot = 0;
         desc.AlignedByteOffset = 0;
 
-        desc.Format = FormatToDXGIFormat(format);
+        desc.Format = FormatToDX(format);
 
         if (instanceStep > 0) {
             desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;

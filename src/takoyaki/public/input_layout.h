@@ -36,10 +36,10 @@ namespace Takoyaki
         InputLayout& operator=(InputLayout&&) = delete;
 
     public:
-        InputLayout(std::unique_ptr<InputLayoutImpl>);
+        explicit InputLayout(std::unique_ptr<InputLayoutImpl>);
         ~InputLayout();
 
-        void addInput(const std::string&, EFormat, uint_fast32_t);
+        void addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep);
 
     private:
         std::unique_ptr<InputLayoutImpl> impl_;

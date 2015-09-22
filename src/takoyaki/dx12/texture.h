@@ -34,7 +34,7 @@ namespace Takoyaki
         DX12Texture& operator=(DX12Texture&&) = delete;
 
     public:
-        DX12Texture(std::weak_ptr<DX12Context>);
+        explicit DX12Texture(std::weak_ptr<DX12Context>);
         DX12Texture(DX12Texture&&) noexcept;
         ~DX12Texture();
 

@@ -40,7 +40,7 @@ namespace Takoyaki
         Renderer& operator=(Renderer&&) = delete;
 
     public:
-        Renderer(std::shared_ptr<RendererImpl>&);
+        explicit Renderer(std::shared_ptr<RendererImpl>&);
         ~Renderer();
 
         void addRenderComponent(std::shared_ptr<RenderComponent>&& component);

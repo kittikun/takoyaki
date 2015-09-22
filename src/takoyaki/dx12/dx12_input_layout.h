@@ -46,6 +46,7 @@ namespace Takoyaki
         void addInput(const std::string&, EFormat, uint_fast32_t);
 
     private:
+        std::vector<std::string> names_;
         std::vector<D3D12_INPUT_ELEMENT_DESC> inputs_;
     };
 } // namespace Takoyaki

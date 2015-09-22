@@ -99,6 +99,10 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
     psDesc.rootSignature = "SimpleSignature";
     psDesc.shaders[Takoyaki::EShaderType::TYPE_VERTEX] = shDescs[0].name;
     psDesc.shaders[Takoyaki::EShaderType::TYPE_PIXEL] = shDescs[1].name;
+    psDesc.depthStencilState.depthEnable = false;
+    psDesc.formatRenderTarget[0] = Takoyaki::EFormat::B8G8R8A8_UNORM;
+    psDesc.numRenderTargets = 1;
+    psDesc.topology = Takoyaki::ETopology::TRIANGLE;
     renderer->createPipelineState("SimpleState", psDesc);
 
     // compile PSO 

@@ -54,7 +54,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection& operator=(DX12DescriptorHeapCollection&&) = delete;
 
     public:
-        DX12DescriptorHeapCollection(std::weak_ptr<DX12Device> device)
+        explicit DX12DescriptorHeapCollection(std::weak_ptr<DX12Device> device)
             : device_{ device }
             , descriptorSize_{ UINT_FAST32_MAX }
         {

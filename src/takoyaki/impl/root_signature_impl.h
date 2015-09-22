@@ -34,7 +34,7 @@ namespace Takoyaki
         RootSignatureImpl& operator=(RootSignatureImpl&&) = delete;
 
     public:
-        RootSignatureImpl(DX12RootSignature&, boost::shared_lock<boost::shared_mutex>);
+        explicit RootSignatureImpl(DX12RootSignature&, boost::shared_lock<boost::shared_mutex>);
         ~RootSignatureImpl();
 
         void addConstant(uint_fast32_t, uint_fast32_t);

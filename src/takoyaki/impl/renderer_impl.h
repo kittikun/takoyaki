@@ -38,7 +38,7 @@ namespace Takoyaki
         RendererImpl& operator=(RendererImpl&&) = delete;
 
     public:
-        RendererImpl(const std::shared_ptr<DX12Context>&);
+        explicit RendererImpl(const std::shared_ptr<DX12Context>&);
         ~RendererImpl();
 
         //////////////////////////////////////////////////////////////////////////

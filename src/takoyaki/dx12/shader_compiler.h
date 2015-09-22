@@ -31,16 +31,8 @@ namespace Takoyaki
     class ThreadPool;
     struct ShaderDesc;
 
-    class ShaderCompiler
+    struct ShaderCompiler
     {
-        ShaderCompiler(const ShaderCompiler&) = delete;
-        ShaderCompiler& operator=(const ShaderCompiler&) = delete;
-        ShaderCompiler(ShaderCompiler&&) = delete;
-        ShaderCompiler& operator=(ShaderCompiler&&) = delete;
-    public:
-        ShaderCompiler();
-        ~ShaderCompiler();
-
         static void main(IO*, const std::shared_ptr<ThreadPool>&, const std::shared_ptr<DX12Context>&);
         static void compileShader(IO*, const ShaderDesc&, const std::shared_ptr<DX12Context>&);
     };

@@ -55,7 +55,6 @@ namespace Takoyaki
         void validateDevice() const;
         void loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& result);
 
-
         //////////////////////////////////////////////////////////////////////////
         // App should use those
         void compileShader(const ShaderDesc& desc);

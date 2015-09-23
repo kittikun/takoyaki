@@ -20,35 +20,58 @@
 
 #pragma once
 
+#include <memory>
 #include <d3d12.h>
-
-#include "../public/definitions.h"
 
 namespace Takoyaki
 {
-    constexpr size_t MAX_INPUT_SEMANTICS = 8;
-
-    class DX12InputLayout
+    enum class EBufferType
     {
-        DX12InputLayout(const DX12InputLayout&) = delete;
-        DX12InputLayout& operator=(const DX12InputLayout&) = delete;
-        DX12InputLayout& operator=(DX12InputLayout&&) = delete;
+        // Best bandwidth for GPU but no CPU access
+        NO_CPU_GPU_FAST,
+
+        // best for CPU-write-once, good GPU performance
+        // later CPU access is possible but not efficient 
+        CPU_SLOW_GPU_GOOD,
+
+        // slower GPU access but good CPU access
+        // best for GPU-write-once
+        CPU_FAST_GPU_SLOW
+    };
+
+    class DX12Device;
+
+    class DX12Buffer
+    {
+        DX12Buffer(const DX12Buffer&) = delete;
+        DX12Buffer& operator=(const DX12Buffer&) = delete;
+        DX12Buffer& operator=(DX12Buffer&&) = delete;
+        DX12Buffer(DX12Buffer&&) = delete;
 
     public:
-        DX12InputLayout();
-        DX12InputLayout(DX12InputLayout&&);
-        ~DX12InputLayout();
+        DX12Buffer(EBufferType, uint_fast64_t, D3D12_RESOURCE_STATES);
+        
+        ~DX12Buffer();
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
-        D3D12_INPUT_LAYOUT_DESC getInputLayout();
+        void Create(const std::shared_ptr<DX12Device>&);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
-        void addInput(const std::string&, EFormat, uint_fast32_t);
 
     private:
-        std::vector<std::string> names_; // we need to keep copies of semantic names for LPCSTR
-        std::vector<D3D12_INPUT_ELEMENT_DESC> inputs_;
+        D3D12_HEAP_TYPE bufferTypeToDX(EBufferType);
+
+    private:
+        struct Intermediate
+        {
+            EBufferType type;
+            uint_fast64_t size;
+            D3D12_RESOURCE_STATES initialState;
+        };
+
+        std::unique_ptr<Intermediate> intermediate_;
+        Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
     };
 } // namespace Takoyaki

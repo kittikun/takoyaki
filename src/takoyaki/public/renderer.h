@@ -27,7 +27,6 @@ namespace Takoyaki
 {
     class ConstantTable;
     class InputLayout;
-    class RenderComponent;
     class RendererImpl;
     class RootSignature;
     struct PipelineStateDesc;
@@ -42,8 +41,6 @@ namespace Takoyaki
     public:
         explicit Renderer(std::shared_ptr<RendererImpl>&);
         ~Renderer();
-
-        void addRenderComponent(std::shared_ptr<RenderComponent>&& component);
 
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
         void createPipelineState(const std::string& name, const PipelineStateDesc&);

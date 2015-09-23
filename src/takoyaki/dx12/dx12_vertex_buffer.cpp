@@ -18,16 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "dx12_vertex_buffer.h"
 
-#include "renderer.h"
+#include "dx12_buffer.h"
 
 namespace Takoyaki
 {
-    class RenderComponent
+    DX12VertexBuffer::DX12VertexBuffer(void* vertices, uint_fast64_t byteSizeVectices, void* indices, uint_fast64_t byteSizeIndices)
+        : uploadVertexBuffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, byteSizeVectices, D3D12_RESOURCE_STATE_GENERIC_READ) }
+        , vertexBuffer_{std::make_unique<DX12Buffer>(EBufferType::NO_CPU_GPU_FAST, byteSizeVectices, D3D12_RESOURCE_STATE_COPY_DEST)}
     {
-    public:
-        virtual void render(Renderer&) = 0;
-    };
-}
-// namespace Takoyaki
+        
+    }
+
+    DX12VertexBuffer::~DX12VertexBuffer() = default;
+
+
+} // namespace Takoyaki

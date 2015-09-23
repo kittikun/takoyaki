@@ -43,7 +43,7 @@ namespace Takoyaki
     void DX12Context::addShader(EShaderType type, const std::string& name, D3D12_SHADER_BYTECODE&& bc)
     {
         switch (type) {
-            case Takoyaki::EShaderType::TYPE_COMPUTE:
+            case Takoyaki::EShaderType::COMPUTE:
             {
                 auto lock = shaderVertex_.getWriteLock();
 
@@ -51,7 +51,7 @@ namespace Takoyaki
             }
             break;
 
-            case Takoyaki::EShaderType::TYPE_DOMAIN:
+            case Takoyaki::EShaderType::DOMAIN:
             {
                 auto lock = shaderVertex_.getWriteLock();
 
@@ -59,7 +59,7 @@ namespace Takoyaki
             }
             break;
 
-            case Takoyaki::EShaderType::TYPE_GEOMETRY:
+            case Takoyaki::EShaderType::GEOMETRY:
             {
                 auto lock = shaderVertex_.getWriteLock();
 
@@ -67,7 +67,7 @@ namespace Takoyaki
             }
             break;
 
-            case Takoyaki::EShaderType::TYPE_HULL:
+            case Takoyaki::EShaderType::HULL:
             {
                 auto lock = shaderVertex_.getWriteLock();
 
@@ -75,7 +75,7 @@ namespace Takoyaki
             }
             break;
 
-            case Takoyaki::EShaderType::TYPE_PIXEL:
+            case Takoyaki::EShaderType::PIXEL:
             {
                 auto lock = shaderVertex_.getWriteLock();
 
@@ -84,7 +84,7 @@ namespace Takoyaki
             }
             break;
 
-            case Takoyaki::EShaderType::TYPE_VERTEX:
+            case Takoyaki::EShaderType::VERTEX:
             {
                 auto lock = shaderVertex_.getWriteLock();
 
@@ -233,27 +233,27 @@ namespace Takoyaki
         D3D12_SHADER_BYTECODE res;
 
         switch (type) {
-            case Takoyaki::EShaderType::TYPE_COMPUTE:
+            case Takoyaki::EShaderType::COMPUTE:
                 res = getShaderImpl(shaderCompute_, name);
                 break;
 
-            case Takoyaki::EShaderType::TYPE_DOMAIN:
+            case Takoyaki::EShaderType::DOMAIN:
                 res = getShaderImpl(shaderDomain_, name);
                 break;
 
-            case Takoyaki::EShaderType::TYPE_GEOMETRY:
+            case Takoyaki::EShaderType::GEOMETRY:
                 res = getShaderImpl(shaderGeometry_, name);
                 break;
 
-            case Takoyaki::EShaderType::TYPE_HULL:
+            case Takoyaki::EShaderType::HULL:
                 res = getShaderImpl(shaderHull_, name);
                 break;
 
-            case Takoyaki::EShaderType::TYPE_PIXEL:
+            case Takoyaki::EShaderType::PIXEL:
                 res = getShaderImpl(shaderPixel_, name);
                 break;
 
-            case Takoyaki::EShaderType::TYPE_VERTEX:
+            case Takoyaki::EShaderType::VERTEX:
                 res = getShaderImpl(shaderVertex_, name);
                 break;
         }

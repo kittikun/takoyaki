@@ -27,31 +27,8 @@
 #include <glm/glm.hpp>
 #include <input_layout.h>
 #include <pipeline_state.h>
-#include <render_component.h>
+#include <renderer.h>
 #include <root_signature.h>
-
-class Test final : public Takoyaki::RenderComponent
-{
-    Test(const Test&) = delete;
-    Test& operator=(const Test&) = delete;
-    Test(Test&&) = delete;
-    Test& operator=(Test&&) = delete;
-public:
-    Test::Test() = default;
-
-    void render(Takoyaki::Renderer& renderer)
-    {
-        auto viewProj = renderer.getConstantBuffer("CBModelViewProjection");      
-        Test test;
-
-        // cbuffer might by empty is shader hasn't been loaded yet
-        if (viewProj) {
-            viewProj->setMatrix4x4("matViewProjection", glm::mat4x4());
-        }
-
-        int i = 0;
-    }
-};
 
 void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
 {
@@ -62,11 +39,11 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
 
     shDescs[0].name = "SimpleVS";
     shDescs[0].path = "data/SimpleVS.hlsl";
-    shDescs[0].type = Takoyaki::EShaderType::TYPE_VERTEX;
+    shDescs[0].type = Takoyaki::EShaderType::VERTEX;
     shDescs[0].entry = "main";
     shDescs[1].name = "SimplePS";
     shDescs[1].path = "data/SimplePS.hlsl";
-    shDescs[1].type = Takoyaki::EShaderType::TYPE_PIXEL;
+    shDescs[1].type = Takoyaki::EShaderType::PIXEL;
     shDescs[1].entry = "main";
 
     for (auto& shDesc : shDescs)
@@ -78,8 +55,8 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
     layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
 
     // create root signature that will be using the input assembler 
-    // and only allow one constant to be accessed from the vertex shader
-    // will be removed later once vulkan abstraction has been added
+    // and only allow the constant buffer to be accessed from the vertex shader
+    // NOTE: will be removed later once vulkan abstraction has been added
     auto rs = renderer->createRootSignature("SimpleSignature");
     D3D12_ROOT_SIGNATURE_FLAGS rsFlags =
         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -97,8 +74,8 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
 
     psDesc.inputLayout = "SimpleVertex";
     psDesc.rootSignature = "SimpleSignature";
-    psDesc.shaders[Takoyaki::EShaderType::TYPE_VERTEX] = shDescs[0].name;
-    psDesc.shaders[Takoyaki::EShaderType::TYPE_PIXEL] = shDescs[1].name;
+    psDesc.shaders[Takoyaki::EShaderType::VERTEX] = shDescs[0].name;
+    psDesc.shaders[Takoyaki::EShaderType::PIXEL] = shDescs[1].name;
     psDesc.depthStencilState.depthEnable = false;
     psDesc.formatRenderTarget[0] = Takoyaki::EFormat::B8G8R8A8_UNORM;
     psDesc.numRenderTargets = 1;
@@ -107,6 +84,14 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
 
     // compile PSO 
     renderer->commit();
+}
 
-    renderer->addRenderComponent(std::make_unique<Test>());
+void appRender(Takoyaki::Renderer& renderer)
+{
+    auto viewProj = renderer.getConstantBuffer("CBModelViewProjection");
+
+    // cbuffer might by empty is shader hasn't been loaded yet
+    if (viewProj) {
+        viewProj->setMatrix4x4("matViewProjection", glm::mat4x4());
+    }
 }

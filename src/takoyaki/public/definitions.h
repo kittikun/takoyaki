@@ -135,14 +135,19 @@ namespace Takoyaki
         WINDOW_DPI
     };
 
+#ifdef WIN32
+// undefined the one from math.h
+#undef DOMAIN
+#endif
+
     enum class EShaderType
     {
-        TYPE_COMPUTE,
-        TYPE_DOMAIN,
-        TYPE_GEOMETRY,
-        TYPE_HULL,
-        TYPE_PIXEL,
-        TYPE_VERTEX
+        COMPUTE,
+        DOMAIN,
+        GEOMETRY,
+        HULL,
+        PIXEL,
+        VERTEX
     };
 
     enum class EStencilOp

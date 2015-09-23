@@ -20,30 +20,32 @@
 
 #pragma once
 
-#include <memory>
-
-#include "definitions.h"
+#include <memory.h>
 
 namespace Takoyaki
 {
-    class InputLayoutImpl;
+    class DX12Buffer;
 
-    class InputLayout
+    class DX12VertexBuffer
     {
-        InputLayout(const InputLayout&) = delete;
-        InputLayout& operator=(const InputLayout&) = delete;
-        InputLayout(InputLayout&&) = delete;
-        InputLayout& operator=(InputLayout&&) = delete;
+        DX12VertexBuffer(const DX12VertexBuffer&) = delete;
+        DX12VertexBuffer& operator=(const DX12VertexBuffer&) = delete;
+        DX12VertexBuffer& operator=(DX12VertexBuffer&&) = delete;
+        DX12VertexBuffer(DX12VertexBuffer&&);
 
     public:
-        explicit InputLayout(std::unique_ptr<InputLayoutImpl>);
-        ~InputLayout();
+        DX12VertexBuffer(void*, uint_fast64_t, void*, uint_fast64_t);
+        
+        ~DX12VertexBuffer();
 
-        // Add order is important
-        void addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep);
+        //////////////////////////////////////////////////////////////////////////
+        // Internal usage:
+
+        //////////////////////////////////////////////////////////////////////////
+        // Internal & External
 
     private:
-        std::unique_ptr<InputLayoutImpl> impl_;
+        std::unique_ptr<DX12Buffer> uploadVertexBuffer_;
+        std::unique_ptr<DX12Buffer> vertexBuffer_;
     };
-}
-// namespace Takoyaki
+} // namespace Takoyaki

@@ -26,7 +26,6 @@
 #include "root_signature_impl.h"
 #include "../thread_pool.h"
 #include "../dx12/context.h"
-#include "../public/render_component.h"
 
 namespace Takoyaki
 {
@@ -37,11 +36,6 @@ namespace Takoyaki
     }
 
     RendererImpl::~RendererImpl() = default;
-
-    void RendererImpl::addRenderComponent(std::shared_ptr<RenderComponent>&& component)
-    {
-        renderable_.push_back(std::move(component));
-    }
 
     void RendererImpl::commit()
     {
@@ -81,14 +75,6 @@ namespace Takoyaki
             return std::make_unique<ConstantTableImpl>(pair->first, std::move(pair->second));
         else
             return nullptr;
-    }
-
-    void RendererImpl::processComponents()
-    {
-        Renderer renderer{ shared_from_this() };
-
-        for (auto& renderable : renderable_)
-            renderable->render(renderer);
     }
 }
 // namespace Takoyaki

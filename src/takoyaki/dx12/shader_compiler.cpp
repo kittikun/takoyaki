@@ -38,22 +38,22 @@ namespace Takoyaki
         std::string res;
 
         switch (type) {
-            case Takoyaki::EShaderType::TYPE_COMPUTE:
+            case Takoyaki::EShaderType::COMPUTE:
                 res = "cs_5_1";
                 break;
-            case Takoyaki::EShaderType::TYPE_DOMAIN:
+            case Takoyaki::EShaderType::DOMAIN:
                 res = "ds_5_1";
                 break;
-            case Takoyaki::EShaderType::TYPE_GEOMETRY:
+            case Takoyaki::EShaderType::GEOMETRY:
                 res = "gs_5_1";
                 break;
-            case Takoyaki::EShaderType::TYPE_HULL:
+            case Takoyaki::EShaderType::HULL:
                 res = "hs_5_1";
                 break;
-            case Takoyaki::EShaderType::TYPE_PIXEL:
+            case Takoyaki::EShaderType::PIXEL:
                 res = "ps_5_1";
                 break;
-            case Takoyaki::EShaderType::TYPE_VERTEX:
+            case Takoyaki::EShaderType::VERTEX:
                 res = "vs_5_1";
                 break;
 
@@ -250,9 +250,9 @@ namespace Takoyaki
                 ShaderDesc shader = {};
 
                 if (name == "vs")
-                    shader.type = EShaderType::TYPE_VERTEX;
+                    shader.type = EShaderType::VERTEX;
                 else if (name == "ps")
-                    shader.type = EShaderType::TYPE_PIXEL;
+                    shader.type = EShaderType::PIXEL;
 
                 if (iter->value.IsArray()) {
                     for (auto item = iter->value.Begin(); item != iter->value.End(); ++item) {

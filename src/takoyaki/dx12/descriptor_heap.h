@@ -125,6 +125,7 @@ namespace Takoyaki
 
                 if (descriptorSize_ == UINT_FAST32_MAX)
                     descriptorSize_ = device->getDXDevice()->GetDescriptorHandleIncrementSize(T);
+
                 DXCheckThrow(device->getDXDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap.descriptor_)));
             }
 

@@ -31,7 +31,7 @@ namespace Takoyaki
         : inputs_{ std::move(other.inputs_) }
     {
         // kind of a waste but D3D12_INPUT_ELEMENT_DESC.SemanticName requires a LPCSTR
-        names_.reserve(16);
+        names_.reserve(MAX_INPUT_SEMANTICS);
     }
 
     DX12InputLayout::~DX12InputLayout() = default;

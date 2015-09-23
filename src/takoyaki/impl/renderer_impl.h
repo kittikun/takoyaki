@@ -25,7 +25,6 @@ namespace Takoyaki
     class ConstantTableImpl;
     class InputLayoutImpl;
     class DX12Context;
-    class RenderComponent;
     class RootSignatureImpl;
     class ThreadPool;
     struct PipelineStateDesc;
@@ -42,13 +41,7 @@ namespace Takoyaki
         ~RendererImpl();
 
         //////////////////////////////////////////////////////////////////////////
-        // Internal usage:
-        void processComponents();
-
-        //////////////////////////////////////////////////////////////////////////
         // External usage: 
-
-        void addRenderComponent(std::shared_ptr<RenderComponent>&&);
 
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
         void createPipelineState(const std::string&, const PipelineStateDesc&);
@@ -60,7 +53,6 @@ namespace Takoyaki
 
     private:
         std::shared_ptr<DX12Context> context_;
-        std::vector<std::shared_ptr<RenderComponent>> renderable_;
     };
 }
 // namespace Takoyaki

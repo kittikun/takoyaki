@@ -33,7 +33,9 @@
     <ClCompile Include="..\src\takoyaki\dx12\device.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\context.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_pipeline_state.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_root_signature.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_vertex_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dxutility.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_input_layout.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\texture.cpp" />
@@ -66,7 +68,9 @@
     <ClInclude Include="..\src\takoyaki\dx12\descriptor_ranges.h" />
     <ClInclude Include="..\src\takoyaki\dx12\device.h" />
     <ClInclude Include="..\src\takoyaki\dx12\context.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_buffer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_root_signature.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_vertex_buffer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dxutility.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_input_layout.h" />
     <ClInclude Include="..\src\takoyaki\dx12\texture.h" />
@@ -85,7 +89,6 @@
     <ClInclude Include="..\src\takoyaki\public\framework.h" />
     <ClInclude Include="..\src\takoyaki\public\input_layout.h" />
     <ClInclude Include="..\src\takoyaki\public\pipeline_state.h" />
-    <ClInclude Include="..\src\takoyaki\public\render_component.h" />
     <ClInclude Include="..\src\takoyaki\public\renderer.h" />
     <ClInclude Include="..\src\takoyaki\public\root_signature.h" />
     <ClInclude Include="..\src\takoyaki\rwlock_map.h" />

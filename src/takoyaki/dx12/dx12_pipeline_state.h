@@ -54,8 +54,6 @@ namespace Takoyaki
         void setShader(EShaderType type, std::string& name) { intermediate_->shaders[type] = name; }
 
     private:
-
-    private:
         Microsoft::WRL::ComPtr<ID3D12PipelineState>	state_;
         std::unique_ptr<PipelineStateDesc> intermediate_;
     };

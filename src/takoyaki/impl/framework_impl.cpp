@@ -27,11 +27,13 @@
 #include "../dx12/texture.h"
 #include "../impl/renderer_impl.h"
 #include "../public/framework.h"
+#include "../public/renderer.h"
 #include "../thread_pool.h"
 #include "../utility/log.h"
 #include "../utility/win_utility.h"
 
 extern void appMain(const std::shared_ptr<Takoyaki::Framework>&);
+extern void appRender(Takoyaki::Renderer& renderer);
 
 namespace Takoyaki
 {
@@ -93,7 +95,10 @@ namespace Takoyaki
     {
         LOG_IDENTIFY_THREAD;
 
-        renderer_->processComponents();
+        Renderer renderer{ renderer_ };
+
+        appRender(renderer);
+
         device_->present();
     }
 

@@ -57,31 +57,31 @@ namespace Takoyaki
             }
 
             // shaders
-            auto found = intermediate_->shaders.find(EShaderType::TYPE_DOMAIN);
+            auto found = intermediate_->shaders.find(EShaderType::DOMAIN);
 
             if (found != intermediate_->shaders.end()) {
                 desc.DS = context->getShader(found->first, found->second);
             }
 
-            found = intermediate_->shaders.find(EShaderType::TYPE_GEOMETRY);
+            found = intermediate_->shaders.find(EShaderType::GEOMETRY);
 
             if (found != intermediate_->shaders.end()) {
                 desc.GS = context->getShader(found->first, found->second);
             }
 
-            found = intermediate_->shaders.find(EShaderType::TYPE_HULL);
+            found = intermediate_->shaders.find(EShaderType::HULL);
 
             if (found != intermediate_->shaders.end()) {
                 desc.HS = context->getShader(found->first, found->second);
             }
 
-            found = intermediate_->shaders.find(EShaderType::TYPE_PIXEL);
+            found = intermediate_->shaders.find(EShaderType::PIXEL);
 
             if (found != intermediate_->shaders.end()) {
                 desc.PS = context->getShader(found->first, found->second);
             }
 
-            found = intermediate_->shaders.find(EShaderType::TYPE_VERTEX);
+            found = intermediate_->shaders.find(EShaderType::VERTEX);
 
             if (found != intermediate_->shaders.end()) {
                 desc.VS = context->getShader(found->first, found->second);

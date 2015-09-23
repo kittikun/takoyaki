@@ -40,11 +40,6 @@ namespace Takoyaki
 
     Renderer::~Renderer() = default;
 
-    void Renderer::addRenderComponent(std::shared_ptr<RenderComponent>&& component)
-    {
-        impl_->addRenderComponent(std::move(component));
-    }
-
     void Renderer::commit()
     {
         impl_->commit();

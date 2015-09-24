@@ -51,6 +51,7 @@
 #include <boost/any.hpp>
 #include <boost/format.hpp>
 #include <boost/thread.hpp>
+#include <boost/optional.hpp>
 
 #ifdef _DEBUG
 #include <boost/log/attributes/scoped_attribute.hpp>
@@ -59,7 +60,6 @@
 #include <boost/log/sources/global_logger_storage.hpp>
 #include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/sources/severity_logger.hpp>
-#include <boost/optional.hpp>
 #endif // _DEBUG
 
 // Maths

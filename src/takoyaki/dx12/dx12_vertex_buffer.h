@@ -33,9 +33,8 @@ namespace Takoyaki
         DX12VertexBuffer(DX12VertexBuffer&&);
 
     public:
-        DX12VertexBuffer(uint8_t*, uint_fast64_t, uint8_t*, uint_fast64_t);
-        
-        ~DX12VertexBuffer();
+        DX12VertexBuffer(uint8_t*, uint_fast64_t, uint8_t*, uint_fast64_t) noexcept;
+        ~DX12VertexBuffer() = default;
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:

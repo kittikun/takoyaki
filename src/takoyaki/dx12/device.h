@@ -35,7 +35,7 @@ namespace Takoyaki
         DX12Device& operator=(DX12Device&&) = delete;
 
     public:
-        DX12Device();
+        DX12Device() noexcept;
         ~DX12Device() = default;
 
         void create(const FrameworkDesc& desc, std::weak_ptr<DX12Context>);

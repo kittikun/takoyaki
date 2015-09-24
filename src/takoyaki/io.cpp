@@ -30,7 +30,6 @@
 namespace Takoyaki
 {
     IO::IO() = default;
-    IO::~IO() = default;
 
     void IO::initialize(const LoadFileAsyncFunc& func)
     {

@@ -25,7 +25,7 @@
 
 namespace Takoyaki
 {
-    InputLayout::InputLayout(std::unique_ptr<InputLayoutImpl> ct)
+    InputLayout::InputLayout(std::unique_ptr<InputLayoutImpl> ct) noexcept
         : impl_{ std::move(ct) }
     {
     }

@@ -25,14 +25,12 @@
 
 namespace Takoyaki
 {
-    RootSignatureImpl::RootSignatureImpl(DX12RootSignature& rs, boost::shared_lock<boost::shared_mutex> lock)
+    RootSignatureImpl::RootSignatureImpl(DX12RootSignature& rs, boost::shared_lock<boost::shared_mutex> lock) noexcept
         : rs_{ rs }
         , bufferLock_{ std::move(lock) }
     {
 
     }
-
-    RootSignatureImpl::~RootSignatureImpl() = default;
 
     void RootSignatureImpl::addConstant(uint_fast32_t numValues, uint_fast32_t shaderRegister)
     {

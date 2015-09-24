@@ -27,12 +27,12 @@
 
 namespace Takoyaki
 {
-    RootSignature::RootSignature(std::unique_ptr<RootSignatureImpl> rs)
+    RootSignature::RootSignature(std::unique_ptr<RootSignatureImpl> rs) noexcept
         : impl_{ std::move(rs) }
     {
     }
 
-    RootSignature::~RootSignature() = default;
+    RootSignature::~RootSignature() noexcept = default;
 
 
     void RootSignature::addConstant(uint_fast32_t numValues, uint_fast32_t shaderRegister)

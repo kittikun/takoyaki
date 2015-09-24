@@ -173,7 +173,7 @@ namespace Takoyaki
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770338(v=vs.85).aspx
     struct RenderTargetBlendDesc
     {
-        RenderTargetBlendDesc();
+        RenderTargetBlendDesc() noexcept;
 
         bool blendEnable;
         bool logicOpEnable;
@@ -189,7 +189,7 @@ namespace Takoyaki
 
     struct BlendDesc
     {
-        BlendDesc();
+        BlendDesc() noexcept;
 
         bool alphaToCoverageEnable;
         bool independentBlendEnable;
@@ -199,7 +199,7 @@ namespace Takoyaki
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770355(v=vs.85).aspx
     struct StencilOpDesc
     {
-        StencilOpDesc();
+        StencilOpDesc() noexcept;
 
         EStencilOp fail;
         EStencilOp depthFail;
@@ -210,7 +210,7 @@ namespace Takoyaki
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770356%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
     struct DepthStencilDesc
     {
-        DepthStencilDesc();
+        DepthStencilDesc() noexcept;
 
         bool depthEnable;
         bool depthMaskEnable;
@@ -239,7 +239,7 @@ namespace Takoyaki
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770387(v=vs.85).aspx
     struct RasterizerDesc
     {
-        RasterizerDesc();
+        RasterizerDesc() noexcept;
 
         EFillMode fillMode;
         ECullMode cullMode;
@@ -257,7 +257,7 @@ namespace Takoyaki
     // https://msdn.microsoft.com/en-us/library/windows/desktop/bb173072(v=vs.85).aspx
     struct MultiSampleDesc
     {
-        MultiSampleDesc();
+        MultiSampleDesc() noexcept;
 
         uint_fast32_t count;
         uint_fast32_t quality;
@@ -266,7 +266,7 @@ namespace Takoyaki
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770370(v=vs.85).aspx
     struct PipelineStateDesc
     {
-        PipelineStateDesc();
+        PipelineStateDesc() noexcept;
 
         BlendDesc blendState;
         DepthStencilDesc depthStencilState;

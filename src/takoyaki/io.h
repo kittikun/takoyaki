@@ -38,7 +38,7 @@ namespace Takoyaki
         using LoadResultFunc = std::function<void(const std::vector<uint8_t>&)>;
 
         IO();
-        ~IO();
+        ~IO() noexcept = default;
 
         void initialize(const LoadFileAsyncFunc&);
 

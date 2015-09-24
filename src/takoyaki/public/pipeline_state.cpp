@@ -25,12 +25,12 @@
 
 namespace Takoyaki
 {
-    PipelineState::PipelineState(std::unique_ptr<PipelineStateImpl> ct)
+    PipelineState::PipelineState(std::unique_ptr<PipelineStateImpl> ct) noexcept
         : impl_{ std::move(ct) }
     {
     }
 
-    PipelineState::~PipelineState() = default;
+    PipelineState::~PipelineState() noexcept = default;
 
     void setRootSignature(const std::string&)
     {

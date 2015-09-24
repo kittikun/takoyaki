@@ -23,10 +23,7 @@
 
 namespace Takoyaki
 {
-    DX12DescriptorRanges::DX12DescriptorRanges() = default;
-    DX12DescriptorRanges::~DX12DescriptorRanges() = default;
-
-    DX12DescriptorRanges::DX12DescriptorRanges(DX12DescriptorRanges&& other)
+    DX12DescriptorRanges::DX12DescriptorRanges(DX12DescriptorRanges&& other) noexcept
         : descs_(std::move(other.descs_))
     {
 

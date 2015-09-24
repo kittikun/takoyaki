@@ -28,20 +28,18 @@
 
 namespace Takoyaki
 {
-    DX12PipelineState::DX12PipelineState(const PipelineStateDesc& desc)
+    DX12PipelineState::DX12PipelineState(const PipelineStateDesc& desc) noexcept
         : intermediate_{ std::make_unique<PipelineStateDesc>(desc) }
     {
 
     }
 
-    DX12PipelineState::DX12PipelineState(DX12PipelineState&& other)
+    DX12PipelineState::DX12PipelineState(DX12PipelineState&& other) noexcept
         : state_{std::move(other.state_)}
         , intermediate_{ std::move(other.intermediate_) }
     {
 
     }
-
-    DX12PipelineState::~DX12PipelineState() = default;
 
     // device has already been locked from context
     void DX12PipelineState::create(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<DX12Context>& context)

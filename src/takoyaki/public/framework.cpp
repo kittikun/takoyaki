@@ -26,7 +26,7 @@
 
 namespace Takoyaki
 {
-    Framework::Framework()
+    Framework::Framework() noexcept
         : impl_{ std::make_unique<FrameworkImpl>() }
     {
     }

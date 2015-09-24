@@ -27,12 +27,12 @@
 
 namespace Takoyaki
 {
-    ConstantTable::ConstantTable(std::unique_ptr<ConstantTableImpl> ct)
+    ConstantTable::ConstantTable(std::unique_ptr<ConstantTableImpl> ct) noexcept
         : impl_{ std::move(ct) }
     {
     }
 
-    ConstantTable::~ConstantTable() = default;
+    ConstantTable::~ConstantTable() noexcept = default;
 
     void ConstantTable::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
     {

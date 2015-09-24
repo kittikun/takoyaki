@@ -45,8 +45,6 @@ namespace Takoyaki
 #endif
     }
 
-    FrameworkImpl::~FrameworkImpl() = default;
-
     void FrameworkImpl::compileShader(const ShaderDesc& desc)
     {
         // system will use shaderlist, this is for app

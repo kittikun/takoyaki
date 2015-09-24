@@ -25,14 +25,12 @@
 
 namespace Takoyaki
 {
-    ConstantTableImpl::ConstantTableImpl(DX12ConstantBuffer& cbuffer, boost::shared_lock<boost::shared_mutex> lock)
+    ConstantTableImpl::ConstantTableImpl(DX12ConstantBuffer& cbuffer, boost::shared_lock<boost::shared_mutex> lock) noexcept
         : cbuffer_(cbuffer)
         , bufferLock_(std::move(lock))
     {
 
     }
-
-    ConstantTableImpl::~ConstantTableImpl() = default;
 
     void ConstantTableImpl::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
     {

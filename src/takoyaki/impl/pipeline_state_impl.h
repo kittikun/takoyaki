@@ -34,8 +34,8 @@ namespace Takoyaki
         PipelineStateImpl& operator=(PipelineStateImpl&&) = delete;
 
     public:
-        explicit PipelineStateImpl(DX12PipelineState&, boost::shared_lock<boost::shared_mutex>);
-        ~PipelineStateImpl();
+        explicit PipelineStateImpl(DX12PipelineState&, boost::shared_lock<boost::shared_mutex>) noexcept;
+        ~PipelineStateImpl() = default;
 
     private:
         DX12PipelineState& state_;

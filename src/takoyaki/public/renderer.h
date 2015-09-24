@@ -39,8 +39,8 @@ namespace Takoyaki
         Renderer& operator=(Renderer&&) = delete;
 
     public:
-        explicit Renderer(std::shared_ptr<RendererImpl>&);
-        ~Renderer();
+        explicit Renderer(std::shared_ptr<RendererImpl>&) noexcept;
+        ~Renderer() noexcept;
 
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
         void createPipelineState(const std::string& name, const PipelineStateDesc&);

@@ -25,14 +25,14 @@
 
 namespace Takoyaki
 {
-    BlendDesc::BlendDesc()
+    BlendDesc::BlendDesc() noexcept
         : alphaToCoverageEnable{false}
         , independentBlendEnable{false}
     {
 
     }
 
-    DepthStencilDesc::DepthStencilDesc()
+    DepthStencilDesc::DepthStencilDesc() noexcept
         : depthEnable{ true }
         , depthMaskEnable{ true }
         , depthFunc{ ECompFunc::LESS }
@@ -45,14 +45,14 @@ namespace Takoyaki
 
     }
 
-    MultiSampleDesc::MultiSampleDesc()
+    MultiSampleDesc::MultiSampleDesc() noexcept
         : count{ 1 }
         , quality{ 0 }
     {
 
     }
 
-    PipelineStateDesc::PipelineStateDesc()
+    PipelineStateDesc::PipelineStateDesc() noexcept
         : blendState{}
         , depthStencilState{}
         , rasterizerState{}
@@ -60,7 +60,7 @@ namespace Takoyaki
     {
     }
 
-    RasterizerDesc::RasterizerDesc()
+    RasterizerDesc::RasterizerDesc() noexcept
         : fillMode{ EFillMode::SOLID }
         , cullMode{ ECullMode::BACK }
         , frontCCW{ false }
@@ -74,7 +74,7 @@ namespace Takoyaki
     {
     }
 
-    RenderTargetBlendDesc::RenderTargetBlendDesc()
+    RenderTargetBlendDesc::RenderTargetBlendDesc() noexcept
         : blendEnable{ false }
         , logicOpEnable{ false }
         , srcBlend{ EBlend::ONE }
@@ -89,7 +89,7 @@ namespace Takoyaki
 
     }
 
-    StencilOpDesc::StencilOpDesc()
+    StencilOpDesc::StencilOpDesc() noexcept
         : fail{ EStencilOp::KEEP }
         , depthFail{ EStencilOp::KEEP }
         , pass{ EStencilOp::KEEP }

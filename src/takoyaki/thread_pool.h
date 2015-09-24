@@ -104,8 +104,8 @@ namespace Takoyaki
         ThreadPool& operator=(ThreadPool&&) = delete;
 
     public:
-        ThreadPool();
-        ~ThreadPool();
+        ThreadPool() noexcept;
+        ~ThreadPool() noexcept;
 
         void initialize(uint_fast32_t);
 

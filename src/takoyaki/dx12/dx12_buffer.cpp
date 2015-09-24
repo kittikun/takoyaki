@@ -25,15 +25,13 @@
 
 namespace Takoyaki
 {
-    DX12Buffer::DX12Buffer(EBufferType type, uint_fast64_t sizeByte, D3D12_RESOURCE_STATES initialState)
+    DX12Buffer::DX12Buffer(EBufferType type, uint_fast64_t sizeByte, D3D12_RESOURCE_STATES initialState) noexcept
         : intermediate_{ std::make_unique<Intermediate>() }
     {
         intermediate_->type = type;
         intermediate_->size = sizeByte;
         intermediate_->initialState = initialState;
     }
-
-    DX12Buffer::~DX12Buffer() = default;
 
     void DX12Buffer::Create(const std::shared_ptr<DX12Device>& device)
     {

@@ -34,8 +34,8 @@ namespace Takoyaki
         DX12RootSignature& operator=(DX12RootSignature&&) = delete;
 
     public:
-        DX12RootSignature();
-        DX12RootSignature(DX12RootSignature&&);
+        DX12RootSignature() noexcept;
+        DX12RootSignature(DX12RootSignature&&) noexcept;
         ~DX12RootSignature();
 
         //////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ namespace Takoyaki
     private:
         struct Intermediate
         {
-            Intermediate();
+            Intermediate() noexcept;
             std::vector<D3D12_ROOT_PARAMETER> params;
             std::vector<DX12DescriptorRanges> ranges;
             D3D12_ROOT_SIGNATURE_FLAGS flags;

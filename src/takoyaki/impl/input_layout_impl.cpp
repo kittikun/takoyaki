@@ -25,14 +25,12 @@
 
 namespace Takoyaki
 {
-    InputLayoutImpl::InputLayoutImpl(DX12InputLayout& layout, boost::shared_lock<boost::shared_mutex> lock)
+    InputLayoutImpl::InputLayoutImpl(DX12InputLayout& layout, boost::shared_lock<boost::shared_mutex> lock) noexcept
         : layout_(layout)
         , bufferLock_(std::move(lock))
     {
 
     }
-
-    InputLayoutImpl::~InputLayoutImpl() = default;
 
     void InputLayoutImpl::addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep)
     {

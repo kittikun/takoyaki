@@ -27,19 +27,19 @@
 
 namespace Takoyaki
 {
-    DX12RootSignature::Intermediate::Intermediate()
+    DX12RootSignature::Intermediate::Intermediate() noexcept
         : flags{ D3D12_ROOT_SIGNATURE_FLAG_NONE }
         , size{ 0 }
     {
 
     }
 
-    DX12RootSignature::DX12RootSignature()
+    DX12RootSignature::DX12RootSignature() noexcept
         : intermediate_{ std::make_unique<Intermediate>() }
     {
     }
 
-    DX12RootSignature::DX12RootSignature(DX12RootSignature&& other)
+    DX12RootSignature::DX12RootSignature(DX12RootSignature&& other) noexcept
         : rootSignature_{ std::move(other.rootSignature_) }
         , intermediate_{ std::move(other.intermediate_) }
     {

@@ -41,7 +41,7 @@ namespace Takoyaki
 
     public:
         FrameworkImpl();
-         ~FrameworkImpl();
+        ~FrameworkImpl() = default;
 
         void initialize(const FrameworkDesc&, const std::shared_ptr<Framework>&);
         void setProperty(EPropertyID, const boost::any&);

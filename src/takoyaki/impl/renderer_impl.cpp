@@ -29,13 +29,11 @@
 
 namespace Takoyaki
 {
-    RendererImpl::RendererImpl(const std::shared_ptr<DX12Context>& context)
+    RendererImpl::RendererImpl(const std::shared_ptr<DX12Context>& context) noexcept
         : context_{ context }
     {
 
     }
-
-    RendererImpl::~RendererImpl() = default;
 
     void RendererImpl::commit()
     {

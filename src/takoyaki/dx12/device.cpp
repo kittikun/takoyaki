@@ -32,7 +32,7 @@
 
 namespace Takoyaki
 {
-    DX12Device::DX12Device()
+    DX12Device::DX12Device() noexcept
         : window_{ nullptr }
         , bufferCount_{ 0 }
         , currentFrame_{ 0 }

@@ -42,7 +42,7 @@ namespace Takoyaki
         Framework& operator=(Framework&&) = delete;
 
     public:
-        Framework();
+        Framework() noexcept;
         ~Framework();
 
         //////////////////////////////////////////////////////////////////////////

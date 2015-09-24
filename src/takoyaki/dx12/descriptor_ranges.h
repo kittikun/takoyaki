@@ -31,9 +31,9 @@ namespace Takoyaki
         DX12DescriptorRanges& operator=(DX12DescriptorRanges&&) = delete;
 
     public:
-        DX12DescriptorRanges();
-        DX12DescriptorRanges(DX12DescriptorRanges&&);
-        ~DX12DescriptorRanges();
+        DX12DescriptorRanges() = default;
+        DX12DescriptorRanges(DX12DescriptorRanges&&) noexcept;
+        ~DX12DescriptorRanges() = default;
 
         void add(D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
 

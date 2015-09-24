@@ -23,13 +23,11 @@
 
 namespace Takoyaki
 {
-    PipelineStateImpl::PipelineStateImpl(DX12PipelineState& state, boost::shared_lock<boost::shared_mutex> lock)
+    PipelineStateImpl::PipelineStateImpl(DX12PipelineState& state, boost::shared_lock<boost::shared_mutex> lock) noexcept
         : state_(state)
         , bufferLock_(std::move(lock))
     {
 
     }
-
-    PipelineStateImpl::~PipelineStateImpl() = default;
 }
 // namespace Takoyaki

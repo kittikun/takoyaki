@@ -25,16 +25,12 @@
 
 namespace Takoyaki
 {
-    DX12InputLayout::DX12InputLayout() = default;
-
     DX12InputLayout::DX12InputLayout(DX12InputLayout&& other)
         : inputs_{ std::move(other.inputs_) }
     {
         // kind of a waste but D3D12_INPUT_ELEMENT_DESC.SemanticName requires a LPCSTR
         names_.reserve(MAX_INPUT_SEMANTICS);
     }
-
-    DX12InputLayout::~DX12InputLayout() = default;
 
     void DX12InputLayout::addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep)
     {

@@ -46,9 +46,8 @@ namespace Takoyaki
         DX12Buffer(DX12Buffer&&) = delete;
 
     public:
-        DX12Buffer(EBufferType, uint_fast64_t, D3D12_RESOURCE_STATES);
-        
-        ~DX12Buffer();
+        explicit DX12Buffer(EBufferType, uint_fast64_t, D3D12_RESOURCE_STATES) noexcept;
+        ~DX12Buffer() = default;
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:

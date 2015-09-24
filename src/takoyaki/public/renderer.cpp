@@ -33,12 +33,12 @@
 
 namespace Takoyaki
 {
-    Renderer::Renderer(std::shared_ptr<RendererImpl>& impl)
+    Renderer::Renderer(std::shared_ptr<RendererImpl>& impl) noexcept
         : impl_{ impl }
     {
     }
 
-    Renderer::~Renderer() = default;
+    Renderer::~Renderer() noexcept = default;
 
     void Renderer::commit()
     {

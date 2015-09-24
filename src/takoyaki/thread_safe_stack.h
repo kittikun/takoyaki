@@ -20,9 +20,6 @@
 
 #pragma once
 
-#include <vector>
-#include <mutex>
-
 namespace Takoyaki
 {
     template<typename T>

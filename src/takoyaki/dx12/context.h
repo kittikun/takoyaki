@@ -20,10 +20,6 @@
 
 #pragma once
 
-#include <boost/optional.hpp>
-#include <d3d12.h>
-#include <memory>
-
 #include "constant_buffer.h"
 #include "device.h"
 #include "descriptor_heap.h"

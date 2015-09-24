@@ -20,11 +20,10 @@
 
 #pragma once
 
-#include <memory.h>
-
 namespace Takoyaki
 {
     class DX12Buffer;
+    class DX12Device;
 
     class DX12VertexBuffer
     {
@@ -34,18 +33,25 @@ namespace Takoyaki
         DX12VertexBuffer(DX12VertexBuffer&&);
 
     public:
-        DX12VertexBuffer(void*, uint_fast64_t, void*, uint_fast64_t);
+        DX12VertexBuffer(uint8_t*, uint_fast64_t, uint8_t*, uint_fast64_t);
         
         ~DX12VertexBuffer();
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
+        void create(const std::shared_ptr<DX12Device>&);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
 
     private:
+        struct Intermediate
+        {
+            D3D12_SUBRESOURCE_DATA vertexData;            
+        };
+
         std::unique_ptr<DX12Buffer> uploadVertexBuffer_;
         std::unique_ptr<DX12Buffer> vertexBuffer_;
+        std::unique_ptr<Intermediate> intermediate_;
     };
 } // namespace Takoyaki

@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 kittikun
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -20,48 +20,22 @@
 
 #pragma once
 
-// Windows
-#include <SDKDDKVer.h>
+namespace Takoyaki
+{
+    class DX12Device;
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
+    struct UpdateSubresourceDesc
+    {
+        ID3D12GraphicsCommandList* cmdList;
+        ID3D12Resource* destinationResource;
+        ID3D12Resource* intermediate;
+        uint_fast64_t intermediateOffset;
+        uint_fast32_t firstSubResource;
+        uint_fast32_t numSubResource;
+        D3D12_SUBRESOURCE_DATA* srcData;
+        std::weak_ptr<DX12Device> device;
+    };
 
-#include <windows.h>
+    uint_fast64_t UpdateSubresourcesHeapAlloc(const UpdateSubresourceDesc& params);
 
-// WinRT
-#include <wrl/client.h>
-
-// DirectX
-#include <d3d12.h>
-#include <dxgi1_4.h>
-
-// STL
-#include <array>
-#include <exception>
-#include <memory>
-#include <mutex>
-#include <numeric>
-#include <thread>
-#include <queue>
-#include <unordered_map>
-#include <vector>
-
-// Boost
-#include <boost/any.hpp>
-#include <boost/format.hpp>
-#include <boost/thread.hpp>
-
-#ifdef _DEBUG
-#include <boost/log/attributes/scoped_attribute.hpp>
-#include <boost/log/expressions/keyword.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/record_ostream.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/optional.hpp>
-#endif // _DEBUG
-
-// Maths
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
+} // namespace Takoyaki

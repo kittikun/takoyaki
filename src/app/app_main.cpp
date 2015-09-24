@@ -90,7 +90,7 @@ void appRender(Takoyaki::Renderer& renderer)
 {
     auto viewProj = renderer.getConstantBuffer("CBModelViewProjection");
 
-    // cbuffer might by empty is shader hasn't been loaded yet
+    // cbuffer might by empty if shader hasn't been loaded yet
     if (viewProj) {
         viewProj->setMatrix4x4("matViewProjection", glm::mat4x4());
     }

@@ -25,11 +25,11 @@
 
 namespace Takoyaki
 {
-    DX12Buffer::DX12Buffer(EBufferType type, uint_fast64_t size, D3D12_RESOURCE_STATES initialState)
+    DX12Buffer::DX12Buffer(EBufferType type, uint_fast64_t sizeByte, D3D12_RESOURCE_STATES initialState)
         : intermediate_{ std::make_unique<Intermediate>() }
     {
         intermediate_->type = type;
-        intermediate_->size = size;
+        intermediate_->size = sizeByte;
         intermediate_->initialState = initialState;
     }
 

@@ -20,9 +20,6 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <boost/thread.hpp>
-
 namespace Takoyaki
 {
     // Not thread-safe by itself, just provide a convenience RW mutex

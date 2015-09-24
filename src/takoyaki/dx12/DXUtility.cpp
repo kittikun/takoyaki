@@ -351,47 +351,4 @@ namespace Takoyaki
 
         return res;
     }
-
-    //////////////////////////////////////////////////////////////////////////
-    // System routines
-    //////////////////////////////////////////////////////////////////////////
-    uint_fast64_t UpdateSubresourcesHeapAlloc(  ID3D12GraphicsCommandList* cmdList, ID3D12Resource* destinationResource, ID3D12Resource* intermediate, uint_fast64_t intermediateOffset,
-                                                uint_fast32_t firstSubResource, uint_fast32_t numSubResource, D3D12_SUBRESOURCE_DATA* pSrcData)
-    {
-        // check parameters
-        if (firstSubResource > D3D12_REQ_SUBRESOURCES)
-            throw new std::runtime_error("UpdateSubresources firstSubResource too big");
-
-        if (numSubResource > (D3D12_REQ_SUBRESOURCES - firstSubResource))
-            throw new std::runtime_error("UpdateSubresources numSubResource too big");
-
-        uint_fast64_t required = 0;
-        uint_fast64_t memToAlloc = static_cast<uint_fast64_t>(sizeof(D3D12_PLACED_SUBRESOURCE_FOOTPRINT) + sizeof(uint_fast32_t) + sizeof(uint_fast64_t)) * numSubResource;
-
-        if (memToAlloc > UINTPTR_MAX) {
-            throw new std::runtime_error("UpdateSubresources memToAlloc too big");
-        }
-
-        void* mem = HeapAlloc(GetProcessHeap(), 0, static_cast<SIZE_T>(memToAlloc));
-
-        if (mem == NULL) {
-            throw new std::runtime_error("UpdateSubresources could not allocate memory");
-        }
-
-        D3D12_PLACED_SUBRESOURCE_FOOTPRINT* layout = reinterpret_cast<D3D12_PLACED_SUBRESOURCE_FOOTPRINT*>(mem);
-        uint_fast64_t* rowSizesInBytes = reinterpret_cast<uint_fast64_t*>(layout + numSubResource);
-        UINT* numRows = reinterpret_cast<uint_fast32_t*>(rowSizesInBytes + numSubResource);
-
-        D3D12_RESOURCE_DESC desc = destinationResource->GetDesc();
-        ID3D12Device* device;
-
-        destinationResource->GetDevice(__uuidof(*device), reinterpret_cast<void**>(&device));
-        device->GetCopyableFootprints(&desc, firstSubResource, numSubResource, intermediateOffset, layout, numRows, rowSizesInBytes, &required);
-        device->Release();
-
-        //uint_fast64_t res = UpdateSubresources(pCmdList, pDestinationResource, pIntermediate, FirstSubresource, NumSubresources, RequiredSize, pLayouts, pNumRows, pRowSizesInBytes, pSrcData);
-        HeapFree(GetProcessHeap(), 0, mem);
-        return 0; // res;
-    }
-
 } // namespace Takoyaki

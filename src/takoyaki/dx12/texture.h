@@ -20,9 +20,6 @@
 
 #pragma once
 
-#include <d3d12.h>
-#include <memory>
-
 namespace Takoyaki
 {
     class DX12Context;

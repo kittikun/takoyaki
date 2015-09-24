@@ -20,13 +20,6 @@
 
 #pragma once
 
-#include <d3d12.h>
-#include <dxgi1_4.h>
-#include <memory>
-#include <mutex>
-#include <wrl/client.h>
-#include <glm/fwd.hpp>
-
 #include "../public/definitions.h"
 
 namespace Takoyaki

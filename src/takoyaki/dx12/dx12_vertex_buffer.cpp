@@ -21,18 +21,52 @@
 #include "pch.h"
 #include "dx12_vertex_buffer.h"
 
+#include "device.h"
 #include "dx12_buffer.h"
+#include "dxsystem.h"
+#include "dxutility.h"
 
 namespace Takoyaki
 {
-    DX12VertexBuffer::DX12VertexBuffer(void* vertices, uint_fast64_t byteSizeVectices, void* indices, uint_fast64_t byteSizeIndices)
-        : uploadVertexBuffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, byteSizeVectices, D3D12_RESOURCE_STATE_GENERIC_READ) }
-        , vertexBuffer_{std::make_unique<DX12Buffer>(EBufferType::NO_CPU_GPU_FAST, byteSizeVectices, D3D12_RESOURCE_STATE_COPY_DEST)}
+    DX12VertexBuffer::DX12VertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint8_t* indices, uint_fast64_t sizeIndicesByte)
+        : uploadVertexBuffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, sizeVecticesByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
+        , vertexBuffer_{std::make_unique<DX12Buffer>(EBufferType::NO_CPU_GPU_FAST, sizeVecticesByte, D3D12_RESOURCE_STATE_COPY_DEST)}
+        , intermediate_{ std::make_unique<Intermediate>() }
     {
-        
+        intermediate_->vertexData.pData = vertices;
+        intermediate_->vertexData.RowPitch = sizeVecticesByte;
+        intermediate_->vertexData.SlicePitch = sizeVecticesByte;
     }
 
     DX12VertexBuffer::~DX12VertexBuffer() = default;
 
+    void DX12VertexBuffer::create(const std::shared_ptr<DX12Device>& device)
+    {
+        // TODO: probably better to add a resource creation queue in thread pool and use on command list for all
+        // thus avoiding running out of threads because they are waiting for resources
+        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> cmdAllocator;
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList;
+
+        // not thread safe
+        {
+            auto lock = device->getLock();
+
+            DXCheckThrow(device->getDXDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAllocator)));
+            DXCheckThrow(device->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAllocator.Get(), nullptr, IID_PPV_ARGS(&cmdList)));
+        }
+
+        D3D12_RESOURCE_BARRIER barrier;
+
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        barrier.Transition.pResource = vertexBuffer_->getResource();
+        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+        cmdList->ResourceBarrier(1, &barrier);
+
+        // not a good idea to use waitForGPU here, need to think about something clever
+    }
 
 } // namespace Takoyaki

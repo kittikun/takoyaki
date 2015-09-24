@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <thread>
-
 #include "rwlock_map.h"
 #include "public/definitions.h"
 

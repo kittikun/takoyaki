@@ -111,6 +111,9 @@
     <ClCompile Include="..\src\takoyaki\dx12\dx12_vertex_buffer.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\dxsystem.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
@@ -213,6 +216,9 @@
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\dx12_vertex_buffer.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\dxsystem.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>

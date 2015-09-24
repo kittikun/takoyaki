@@ -20,10 +20,6 @@
 
 #pragma once
 
-#include <d3d12.h>
-#include <memory>
-#include <unordered_map>
-
 namespace Takoyaki
 {
     class DX12Context;

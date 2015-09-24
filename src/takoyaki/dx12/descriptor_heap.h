@@ -20,10 +20,6 @@
 
 #pragma once
 
-#include <d3d12.h>
-#include <vector>
-#include <unordered_map>
-
 #include "device.h"
 #include "dxutility.h"
 

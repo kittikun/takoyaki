@@ -18,41 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "copy_worker.h"
 
-#include "rwlock_map.h"
-#include "public/definitions.h"
+#include "device.h"
+#include "../thread_pool.h"
 
 namespace Takoyaki
 {
-    struct FrameworkDesc;
-
-    class IO
+    void CopyWorker::initialize(const std::shared_ptr<DX12Device>&)
     {
-        IO(const IO&) = delete;
-        IO& operator=(const IO&) = delete;
-        IO(IO&&) = delete;
-        IO& operator=(IO&&) = delete;
 
-    public:
-        using LoadResultFunc = std::function<void(const std::vector<uint8_t>&)>;
+    }
 
-        IO();
-        ~IO() = default;
-
-        void initialize(const LoadFileAsyncFunc&);
-
-        // Blocking load a file
-        std::string loadFile(const std::string&);
-
-        // Asynchronously load a file
-        void loadAsyncFile(const std::string&, const LoadResultFunc&);
-
-        // called by framework to return the async result by OS
-        void loadAsyncFileResult(const std::string&, const std::vector<uint8_t>&);
-    private:
-        std::mutex mutex_;
-        RWLockMap<std::string, std::vector<LoadResultFunc>> mapQueued_;
-        LoadFileAsyncFunc loadFileAsyncFunc_;
-    };
 } // namespace Takoyaki

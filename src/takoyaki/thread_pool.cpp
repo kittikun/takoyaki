@@ -37,6 +37,11 @@ namespace Takoyaki
         done_ = true;
     }
 
+    void ThreadPool::addWorkerFunc(const SpecializedWorker& worker)
+    { 
+        specializedWorkers_.push_back(worker.func);
+    }
+
     void ThreadPool::initialize(uint_fast32_t threadCount)
     {
         auto hardMax = std::thread::hardware_concurrency();

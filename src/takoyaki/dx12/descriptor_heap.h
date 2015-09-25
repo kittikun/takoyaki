@@ -96,7 +96,7 @@ namespace Takoyaki
             auto container = containerMap_[handle.ptr];
 
             if (containerMap_.erase(handle.ptr) != 1)
-                throw new std::runtime_error("DX12DescriptorHeapCollection::releaseOne, containerMap_ nothing erased");
+                throw new std::runtime_error{ "DX12DescriptorHeapCollection::releaseOne, containerMap_ nothing erased" };
 
             heaps_[container].freelist_.push_back((uint_fast32_t)(handle.ptr - heaps_[container].handle_.ptr) / descriptorSize_);
         }

@@ -40,7 +40,7 @@ namespace Takoyaki
 
         void addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size);
 
-        const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView() { return rtv_; }
+       inline const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView() { return rtv_; }
 
         //////////////////////////////////////////////////////////////////////////
         // External usage: 

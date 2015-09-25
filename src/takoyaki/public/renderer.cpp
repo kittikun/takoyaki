@@ -38,7 +38,7 @@ namespace Takoyaki
     {
     }
 
-    Renderer::~Renderer() noexcept = default;
+    Renderer::~Renderer() = default;
 
     void Renderer::commit()
     {

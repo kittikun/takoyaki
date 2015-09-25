@@ -33,7 +33,7 @@ namespace Takoyaki
         DX12InputLayout& operator=(DX12InputLayout&&) = delete;
 
     public:
-        DX12InputLayout() noexcept = default;
+        DX12InputLayout() = default;
         DX12InputLayout(DX12InputLayout&&);
         ~DX12InputLayout() = default;
 

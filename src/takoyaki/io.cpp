@@ -84,9 +84,9 @@ namespace Takoyaki
             for (auto func : funcs)
                 func(res);
         } else {
-            auto fmt = boost::format("IO::loadAsyncFileResult, key not found %1%") % filename;
+            auto fmt = boost::format{ "IO::loadAsyncFileResult, key not found %1%" } % filename;
 
-            throw new std::runtime_error(boost::str(fmt));
+            throw new std::runtime_error{ boost::str(fmt) };
         }
     }
 } // namespace Takoyaki

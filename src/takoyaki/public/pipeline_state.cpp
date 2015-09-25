@@ -30,7 +30,7 @@ namespace Takoyaki
     {
     }
 
-    PipelineState::~PipelineState() noexcept = default;
+    PipelineState::~PipelineState() = default;
 
     void setRootSignature(const std::string&)
     {

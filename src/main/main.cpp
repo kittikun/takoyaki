@@ -51,7 +51,7 @@ namespace AppMain
             case Windows::Graphics::Display::DisplayOrientations::PortraitFlipped:
                 return Takoyaki::EDisplayOrientation::PORTRAIT_FLIPPED;
             default:
-                throw std::runtime_error("DisplayOrientationsToTakoyaki");
+                throw std::runtime_error{ "DisplayOrientationsToTakoyaki" };
                 break;
         }
 
@@ -93,7 +93,7 @@ namespace AppMain
         desc.bufferCount = 3;
         desc.nativeOrientation = DisplayOrientationsToTakoyaki(disp->NativeOrientation);
         desc.currentOrientation = DisplayOrientationsToTakoyaki(disp->CurrentOrientation);
-        desc.numWorkerThreads = 4;
+        desc.numWorkerThreads = std::thread::hardware_concurrency();
         desc.type = Takoyaki::EDeviceType::DX12;
         desc.windowHandle = reinterpret_cast<void*>(window);
         desc.windowSize.x = window->Bounds.Width;

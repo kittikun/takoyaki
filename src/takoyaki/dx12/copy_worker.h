@@ -20,47 +20,41 @@
 
 #pragma once
 
-#include "../io.h"
-#include "../public/definitions.h"
+#include "../thread_pool.h"
 
 namespace Takoyaki
 {
-    struct FrameworkDesc;
-    class DX12Context;
     class DX12Device;
-    class Framework;
-    class RendererImpl;
     class ThreadPool;
 
-    class FrameworkImpl
+    // A copy worker that specialize in copy commands but do global work when local
+    // queue is empty. Also Provides synchronization with other specialized workers
+    class CopyWorker
     {
-        FrameworkImpl(const FrameworkImpl&) = delete;
-        FrameworkImpl& operator=(const FrameworkImpl&) = delete;
-        FrameworkImpl(FrameworkImpl&&) = delete;
-        FrameworkImpl& operator=(FrameworkImpl&&) = delete;
+        CopyWorker(const CopyWorker&) = delete;
+        CopyWorker& operator=(const CopyWorker&) = delete;
+        CopyWorker& operator=(CopyWorker&&) = delete;
+        CopyWorker(CopyWorker&&) = delete;
 
     public:
-        FrameworkImpl();
-        ~FrameworkImpl() = default;
+        CopyWorker() = default;
+        ~CopyWorker() = default;
 
-        void initialize(const FrameworkDesc&, const std::shared_ptr<Framework>&);
-        void setProperty(EPropertyID, const boost::any&);
-        void render();
-        void terminate();
-        void validateDevice() const;
+        void initialize(const std::shared_ptr<DX12Device>&);
 
-        void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
-        inline std::shared_ptr<RendererImpl>& getRenderer() { return renderer_; }
-
-        void compileShader(const ShaderDesc&);
+        inline void setThreadPool(std::weak_ptr<ThreadPool> pool) { threadPool_ = pool; }
 
     private:
-        IO io_;
-        std::shared_ptr<ThreadPool> threadPool_;
-        std::shared_ptr<DX12Device> device_;
-        std::shared_ptr<DX12Context> context_;
-        std::shared_ptr<RendererImpl> renderer_;
+        std::weak_ptr<ThreadPool> threadPool_;
+        ThreadSafeQueue<MoveOnlyFunc> workQueue_; 
+
+        // local command queue
+        Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
+        std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
+
+        // shared synchronization
+        Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
+        std::vector<uint64_t> fenceValues_;
+        HANDLE fenceEvent_;
     };
-
 } // namespace Takoyaki
-

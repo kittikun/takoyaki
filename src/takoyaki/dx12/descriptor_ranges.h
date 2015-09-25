@@ -37,8 +37,8 @@ namespace Takoyaki
 
         void add(D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
 
-        uint_fast32_t size() const { return static_cast<uint_fast32_t>(descs_.size()); }
-        D3D12_DESCRIPTOR_RANGE* getDescs() { return &descs_.front(); }
+        inline uint_fast32_t size() const { return static_cast<uint_fast32_t>(descs_.size()); }
+        inline D3D12_DESCRIPTOR_RANGE* getDescs() { return &descs_.front(); }
 
     private:
         std::vector<D3D12_DESCRIPTOR_RANGE> descs_;

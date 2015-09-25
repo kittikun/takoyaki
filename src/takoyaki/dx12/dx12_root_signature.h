@@ -42,7 +42,7 @@ namespace Takoyaki
         // Internal usage:
 
         bool create(const std::shared_ptr<DX12Device>&);
-        ID3D12RootSignature* getRootSignature() { return rootSignature_.Get(); }
+        inline ID3D12RootSignature* getRootSignature() { return rootSignature_.Get(); }
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
@@ -56,7 +56,7 @@ namespace Takoyaki
         // only when using descriptor tables
         void addDescriptorRange(uint_fast32_t, D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
 
-        void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags) { intermediate_->flags = flags; }
+        inline void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags) { intermediate_->flags = flags; }
 
     private:
         struct Intermediate

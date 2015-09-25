@@ -185,7 +185,7 @@ namespace Takoyaki
     void DXCheckThrow(HRESULT hr)
     {
         if (FAILED(hr)) {
-            throw std::runtime_error(GetDXError(hr));
+            throw std::runtime_error{ GetDXError(hr) };
         }
     }
 

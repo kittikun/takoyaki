@@ -56,14 +56,12 @@ namespace Takoyaki
         LOG_IDENTIFY_THREAD;
         LOGC_INDENT_START << "Initializing Takoyaki Framework..";
 
-        threadPool_->initialize(desc.numWorkerThreads);
-
         if (desc.type == EDeviceType::DX12) {
             device_.reset(new DX12Device());
+            context_ = std::make_shared<DX12Context>(device_, threadPool_);
         }
 
-        context_ = std::make_shared<DX12Context>(device_, threadPool_);
-
+        threadPool_->initialize(desc.numWorkerThreads);
         device_->create(desc, context_);
 
         if (!desc.loadAsyncFunc)
@@ -110,7 +108,7 @@ namespace Takoyaki
                 break;
 
             default:
-                throw new std::runtime_error("FrameworkImpl::setProperty, id");
+                throw new std::runtime_error{ "FrameworkImpl::setProperty, id" };
                 break;
         }
     }

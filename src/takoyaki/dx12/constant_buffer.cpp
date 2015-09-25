@@ -66,7 +66,7 @@ namespace Takoyaki
         auto found = offsetMap_.find(name);
 
         if (found == offsetMap_.end()) {
-            auto fmt = boost::format("DX12ConstantBuffer, could not find constant %1%") % name;
+            auto fmt = boost::format{ "DX12ConstantBuffer, could not find constant %1%" } % name;
 
             LOGW << boost::str(fmt);
             //throw new std::runtime_error(boost::str(fmt));

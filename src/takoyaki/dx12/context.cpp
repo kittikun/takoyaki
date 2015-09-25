@@ -106,7 +106,7 @@ namespace Takoyaki
                 auto res = rs.second.create(device_);
 
                 if (!res) {
-                    auto fmt = boost::format("RootSignature contains no parameters: %1%") % rs.first;
+                    auto fmt = boost::format{ "RootSignature contains no parameters: %1%" } % rs.first;
 
                     LOGW << boost::str(fmt);
                 }
@@ -174,7 +174,7 @@ namespace Takoyaki
         auto found = constantBuffers_.find(name);
 
         if (found == constantBuffers_.end()) {
-            auto fmt = boost::format("DX12DeviceContext::getConstantBuffer, cannot find key \"%1%\"") % name;
+            auto fmt = boost::format{ "DX12DeviceContext::getConstantBuffer, cannot find key \"%1%\"" } % name;
 
             LOGW << boost::str(fmt);
             return ConstantBufferReturn();
@@ -192,9 +192,9 @@ namespace Takoyaki
         auto found = inputLayouts_.find(name);
 
         if (found == inputLayouts_.end()) {
-            auto fmt = boost::format("DX12DeviceContext::getInputLayout, cannot find key \"%1%\"") % name;
+            auto fmt = boost::format{ "DX12DeviceContext::getInputLayout, cannot find key \"%1%\"" } % name;
 
-            throw new std::runtime_error(boost::str(fmt));
+            throw new std::runtime_error{ boost::str(fmt) };
         }
 
         return std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
@@ -208,7 +208,7 @@ namespace Takoyaki
         if (found == pipelineStates_.end()) {
             auto fmt = boost::format("DX12DeviceContext::getPipelineState, cannot find key \"%1%\"") % name;
 
-            throw new std::runtime_error(boost::str(fmt));
+            throw new std::runtime_error{ boost::str(fmt) };
         }
 
         return std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
@@ -220,9 +220,9 @@ namespace Takoyaki
         auto found = rootSignatures_.find(name);
 
         if (found == rootSignatures_.end()) {
-            auto fmt = boost::format("DX12DeviceContext::getRootSignature, cannot find key \"%1%\"") % name;
+            auto fmt = boost::format{ "DX12DeviceContext::getRootSignature, cannot find key \"%1%\"" } % name;
 
-            throw new std::runtime_error(boost::str(fmt));
+            throw new std::runtime_error{ boost::str(fmt) };
         }
 
         return std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));

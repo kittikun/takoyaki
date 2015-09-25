@@ -36,7 +36,7 @@ namespace Takoyaki
         ~DX12Texture();
 
         // For external initialization, swap buffer only ?
-        Microsoft::WRL::ComPtr<ID3D12Resource>& getResource() { return resource_; }
+        inline Microsoft::WRL::ComPtr<ID3D12Resource>& getResource() { return resource_; }
         const D3D12_CPU_DESCRIPTOR_HANDLE& getRenderTargetView();
 
     private:

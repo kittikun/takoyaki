@@ -43,8 +43,8 @@ namespace Takoyaki
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
-        const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
-        std::unique_lock<std::mutex> getLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
+        inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
+        inline std::unique_lock<std::mutex> getLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
 
     private:
         void createDevice(uint_fast32_t);
@@ -58,17 +58,16 @@ namespace Takoyaki
         std::mutex deviceMutex_;
         std::weak_ptr<DX12Context> context_;
 
-        // Command queue
-        // TODO: Move to another thread class
+        // main command queue
         Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
         std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
 
-        // CPU/GPU Synchronization.
+        // synchronization
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
         std::vector<uint64_t> fenceValues_;
         HANDLE fenceEvent_;
 
-        // window related
+        // windows related
         IUnknown* window_;
         glm::vec2 windowSize_;
         EDisplayOrientation currentOrientation_;

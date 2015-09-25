@@ -65,7 +65,7 @@ namespace Takoyaki
         cmdList->ResourceBarrier(1, &barrier);
         cmdList->Close();
 
-        // excute command
+        // execute command
 
         // not a good idea to use waitForGPU here, need to think about something clever
 

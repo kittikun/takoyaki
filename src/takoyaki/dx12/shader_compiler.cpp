@@ -58,7 +58,7 @@ namespace Takoyaki
                 break;
 
             default:
-                throw new std::runtime_error("ShaderCompiler::getDXShaderType, unknown type");
+                throw new std::runtime_error{ "ShaderCompiler::getDXShaderType, unknown type" };
         }
 
         return res;
@@ -88,7 +88,7 @@ namespace Takoyaki
                         D3D12_SHADER_VARIABLE_DESC vardesc;
 
                         var->GetDesc(&vardesc);
-                        auto fmt = boost::format("CB var : %1%, Offset: %2%, Size: %3%") % vardesc.Name % vardesc.StartOffset % vardesc.Size;
+                        auto fmt = boost::format{ "CB var : %1%, Offset: %2%, Size: %3%" } % vardesc.Name % vardesc.StartOffset % vardesc.Size;
                         LOGS << boost::str(fmt);
 
                         cbuffer.addVariable(vardesc.Name, vardesc.StartOffset, vardesc.Size);
@@ -175,7 +175,7 @@ namespace Takoyaki
                     break;
 
                 default:
-                    throw new std::runtime_error("Unknown D3D_SHADER_INPUT_TYPE");
+                    throw new std::runtime_error{ "Unknown D3D_SHADER_INPUT_TYPE" };
                     break;
             }
         }
@@ -183,11 +183,11 @@ namespace Takoyaki
 
     void ShaderCompiler::compileShader(IO* io, const ShaderDesc& desc, const std::shared_ptr<DX12Context>& context)
     {
-        auto fmt = boost::format("Compiling shader \"%1%\"") % desc.name;
+        auto fmt = boost::format{ "Compiling shader \"%1%\"" } % desc.name;
 
         LOGS_INDENT_START << boost::str(fmt);
 
-        fmt = boost::format("Path: %1%, Entry: %2%") % desc.path % desc.entry;
+        fmt = boost::format{ "Path: %1%, Entry: %2%" } % desc.path % desc.entry;
 
         LOGS << boost::str(fmt);
 
@@ -215,9 +215,9 @@ namespace Takoyaki
             if (shaderBlob != nullptr)
                 shaderBlob->Release();
 
-            fmt = boost::format("Shader compilation failed: %1%, %2%") % desc.path % GetDXError(hr);
+            fmt = boost::format{ "Shader compilation failed: %1%, %2%" } % desc.path % GetDXError(hr);
             auto test = boost::str(fmt);
-            throw new std::runtime_error(boost::str(fmt));
+            throw new std::runtime_error{ boost::str(fmt) };
         }
 
         D3D12_SHADER_BYTECODE bc;
@@ -279,11 +279,11 @@ namespace Takoyaki
                             shader.debug |= allDebug;
                             shaderList.push_back(std::move(shader));
                         } else {
-                            throw new std::runtime_error("Shaderlist expected an object to describe shader");
+                            throw new std::runtime_error{ "Shaderlist expected an object to describe shader" };
                         }
                     }
                 } else {
-                    throw new std::runtime_error("Shaderlist expected an array after type");
+                    throw new std::runtime_error{ "Shaderlist expected an array after type" };
                 }
             }
         }

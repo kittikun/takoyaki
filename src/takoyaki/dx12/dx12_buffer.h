@@ -52,7 +52,7 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
         void Create(const std::shared_ptr<DX12Device>&);
-        ID3D12Resource* getResource() { return resource_.Get(); }
+        inline ID3D12Resource* getResource() { return resource_.Get(); }
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External

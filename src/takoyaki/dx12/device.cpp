@@ -102,6 +102,10 @@ namespace Takoyaki
 
     void DX12Device::createSwapChain()
     {
+        // createSwapChain could happen while some other thread
+        // is using the device so lock self
+        auto lock = getLock();
+
         LOGC << "Creating swap chain...";
 
         waitForGpu();
@@ -140,7 +144,7 @@ namespace Takoyaki
                 break;
 
             default:
-                throw std::runtime_error("DX12Device::createSwapChain, displayRotation");
+                throw std::runtime_error{ "DX12Device::createSwapChain, displayRotation" };
         }
 
         if (swapChain_ != nullptr) {
@@ -169,7 +173,6 @@ namespace Takoyaki
         }
 
         DXCheckThrow(swapChain_->SetRotation(displayRotation));
-
 
         // All pending GPU work was already finished. Update the tracked fence values
         // to the last value signaled.
@@ -220,7 +223,7 @@ namespace Takoyaki
                         break;
 
                     default:
-                        throw std::runtime_error("DX12Device::GetDXGIOrientation, nativeOrientation_");
+                        throw std::runtime_error{ "DX12Device::GetDXGIOrientation, nativeOrientation_" };
                 }
                 break;
 
@@ -243,7 +246,7 @@ namespace Takoyaki
                         break;
 
                     default:
-                        throw std::runtime_error("DX12Device::GetDXGIOrientation, currentOrientation_");
+                        throw std::runtime_error{ "DX12Device::GetDXGIOrientation, currentOrientation_" };
                 }
                 break;
         }

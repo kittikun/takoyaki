@@ -21,6 +21,7 @@
 #pragma once
 
 #include "constant_buffer.h"
+#include "copy_worker.h"
 #include "device.h"
 #include "descriptor_heap.h"
 #include "dx12_input_layout.h"
@@ -62,8 +63,8 @@ namespace Takoyaki
         DX12Texture& createTexture();
 
         // Get
-        DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
-        DescriptorHeapSR& getSRVDescHeapCollection() { return descHeapSRV_; }
+        inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
+        inline DescriptorHeapSR& getSRVDescHeapCollection() { return descHeapSRV_; }
         D3D12_SHADER_BYTECODE getShader(EShaderType, const std::string&); // warning, will yield until shader is found
 
         //////////////////////////////////////////////////////////////////////////
@@ -100,6 +101,7 @@ namespace Takoyaki
         RWLockMap<std::string, DX12RootSignature> rootSignatures_;
 
         // use multiples maps to allow same name in different categories
+        // TODO: make something nice
         RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderCompute_;
         RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderDomain_;
         RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderHull_;
@@ -108,5 +110,8 @@ namespace Takoyaki
         RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderVertex_;
 
         ThreadSafeStack<DX12Texture> textures_;
+
+        // Workers
+        CopyWorker copyWorker_;
     };
 } // namespace Takoyaki

@@ -104,9 +104,16 @@ namespace Takoyaki
         ThreadPool& operator=(ThreadPool&&) = delete;
 
     public:
+        struct SpecializedWorker
+        {
+            std::function<void()> func;
+            std::string name;
+        };
+
         ThreadPool() noexcept;
         ~ThreadPool() noexcept;
 
+        void addWorkerFunc(const SpecializedWorker&);
         void initialize(uint_fast32_t);
 
         template<typename Func>
@@ -132,6 +139,7 @@ namespace Takoyaki
         std::atomic<bool> done_;
         ThreadSafeQueue<MoveOnlyFunc> workQueue_;
         std::vector<std::thread> threads;
+        std::vector<std::function<void()>> specializedWorkers_;
         JoinThreads joiner;
     };
 } // namespace Takoyaki

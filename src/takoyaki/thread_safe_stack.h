@@ -45,7 +45,7 @@ namespace Takoyaki
             std::lock_guard<std::mutex> lock{ mutex_ };
 
             if (stack_.empty())
-                throw std::runtime_error("Trying to pop when ThreadSafeStack is empty");
+                throw std::runtime_error{ "Trying to pop when ThreadSafeStack is empty" };
 
             value = std::move(stack_.back());
             stack_.pop_back();

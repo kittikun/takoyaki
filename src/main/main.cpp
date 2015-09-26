@@ -93,7 +93,7 @@ namespace AppMain
         desc.bufferCount = 3;
         desc.nativeOrientation = DisplayOrientationsToTakoyaki(disp->NativeOrientation);
         desc.currentOrientation = DisplayOrientationsToTakoyaki(disp->CurrentOrientation);
-        desc.numWorkerThreads = std::thread::hardware_concurrency();
+        desc.numWorkerThreads = 4; // std::thread::hardware_concurrency();
         desc.type = Takoyaki::EDeviceType::DX12;
         desc.windowHandle = reinterpret_cast<void*>(window);
         desc.windowSize.x = window->Bounds.Width;

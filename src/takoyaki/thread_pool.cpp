@@ -37,9 +37,17 @@ namespace Takoyaki
         done_ = true;
     }
 
-    void ThreadPool::addWorkerFunc(const SpecializedWorker& worker)
+    void ThreadPool::addSpecializedWorker(const SpecializedWorkerDesc& worker)
     { 
-        specializedWorkers_.push_back(worker.func);
+        // no need to protect here because it's still single-threaded
+        auto found = specializedWorkers_.find(worker.name);
+
+        if (found != specializedWorkers_.end()) {
+            auto fmt = boost::format{ "Specialized worker already added: %1%" } % worker.name;
+            throw new std::runtime_error{ boost::str(fmt) };
+        }
+
+        specializedWorkers_.insert(std::make_pair(worker.name, std::make_pair(worker.mainFunc, worker.submitFunc)));
     }
 
     void ThreadPool::initialize(uint_fast32_t threadCount)
@@ -50,11 +58,22 @@ namespace Takoyaki
             threadCount = hardMax;
 
         auto fmt = boost::format{ "Initializing thread pool with %1% threads" } % threadCount;
-
         LOGC << boost::str(fmt);
+
+        auto genericCount = std::max<size_t>(0, threadCount - specializedWorkers_.size());
             
         try {
-            for (unsigned i = 0; i < threadCount; ++i) {
+            // workers are mandatory so create a thread for them even if threadCount is smaller
+            for (auto spec : specializedWorkers_) {
+                auto thread = std::thread{ spec.second.first };
+                auto fmt = boost::format{ "Takoyaki Worker %1%" } % spec.first;
+
+                setThreadName(thread.native_handle(), boost::str(fmt));
+                threads.push_back(std::move(thread));
+            }
+
+            // create generic workers
+            for (unsigned i = 0; i < genericCount; ++i) {
                 auto thread = std::thread{ &ThreadPool::workerMain, this };
                 auto fmt = boost::format{ "Takoyaki Worker %1%" } % i;
 

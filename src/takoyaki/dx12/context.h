@@ -24,9 +24,11 @@
 #include "copy_worker.h"
 #include "device.h"
 #include "descriptor_heap.h"
+#include "dx12_buffer.h"
 #include "dx12_input_layout.h"
 #include "dx12_pipeline_state.h"
 #include "dx12_root_signature.h"
+#include "dx12_vertex_buffer.h"
 #include "texture.h"
 #include "../rwlock_map.h"
 #include "../thread_safe_stack.h"
@@ -50,12 +52,15 @@ namespace Takoyaki
         using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
         using PipelineStateReturn = std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>;
         using RootSignatureReturn = std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>;
+        using VertexBufferReturn = std::pair<DX12VertexBuffer&, boost::shared_lock<boost::shared_mutex>>;
 
-        explicit DX12Context(const std::shared_ptr<DX12Device>&, const std::shared_ptr<ThreadPool>&) noexcept;
+        explicit DX12Context(const std::shared_ptr<DX12Device>&, const std::shared_ptr<ThreadPool>&);
         ~DX12Context() = default;
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
+
+        void initialize();
 
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
@@ -73,10 +78,12 @@ namespace Takoyaki
         void createInputLayout(const std::string&);
         void createPipelineState(const std::string&, const PipelineStateDesc&);
         void createRootSignature(const std::string&);
+        void createVertexBuffer(const std::string&,uint8_t*, uint_fast64_t, uint8_t*, uint_fast64_t);
 
         auto getInputLayout(const std::string&) -> InputLayoutReturn;
         auto getPipelineState(const std::string&) -> PipelineStateReturn;
         auto getRootSignature(const std::string&) -> RootSignatureReturn;
+        auto getVertexBuffer(const std::string&) -> VertexBufferReturn;
 
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
@@ -99,9 +106,10 @@ namespace Takoyaki
         RWLockMap<std::string, DX12InputLayout> inputLayouts_;
         RWLockMap<std::string, DX12PipelineState> pipelineStates_;
         RWLockMap<std::string, DX12RootSignature> rootSignatures_;
+        RWLockMap<std::string, DX12VertexBuffer> vertexBuffers_;
 
         // use multiples maps to allow same name in different categories
-        // TODO: make something nice
+        // TODO: make something nicer
         RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderCompute_;
         RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderDomain_;
         RWLockMap<std::string, D3D12_SHADER_BYTECODE> shaderHull_;

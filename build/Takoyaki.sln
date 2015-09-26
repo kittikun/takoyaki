@@ -19,9 +19,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main", "Main.vcxproj", "{80
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "App", "App.vcxproj", "{666353BA-6BBE-4CC7-A214-9B47AD45C5BF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{10A79E06-CADF-4496-AEDC-063E4AAA0C6F} = {10A79E06-CADF-4496-AEDC-063E4AAA0C6F}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

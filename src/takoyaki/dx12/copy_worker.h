@@ -37,24 +37,27 @@ namespace Takoyaki
         CopyWorker(CopyWorker&&) = delete;
 
     public:
-        CopyWorker() = default;
-        ~CopyWorker() = default;
+        CopyWorker() noexcept;
+        ~CopyWorker() noexcept;
 
-        void initialize(const std::shared_ptr<DX12Device>&);
-
-        inline void setThreadPool(std::weak_ptr<ThreadPool> pool) { threadPool_ = pool; }
+        void initialize(const std::shared_ptr<DX12Device>&, std::weak_ptr<ThreadPool>);
 
     private:
+        void submit(MoveOnlyFunc);
+        void main();
+
+    private:
+        bool done_;
         std::weak_ptr<ThreadPool> threadPool_;
         ThreadSafeQueue<MoveOnlyFunc> workQueue_; 
 
         // local command queue
-        Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
-        std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
+        Microsoft::WRL::ComPtr<ID3D12CommandList>  commandList_;
+        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
 
         // shared synchronization
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-        std::vector<uint64_t> fenceValues_;
+        uint64_t fenceValue_;
         HANDLE fenceEvent_;
     };
 } // namespace Takoyaki

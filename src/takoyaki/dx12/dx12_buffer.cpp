@@ -72,7 +72,7 @@ namespace Takoyaki
         intermediate_.reset();
     }
 
-    D3D12_HEAP_TYPE bufferTypeToDX(EBufferType type)
+    D3D12_HEAP_TYPE DX12Buffer::bufferTypeToDX(EBufferType type)
     {
         if (type == EBufferType::CPU_FAST_GPU_SLOW)
             return D3D12_HEAP_TYPE_READBACK;

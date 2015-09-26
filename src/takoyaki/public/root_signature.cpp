@@ -27,8 +27,8 @@
 
 namespace Takoyaki
 {
-    RootSignature::RootSignature(std::unique_ptr<RootSignatureImpl> rs) noexcept
-        : impl_{ std::move(rs) }
+    RootSignature::RootSignature(std::unique_ptr<RootSignatureImpl> impl) noexcept
+        : impl_{ std::move(impl) }
     {
     }
 

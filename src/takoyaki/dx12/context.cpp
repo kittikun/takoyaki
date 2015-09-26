@@ -31,13 +31,12 @@ namespace Takoyaki
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
 
-    DX12Context::DX12Context(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<ThreadPool>& threadPool) noexcept
+    DX12Context::DX12Context(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<ThreadPool>& threadPool)
         : device_ { device }
         , threadPool_{ threadPool }
         , descHeapRTV_{ device }
         , descHeapSRV_{ device }
     {
-
     }
 
     void DX12Context::addShader(EShaderType type, const std::string& name, D3D12_SHADER_BYTECODE&& bc)
@@ -168,6 +167,19 @@ namespace Takoyaki
         return textures_.push(DX12Texture{ shared_from_this() });
     }
 
+    void DX12Context::createVertexBuffer(const std::string& name, uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint8_t* indices, uint_fast64_t sizeIndicesByte)
+    {
+        {
+            auto lock = vertexBuffers_.getWriteLock();
+
+            vertexBuffers_.insert(std::make_pair(name, DX12VertexBuffer{ vertices, sizeVecticesByte, indices, sizeIndicesByte }));
+        }
+
+        auto pair = getVertexBuffer(name);
+
+        pair.first.create(threadPool_);
+    }
+
     auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn
     {
         auto lock = constantBuffers_.getReadLock();
@@ -275,5 +287,24 @@ namespace Takoyaki
         }
 
         return found->second;
+    }
+
+    auto DX12Context::getVertexBuffer(const std::string& name)->VertexBufferReturn
+    {
+        auto lock = vertexBuffers_.getReadLock();
+        auto found = vertexBuffers_.find(name);
+
+        if (found == vertexBuffers_.end()) {
+            auto fmt = boost::format{ "DX12DeviceContext::getVertexBuffer, cannot find key \"%1%\"" } % name;
+
+            throw new std::runtime_error{ boost::str(fmt) };
+        }
+
+        return std::pair<DX12VertexBuffer&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
+    }
+
+    void DX12Context::initialize()
+    {
+        copyWorker_.initialize(device_, threadPool_);
     }
 } // namespace Takoyaki

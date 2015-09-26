@@ -20,28 +20,35 @@
 
 #pragma once
 
+#include <boost/any.hpp>
+
 namespace Takoyaki
 {
     class DX12Buffer;
     class DX12Device;
+    class ThreadPool;
 
+    // For simplicity, bundle vertex and index buffer here
     class DX12VertexBuffer
     {
         DX12VertexBuffer(const DX12VertexBuffer&) = delete;
         DX12VertexBuffer& operator=(const DX12VertexBuffer&) = delete;
         DX12VertexBuffer& operator=(DX12VertexBuffer&&) = delete;
-        DX12VertexBuffer(DX12VertexBuffer&&);
 
     public:
         DX12VertexBuffer(uint8_t*, uint_fast64_t, uint8_t*, uint_fast64_t) noexcept;
+        DX12VertexBuffer(DX12VertexBuffer&&) noexcept;
         ~DX12VertexBuffer() = default;
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
-        void create(const std::shared_ptr<DX12Device>&);
+        void create(const std::shared_ptr<ThreadPool>&);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
+    
+    private:
+        void createImpl(const boost::any&);
 
     private:
         struct Intermediate

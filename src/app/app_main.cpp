@@ -30,6 +30,12 @@
 #include <renderer.h>
 #include <root_signature.h>
 
+struct Vertex
+{
+    glm::vec3 pos;
+    glm::vec3 color;
+};
+
 void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
 {
     auto renderer = framework->getRenderer();
@@ -82,8 +88,46 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
     psDesc.topology = Takoyaki::ETopology::TRIANGLE;
     renderer->createPipelineState("SimpleState", psDesc);
 
-    // compile PSO 
+    // compile PSO, this only needs to be called once for all your PSO
     renderer->commit();
+
+    // cube vertices (pos, color)
+    std::array<Vertex, 8> cubeVertices =
+    {{
+        { glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec3{0.0f, 0.0f, 0.0f} },
+        { glm::vec3{-0.5f, -0.5f,  0.5f}, glm::vec3{0.0f, 0.0f, 1.0f} },
+        { glm::vec3{-0.5f,  0.5f, -0.5f}, glm::vec3{0.0f, 1.0f, 0.0f} },
+        { glm::vec3{-0.5f,  0.5f,  0.5f}, glm::vec3{0.0f, 1.0f, 1.0f} },
+        { glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec3{1.0f, 0.0f, 0.0f} },
+        { glm::vec3{0.5f, -0.5f,  0.5f}, glm::vec3{1.0f, 0.0f, 1.0f} },
+        { glm::vec3{0.5f,  0.5f, -0.5f}, glm::vec3{1.0f, 1.0f, 0.0f} },
+        { glm::vec3{0.5f,  0.5f,  0.5f}, glm::vec3{1.0f, 1.0f, 1.0f} },
+    }};
+
+    // cube indices as triangle list
+    std::array<uint_fast32_t, 36> cubeIndices =
+    {
+        0, 2, 1, // -x
+        1, 2, 3,
+
+        4, 5, 6, // +x
+        5, 7, 6,
+
+        0, 1, 5, // -y
+        0, 5, 4,
+
+        2, 6, 7, // +y
+        2, 7, 3,
+
+        0, 4, 6, // -z
+        0, 6, 2,
+
+        1, 3, 7, // +z
+        1, 7, 5,
+    };
+
+    renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex), reinterpret_cast<uint8_t*>(&cubeIndices[0]), cubeIndices.size() * sizeof(uint_fast32_t));
+
 }
 
 void appRender(Takoyaki::Renderer& renderer)

@@ -18,26 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "constant_table.h"
+#pragma once
 
-#include <glm/glm.hpp>
-
-#include "../impl/constant_table_impl.h"
+#include "../public/definitions.h"
 
 namespace Takoyaki
 {
-    ConstantTable::ConstantTable(std::unique_ptr<ConstantTableImpl> impl) noexcept
-        : impl_{ std::move(impl) }
-    {
-    }
+    class DX12VertexBuffer;
 
-    ConstantTable::~ConstantTable() = default;
-
-    void ConstantTable::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
+    class VertexBufferImpl
     {
-        if (impl_)
-            impl_->setMatrix4x4(name, value);
-    }
+        VertexBufferImpl(const VertexBufferImpl&) = delete;
+        VertexBufferImpl& operator=(const VertexBufferImpl&) = delete;
+        VertexBufferImpl(VertexBufferImpl&&) = delete;
+        VertexBufferImpl& operator=(VertexBufferImpl&&) = delete;
+
+    public:
+        explicit VertexBufferImpl(DX12VertexBuffer&, boost::shared_lock<boost::shared_mutex>) noexcept;
+        ~VertexBufferImpl() = default;
+
+    private:
+        DX12VertexBuffer& buffer_;
+        boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
+    };
 }
 // namespace Takoyaki

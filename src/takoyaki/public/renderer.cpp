@@ -60,6 +60,11 @@ namespace Takoyaki
         return std::make_unique<RootSignature>(impl_->createRootSignature(name));
     }
 
+    void Renderer::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint8_t* indices, uint_fast64_t sizeIndicesByte)
+    {
+        impl_->createVertexBuffer(vertices, sizeVecticesByte, indices, sizeIndicesByte);
+    }
+
     std::unique_ptr<ConstantTable> Renderer::getConstantBuffer(const std::string& name)
     {
         return std::make_unique<ConstantTable>(std::move(impl_->getConstantBuffer(name)));

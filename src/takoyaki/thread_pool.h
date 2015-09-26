@@ -24,6 +24,7 @@
 #pragma warning(disable : 4521)
 
 #include <future>
+#include <boost/any.hpp>
 
 #include "thread_safe_queue.h"
 
@@ -61,6 +62,7 @@ namespace Takoyaki
         struct ImplBase
         {
             virtual void call() = 0;
+            virtual void call(const boost::any&) = 0;
             virtual ~ImplBase() {}
         };
         std::unique_ptr<ImplBase> impl;
@@ -71,6 +73,8 @@ namespace Takoyaki
             F f;
             Impl(F&& f_) : f(std::move(f_)) {}
             void call() { f(); }
+
+            void call(const boost::any& param) { f(param); }
         };
 
     public:
@@ -89,6 +93,8 @@ namespace Takoyaki
 
         void operator()() { impl->call(); }
 
+        void operator()(const boost::any& var) { impl->call(var); }
+
         MoveOnlyFunc& operator=(MoveOnlyFunc&& other)
         {
             impl = std::move(other.impl);
@@ -104,16 +110,17 @@ namespace Takoyaki
         ThreadPool& operator=(ThreadPool&&) = delete;
 
     public:
-        struct SpecializedWorker
+        struct SpecializedWorkerDesc
         {
-            std::function<void()> func;
+            std::function<void()> mainFunc;
+            std::function<void(MoveOnlyFunc)> submitFunc;
             std::string name;
         };
 
         ThreadPool() noexcept;
         ~ThreadPool() noexcept;
 
-        void addWorkerFunc(const SpecializedWorker&);
+        void addSpecializedWorker(const SpecializedWorkerDesc&);
         void initialize(uint_fast32_t);
 
         template<typename Func>
@@ -132,6 +139,15 @@ namespace Takoyaki
             workQueue_.push(std::move(f));
         }
 
+        template<typename Func>
+        void submit(Func f, const std::string& target)
+        {
+            specializedWorkers_[target].second(std::move(f));
+        }
+
+        // for specialized workers
+        inline bool tryPopWork(MoveOnlyFunc& func) { return workQueue_.tryPop(func); }
+
     private:
         void workerMain();
 
@@ -139,8 +155,10 @@ namespace Takoyaki
         std::atomic<bool> done_;
         ThreadSafeQueue<MoveOnlyFunc> workQueue_;
         std::vector<std::thread> threads;
-        std::vector<std::function<void()>> specializedWorkers_;
         JoinThreads joiner;
+
+        // pair is main and submit to specialized worker queue
+        std::unordered_map<std::string, std::pair<std::function<void()>, std::function<void(MoveOnlyFunc)>>> specializedWorkers_;
     };
 } // namespace Takoyaki
 

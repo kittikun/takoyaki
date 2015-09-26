@@ -43,8 +43,10 @@ namespace Takoyaki
         ~Renderer() noexcept;
 
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
-        void createPipelineState(const std::string& name, const PipelineStateDesc&);
         std::unique_ptr<RootSignature> createRootSignature(const std::string& name);
+        void createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint8_t* indices, uint_fast64_t sizeIndicesByte);
+
+        void createPipelineState(const std::string& name, const PipelineStateDesc&);
 
         // Compile pipeline state objects
         // Called once the root signatures and pipeline state objects have been defined

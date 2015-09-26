@@ -25,6 +25,7 @@
 #include "dx12_buffer.h"
 #include "dxsystem.h"
 #include "dxutility.h"
+#include "../thread_pool.h"
 
 namespace Takoyaki
 {
@@ -38,21 +39,23 @@ namespace Takoyaki
         intermediate_->vertexData.SlicePitch = sizeVecticesByte;
     }
 
-    void DX12VertexBuffer::create(const std::shared_ptr<DX12Device>& device)
+    DX12VertexBuffer::DX12VertexBuffer(DX12VertexBuffer&& other) noexcept
+        : uploadVertexBuffer_{std::move(other.uploadVertexBuffer_)}
+        , vertexBuffer_{std::move(other.vertexBuffer_)}
+        , intermediate_{ std::move(other.intermediate_) }
+
     {
-        // TODO: probably better to add a resource creation queue in thread pool and use on command list for all
-        // thus avoiding running out of threads because they are waiting for resources
-        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> cmdAllocator;
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList;
 
-        // not thread safe
-        {
-            auto lock = device->getLock();
+    }
 
-            DXCheckThrow(device->getDXDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAllocator)));
-            DXCheckThrow(device->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAllocator.Get(), nullptr, IID_PPV_ARGS(&cmdList)));
-        }
+    void DX12VertexBuffer::create(const std::shared_ptr<ThreadPool>& threadPool)
+    {
+        threadPool->submit(std::bind(&DX12VertexBuffer::createImpl, this, nullptr), "Copy");
+    }
 
+    void DX12VertexBuffer::createImpl(const boost::any& cmdList)
+    {
+        ID3D12GraphicsCommandList* commandList = boost::any_cast<ID3D12GraphicsCommandList*>(cmdList);
         D3D12_RESOURCE_BARRIER barrier;
 
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -62,8 +65,8 @@ namespace Takoyaki
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-        cmdList->ResourceBarrier(1, &barrier);
-        cmdList->Close();
+        commandList->ResourceBarrier(1, &barrier);
+        commandList->Close();
 
         // execute command
 
@@ -73,6 +76,6 @@ namespace Takoyaki
 
         uploadVertexBuffer_.reset();
         intermediate_.reset();
-    }
 
+    }
 } // namespace Takoyaki

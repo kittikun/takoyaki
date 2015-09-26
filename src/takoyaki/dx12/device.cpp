@@ -102,10 +102,6 @@ namespace Takoyaki
 
     void DX12Device::createSwapChain()
     {
-        // createSwapChain could happen while some other thread
-        // is using the device so lock self
-        auto lock = getLock();
-
         LOGC << "Creating swap chain...";
 
         waitForGpu();

@@ -44,8 +44,10 @@ namespace Takoyaki
         // External usage: 
 
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
-        void createPipelineState(const std::string&, const PipelineStateDesc&);
         std::unique_ptr<RootSignatureImpl> createRootSignature(const std::string&);
+        void createVertexBuffer(uint8_t*, uint_fast64_t, uint8_t*, uint_fast64_t);
+
+        void createPipelineState(const std::string&, const PipelineStateDesc&);
 
         void commit();
 

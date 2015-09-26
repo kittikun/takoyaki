@@ -61,8 +61,9 @@ namespace Takoyaki
             context_ = std::make_shared<DX12Context>(device_, threadPool_);
         }
 
-        threadPool_->initialize(desc.numWorkerThreads);
         device_->create(desc, context_);
+        context_->initialize();
+        threadPool_->initialize(desc.numWorkerThreads);
 
         if (!desc.loadAsyncFunc)
             throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };

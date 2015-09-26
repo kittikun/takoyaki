@@ -25,8 +25,8 @@
 
 namespace Takoyaki
 {
-    PipelineState::PipelineState(std::unique_ptr<PipelineStateImpl> ct) noexcept
-        : impl_{ std::move(ct) }
+    PipelineState::PipelineState(std::unique_ptr<PipelineStateImpl> impl) noexcept
+        : impl_{ std::move(impl) }
     {
     }
 

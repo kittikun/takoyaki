@@ -19,25 +19,17 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "constant_table.h"
+#include "vertex_buffer_impl.h"
 
-#include <glm/glm.hpp>
-
-#include "../impl/constant_table_impl.h"
+#include "../dx12/dx12_vertex_buffer.h"
 
 namespace Takoyaki
 {
-    ConstantTable::ConstantTable(std::unique_ptr<ConstantTableImpl> impl) noexcept
-        : impl_{ std::move(impl) }
+    VertexBufferImpl::VertexBufferImpl(DX12VertexBuffer& buffer, boost::shared_lock<boost::shared_mutex> lock) noexcept
+        : buffer_(buffer)
+        , bufferLock_(std::move(lock))
     {
-    }
 
-    ConstantTable::~ConstantTable() = default;
-
-    void ConstantTable::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
-    {
-        if (impl_)
-            impl_->setMatrix4x4(name, value);
     }
 }
 // namespace Takoyaki

@@ -104,6 +104,7 @@
     <ClInclude Include="..\src\takoyaki\thread_safe_queue.h" />
     <ClInclude Include="..\src\takoyaki\thread_safe_stack.h" />
     <ClInclude Include="..\src\takoyaki\utility\log.h" />
+    <ClInclude Include="..\src\takoyaki\utility\MoveOnlyFunc.h" />
     <ClInclude Include="..\src\takoyaki\utility\win_utility.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -117,7 +117,7 @@ namespace Takoyaki
             // Not thread-safe so lock device
             {
                 auto device = device_.lock();
-                auto lock = device->getLock();
+                auto lock = device->getDeviceLock();
 
                 if (descriptorSize_ == UINT_FAST32_MAX)
                     descriptorSize_ = device->getDXDevice()->GetDescriptorHandleIncrementSize(T);

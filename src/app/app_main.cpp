@@ -127,7 +127,6 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
     };
 
     renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex), reinterpret_cast<uint8_t*>(&cubeIndices[0]), cubeIndices.size() * sizeof(uint_fast32_t));
-
 }
 
 void appRender(Takoyaki::Renderer& renderer)

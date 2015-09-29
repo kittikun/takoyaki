@@ -239,5 +239,8 @@
     <ClInclude Include="..\src\takoyaki\impl\vertex_buffer_impl.h">
       <Filter>Source Files\impl</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\takoyaki\utility\MoveOnlyFunc.h">
+      <Filter>Source Files\utility</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -27,6 +27,7 @@
 #include <boost/any.hpp>
 
 #include "thread_safe_queue.h"
+#include "utility/MoveOnlyFunc.h"
 
 namespace Takoyaki
 {
@@ -52,56 +53,6 @@ namespace Takoyaki
         }
     };
 
-    // Wrapper to allow function pointers to be stored in a template container
-    class MoveOnlyFunc
-    {
-        MoveOnlyFunc(const MoveOnlyFunc&) = delete;
-        MoveOnlyFunc(MoveOnlyFunc&) = delete;
-        MoveOnlyFunc& operator=(const MoveOnlyFunc&) = delete;
-
-        struct ImplBase
-        {
-            virtual void call() = 0;
-            virtual void call(const boost::any&) = 0;
-            virtual ~ImplBase() {}
-        };
-        std::unique_ptr<ImplBase> impl;
-
-        template<typename F>
-        struct Impl : ImplBase
-        {
-            F f;
-            Impl(F&& f_) : f(std::move(f_)) {}
-            void call() { f(); }
-
-            void call(const boost::any& param) { f(param); }
-        };
-
-    public:
-        MoveOnlyFunc() = default;
-
-        MoveOnlyFunc(MoveOnlyFunc&& other) :
-            impl(std::move(other.impl))
-        {
-        }
-
-        template<typename F>
-        MoveOnlyFunc(F&& f)
-            : impl(new Impl<F>(std::move(f)))
-        {
-        }
-
-        void operator()() { impl->call(); }
-
-        void operator()(const boost::any& var) { impl->call(var); }
-
-        MoveOnlyFunc& operator=(MoveOnlyFunc&& other)
-        {
-            impl = std::move(other.impl);
-            return *this;
-        }
-    };
-
     class ThreadPool
     {
         ThreadPool(const ThreadPool&) = delete;
@@ -113,8 +64,9 @@ namespace Takoyaki
         struct SpecializedWorkerDesc
         {
             std::function<void()> mainFunc;
-            std::function<void(MoveOnlyFunc)> submitFunc;
+            std::function<void(MoveOnlySpecializedFunc)> submitFunc;
             std::string name;
+            uint_fast32_t id;
         };
 
         ThreadPool() noexcept;
@@ -140,9 +92,9 @@ namespace Takoyaki
         }
 
         template<typename Func>
-        void submit(Func f, const std::string& target)
+        void submit(uint32_t specialId, Func f)
         {
-            specializedWorkers_[target].second(std::move(f));
+            specializedWorkers_[specialId].second(std::move(f));
         }
 
         // for specialized workers
@@ -158,7 +110,8 @@ namespace Takoyaki
         JoinThreads joiner;
 
         // pair is main and submit to specialized worker queue
-        std::unordered_map<std::string, std::pair<std::function<void()>, std::function<void(MoveOnlyFunc)>>> specializedWorkers_;
+        using SpecializedPair = std::pair<std::function<void()>, std::function<void(MoveOnlySpecializedFunc)>>;
+        std::unordered_map<uint_fast32_t, SpecializedPair> specializedWorkers_;
     };
 } // namespace Takoyaki
 

@@ -21,6 +21,7 @@
 #include "pch.h"
 #include "dx12_vertex_buffer.h"
 
+#include "copy_worker.h"
 #include "device.h"
 #include "dx12_buffer.h"
 #include "dxsystem.h"
@@ -48,14 +49,13 @@ namespace Takoyaki
 
     }
 
-    void DX12VertexBuffer::create(const std::shared_ptr<ThreadPool>& threadPool)
+    void DX12VertexBuffer::create(void* p)
     {
-        threadPool->submit(std::bind(&DX12VertexBuffer::createImpl, this, nullptr), "Copy");
-    }
+        auto params = static_cast<CopyWorker::Context*>(p);
+        auto device = params->device.lock();
 
-    void DX12VertexBuffer::createImpl(const boost::any& cmdList)
-    {
-        ID3D12GraphicsCommandList* commandList = boost::any_cast<ID3D12GraphicsCommandList*>(cmdList);
+        vertexBuffer_->Create(device);
+
         D3D12_RESOURCE_BARRIER barrier;
 
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -65,13 +65,27 @@ namespace Takoyaki
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-        commandList->ResourceBarrier(1, &barrier);
-        commandList->Close();
-
-        // execute command
+        params->commandList->ResourceBarrier(1, &barrier);
+        params->commandList->Close();
 
         // not a good idea to use waitForGPU here, need to think about something clever
+        {
+            auto lock = device->getCommandQueueLock();
+            ID3D12CommandList* ppCommandLists[] = { params->commandList.Get() };
 
+            device->getCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+            // Schedule a Signal command in the queue.
+            DXCheckThrow(device->getCommandQueue()->Signal(params->fence.Get(), params->fenceValue));
+
+            // Wait until the fence has been crossed.
+            DXCheckThrow(params->fence->SetEventOnCompletion(params->fenceValue, params->fenceEvent));
+            WaitForSingleObjectEx(params->fenceEvent, INFINITE, FALSE);
+
+            // Increment the fence value for the current frame.
+            params->fenceValue++;
+        }
+        
         //how to free resource ?
 
         uploadVertexBuffer_.reset();

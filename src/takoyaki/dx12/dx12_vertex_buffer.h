@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <boost/any.hpp>
-
 namespace Takoyaki
 {
     class DX12Buffer;
@@ -42,13 +40,10 @@ namespace Takoyaki
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
-        void create(const std::shared_ptr<ThreadPool>&);
+        void create(void *);
 
         //////////////////////////////////////////////////////////////////////////
-        // Internal & External
-    
-    private:
-        void createImpl(const boost::any&);
+        // Internal & External    
 
     private:
         struct Intermediate

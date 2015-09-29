@@ -95,7 +95,7 @@ namespace Takoyaki
 
     void DX12Context::commit()
     {
-        auto lock = device_->getLock();
+        auto lock = device_->getDeviceLock();
 
         // create all root signatures
         {
@@ -177,7 +177,7 @@ namespace Takoyaki
 
         auto pair = getVertexBuffer(name);
 
-        pair.first.create(threadPool_);
+        threadPool_->submit(WORKER_COPY, std::bind(&DX12VertexBuffer::create, &pair.first, std::placeholders::_1));
     }
 
     auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn

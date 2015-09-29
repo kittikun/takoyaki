@@ -121,7 +121,7 @@ namespace Takoyaki
 
         // the following is not thread safe so lock
         {
-            auto lock = device->getLock();
+            auto lock = device->getDeviceLock();
 
             device->getDXDevice()->GetCopyableFootprints(&desc, params.firstSubResource, params.numSubResource, params.intermediateOffset, layout, numRows, rowSizesInBytes, &requiredSize);
         }

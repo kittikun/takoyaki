@@ -27,6 +27,8 @@ namespace Takoyaki
     class DX12Device;
     class ThreadPool;
 
+    constexpr uint_fast32_t WORKER_COPY = 0;
+
     // A copy worker that specialize in copy commands but do global work when local
     // queue is empty. Also Provides synchronization with other specialized workers
     class CopyWorker
@@ -37,27 +39,38 @@ namespace Takoyaki
         CopyWorker(CopyWorker&&) = delete;
 
     public:
+        struct Context
+        {
+            explicit Context(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>&, Microsoft::WRL::ComPtr<ID3D12Fence>&) noexcept;
+
+            std::weak_ptr<DX12Device> device;
+            Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& commandList;
+            Microsoft::WRL::ComPtr<ID3D12Fence>& fence;
+            uint64_t fenceValue;
+            HANDLE fenceEvent;
+        };
+
         CopyWorker() noexcept;
         ~CopyWorker() noexcept;
 
-        void initialize(const std::shared_ptr<DX12Device>&, std::weak_ptr<ThreadPool>);
+        void initialize(std::weak_ptr<DX12Device>, std::weak_ptr<ThreadPool>);
 
     private:
-        void submit(MoveOnlyFunc);
         void main();
+        void submit(MoveOnlySpecializedFunc func);
 
     private:
         bool done_;
+        std::weak_ptr<DX12Device> device_;
         std::weak_ptr<ThreadPool> threadPool_;
-        ThreadSafeQueue<MoveOnlyFunc> workQueue_; 
+        ThreadSafeQueue<MoveOnlySpecializedFunc> workQueue_;
 
         // local command queue
-        Microsoft::WRL::ComPtr<ID3D12CommandList>  commandList_;
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>  commandList_;
         Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
 
         // shared synchronization
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-        uint64_t fenceValue_;
         HANDLE fenceEvent_;
     };
 } // namespace Takoyaki

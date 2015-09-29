@@ -44,7 +44,10 @@ namespace Takoyaki
         void validate();
 
         inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
-        inline std::unique_lock<std::mutex> getLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
+        inline const Microsoft::WRL::ComPtr<ID3D12CommandQueue>& getCommandQueue() { return commandQueue_; }
+
+        inline std::unique_lock<std::mutex> getDeviceLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
+        inline std::unique_lock<std::mutex> getCommandQueueLock() { return std::unique_lock<std::mutex>(queueMutex_); }
 
     private:
         void createDevice(uint_fast32_t);
@@ -55,14 +58,19 @@ namespace Takoyaki
     private:
         Microsoft::WRL::ComPtr<ID3D12Device> D3DDevice_;
         Microsoft::WRL::ComPtr<IDXGIFactory4> DXGIFactory_;
-        std::mutex deviceMutex_;
+
+        // for swapchain creation
         std::weak_ptr<DX12Context> context_;
 
         // main command queue
         Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
         std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
 
-        // synchronization
+        // cpu synchronization
+        std::mutex deviceMutex_;
+        std::mutex queueMutex_;
+
+        // gpu synchronization
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
         std::vector<uint64_t> fenceValues_;
         HANDLE fenceEvent_;

@@ -40,7 +40,8 @@ namespace Takoyaki
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
-        void create(void *);
+        std::function<void()> create(void *);
+        void onCreateDone();
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External    

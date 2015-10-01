@@ -44,12 +44,11 @@ namespace Takoyaki
         : uploadVertexBuffer_{std::move(other.uploadVertexBuffer_)}
         , vertexBuffer_{std::move(other.vertexBuffer_)}
         , intermediate_{ std::move(other.intermediate_) }
-
     {
 
     }
 
-    void DX12VertexBuffer::create(void* p)
+    std::function<void()> DX12VertexBuffer::create(void* p)
     {
         auto params = static_cast<CopyWorker::Context*>(p);
         auto device = params->device.lock();
@@ -66,30 +65,13 @@ namespace Takoyaki
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
         params->commandList->ResourceBarrier(1, &barrier);
-        params->commandList->Close();
 
-        // not a good idea to use waitForGPU here, need to think about something clever
-        {
-            auto lock = device->getCommandQueueLock();
-            ID3D12CommandList* ppCommandLists[] = { params->commandList.Get() };
+        return std::bind(&DX12VertexBuffer::onCreateDone, this);
+    }
 
-            device->getCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-            // Schedule a Signal command in the queue.
-            DXCheckThrow(device->getCommandQueue()->Signal(params->fence.Get(), params->fenceValue));
-
-            // Wait until the fence has been crossed.
-            DXCheckThrow(params->fence->SetEventOnCompletion(params->fenceValue, params->fenceEvent));
-            WaitForSingleObjectEx(params->fenceEvent, INFINITE, FALSE);
-
-            // Increment the fence value for the current frame.
-            params->fenceValue++;
-        }
-        
-        //how to free resource ?
-
+    void DX12VertexBuffer::onCreateDone()
+    {
         uploadVertexBuffer_.reset();
         intermediate_.reset();
-
     }
 } // namespace Takoyaki

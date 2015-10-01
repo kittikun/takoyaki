@@ -47,12 +47,12 @@ namespace Takoyaki
             throw new std::runtime_error{ boost::str(fmt) };
         }
 
-        specializedWorkers_.insert(std::make_pair(desc.id, std::make_pair(desc.mainFunc, desc.submitFunc)));
+        specializedWorkers_.insert(std::make_pair(desc.id,desc.submitFunc));
 
         try {
             // workers are mandatory so create a thread for them even if threadCount is smaller
             for (auto spec : specializedWorkers_) {
-                auto thread = std::thread{ spec.second.first };
+                auto thread = std::thread{ desc.mainFunc };
                 auto fmt = boost::format{ "Takoyaki Worker %1%" } % desc.name;
 
                 setThreadName(thread.native_handle(), boost::str(fmt));
@@ -60,7 +60,7 @@ namespace Takoyaki
             }
         } catch (...) {
             done_ = true;
-            throw new std::runtime_error{ "Could not create Specialzied worker thread" };
+            throw new std::runtime_error{ "Could not create specialized worker thread" };
         }
     }
 

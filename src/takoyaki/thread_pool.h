@@ -23,7 +23,7 @@
 #pragma warning(push)
 #pragma warning(disable : 4521)
 
-#include <future>
+#include <atomic>
 #include <boost/any.hpp>
 
 #include "thread_safe_queue.h"
@@ -31,7 +31,6 @@
 
 namespace Takoyaki
 {
-    class MoveOnlyFunc;
     struct FrameworkDesc;
 
     // Allows the threads to be properly joined even if an exception occured with the thread pool
@@ -64,7 +63,7 @@ namespace Takoyaki
         struct SpecializedWorkerDesc
         {
             std::function<void()> mainFunc;
-            std::function<void(MoveOnlySpecializedFunc)> submitFunc;
+            std::function<void(MoveOnlyFuncParamReturn)> submitFunc;
             std::string name;
             uint_fast32_t id;
         };
@@ -76,25 +75,17 @@ namespace Takoyaki
         void initialize(uint_fast32_t);
 
         template<typename Func>
-        std::future<std::result_of_t<Func()>> submitWithResult(Func f)
-        {
-            std::packaged_task<std::result_of_t<Func()>> task(std::move(f));
-            std::future<std::result_of_t<Func()>> res(task.get_future());
-
-            workQueue_.push(std::move(task));
-            return res;
-        }
-
-        template<typename Func>
         void submit(Func f)
         {
+            // generic submit
             workQueue_.push(std::move(f));
         }
 
         template<typename Func>
         void submit(uint32_t specialId, Func f)
         {
-            specializedWorkers_[specialId].second(std::move(f));
+            // specialized submit
+            specializedWorkers_[specialId](std::move(f));
         }
 
         // for specialized workers
@@ -109,9 +100,8 @@ namespace Takoyaki
         std::vector<std::thread> threads;
         JoinThreads joiner;
 
-        // pair is main and submit to specialized worker queue
-        using SpecializedPair = std::pair<std::function<void()>, std::function<void(MoveOnlySpecializedFunc)>>;
-        std::unordered_map<uint_fast32_t, SpecializedPair> specializedWorkers_;
+        // map to specialized worker submit function
+        std::unordered_map<uint_fast32_t, std::function<void(MoveOnlyFuncParamReturn)>> specializedWorkers_;
     };
 } // namespace Takoyaki
 

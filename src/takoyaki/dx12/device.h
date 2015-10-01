@@ -47,7 +47,6 @@ namespace Takoyaki
         inline const Microsoft::WRL::ComPtr<ID3D12CommandQueue>& getCommandQueue() { return commandQueue_; }
 
         inline std::unique_lock<std::mutex> getDeviceLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
-        inline std::unique_lock<std::mutex> getCommandQueueLock() { return std::unique_lock<std::mutex>(queueMutex_); }
 
     private:
         void createDevice(uint_fast32_t);
@@ -68,7 +67,6 @@ namespace Takoyaki
 
         // cpu synchronization
         std::mutex deviceMutex_;
-        std::mutex queueMutex_;
 
         // gpu synchronization
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;

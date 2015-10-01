@@ -41,13 +41,8 @@ namespace Takoyaki
     public:
         struct Context
         {
-            explicit Context(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>&, Microsoft::WRL::ComPtr<ID3D12Fence>&) noexcept;
-
             std::weak_ptr<DX12Device> device;
-            Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& commandList;
-            Microsoft::WRL::ComPtr<ID3D12Fence>& fence;
-            uint64_t fenceValue;
-            HANDLE fenceEvent;
+            Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList;            
         };
 
         CopyWorker() noexcept;
@@ -57,20 +52,21 @@ namespace Takoyaki
 
     private:
         void main();
-        void submit(MoveOnlySpecializedFunc func);
+        void submit(MoveOnlyFuncParamReturn);
 
     private:
         bool done_;
         std::weak_ptr<DX12Device> device_;
         std::weak_ptr<ThreadPool> threadPool_;
-        ThreadSafeQueue<MoveOnlySpecializedFunc> workQueue_;
+        ThreadSafeQueue<MoveOnlyFuncParamReturn> workQueue_;
 
         // local command queue
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>  commandList_;
+        Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
         Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
 
         // shared synchronization
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
         HANDLE fenceEvent_;
+        uint64_t fenceValue_;
     };
 } // namespace Takoyaki

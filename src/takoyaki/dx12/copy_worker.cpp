@@ -28,13 +28,6 @@
 
 namespace Takoyaki
 {
-    CopyWorker::Context::Context(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& cmdList, Microsoft::WRL::ComPtr<ID3D12Fence>& fence) noexcept
-        : commandList(cmdList)
-        , fence(fence)
-    {
-
-    }
-
     CopyWorker::CopyWorker() noexcept
         : done_(false)
     {
@@ -50,16 +43,20 @@ namespace Takoyaki
     {
         device_ = dev;
         threadPool_ = threadPool;
+        fenceEvent_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
 
         // create command queue, fence, etc..
         {
             auto device = dev.lock();
             auto lock = device->getDeviceLock();
 
+            D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+            queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+            queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+
+            DXCheckThrow(device->getDXDevice()->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
             DXCheckThrow(device->getDXDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_)));
-            DXCheckThrow(device->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&commandList_)));
             DXCheckThrow(device->getDXDevice()->CreateFence(0, D3D12_FENCE_FLAG_SHARED, IID_PPV_ARGS(&fence_)));
-            fenceEvent_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
         }
 
         // register with thread pool, important to do this last since thread will be created right away
@@ -79,31 +76,66 @@ namespace Takoyaki
     {
         LOG_IDENTIFY_THREAD;
 
-        // params used for all jobs
-        Context params(commandList_, fence_);
+        Context context;
 
-        params.device = device_;
-        params.fenceValue = 1;
-        params.fenceEvent = fenceEvent_;
+        {
+            auto device = device_.lock();
 
-        while (!done_) {
-            MoveOnlySpecializedFunc specTask;
-            MoveOnlyFunc task;
-            // to avoid mutual reference counting lock, we cannot own the thread pool...
-            auto threadPool = threadPool_.lock();
+            DXCheckThrow(device->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&context.commandList)));
+        }
 
-            // Run local queue, if empty do global work
-            if (workQueue_.tryPop(specTask)) {
-                specTask(&params);
-            } else if (threadPool->tryPopWork(task)) {
-                task();
-            } else {
-                std::this_thread::yield();
+        context.device = device_;
+
+        MoveOnlyFuncParamReturn specTask;
+        MoveOnlyFunc task;
+        std::vector<std::function<void()>> doneCallbacks;
+
+        while (!done_) {            
+            if (!workQueue_.empty()) {
+                // run copy jobs if any
+                context.commandList->Reset(commandAllocator_.Get(), nullptr);
+
+                while (workQueue_.tryPop(specTask)) {
+                    doneCallbacks.push_back(specTask(&context));
+                }
+
+                // Schedule a signal on completion
+                DXCheckThrow(commandQueue_->Signal(fence_.Get(), fenceValue_));
+                DXCheckThrow(fence_->SetEventOnCompletion(fenceValue_, fenceEvent_));
+
+                DXCheckThrow(context.commandList->Close());
+
+                ID3D12CommandList* list[] = { context.commandList.Get() };
+
+                commandQueue_->ExecuteCommandLists(1, list);
+
+                // Wait until the fence has been crossed.
+                WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
+
+                // Increment the fence value for the next round
+                fenceValue_++;
+
+                // notify users so they can clean up intermediate data
+                for (auto func : doneCallbacks)
+                    func();
+
+                doneCallbacks.clear();
+            } else {             
+                // to avoid mutual reference counting lock, we cannot own the thread pool...
+                auto threadPool = threadPool_.lock();
+
+                if (threadPool->tryPopWork(task)) {
+                    // run generic tasks
+                    task();
+                } else {
+                    // or yield
+                    std::this_thread::yield();
+                }
             }
         }
     }
 
-    void CopyWorker::submit(MoveOnlySpecializedFunc func)
+    void CopyWorker::submit(MoveOnlyFuncParamReturn func)
     {
         workQueue_.push(std::move(func));
     }

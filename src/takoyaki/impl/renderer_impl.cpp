@@ -24,6 +24,7 @@
 #include "constant_table_impl.h"
 #include "input_layout_impl.h"
 #include "root_signature_impl.h"
+#include "vertex_buffer_impl.h"
 #include "../thread_pool.h"
 #include "../dx12/context.h"
 
@@ -63,9 +64,13 @@ namespace Takoyaki
         return std::make_unique<RootSignatureImpl>(pair.first, std::move(pair.second));
     }
 
-    void RendererImpl::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint8_t* indices, uint_fast64_t sizeIndicesByte)
+    std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte)
     {
-        context_->createVertexBuffer("test", vertices, sizeVecticesByte, indices, sizeIndicesByte);
+        auto id = uidGenerator_.fetch_add(1);
+
+        context_->createVertexBuffer(id, vertices, sizeVecticesByte);
+
+        return std::make_unique<VertexBufferImpl>(context_, context_->getVertexBuffer(id), id);
     }
 
     std::unique_ptr<ConstantTableImpl> RendererImpl::getConstantBuffer(const std::string& name)

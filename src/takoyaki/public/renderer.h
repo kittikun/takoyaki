@@ -29,6 +29,7 @@ namespace Takoyaki
     class InputLayout;
     class RendererImpl;
     class RootSignature;
+    class VertexBuffer;
     struct PipelineStateDesc;
 
     class Renderer
@@ -44,7 +45,7 @@ namespace Takoyaki
 
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
         std::unique_ptr<RootSignature> createRootSignature(const std::string& name);
-        void createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint8_t* indices, uint_fast64_t sizeIndicesByte);
+        std::unique_ptr<VertexBuffer> createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte);
 
         void createPipelineState(const std::string& name, const PipelineStateDesc&);
 

@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <atomic>
+
 namespace Takoyaki
 {
     class ConstantTableImpl;
@@ -27,6 +29,7 @@ namespace Takoyaki
     class DX12Context;
     class RootSignatureImpl;
     class ThreadPool;
+    class VertexBufferImpl;
     struct PipelineStateDesc;
 
     class RendererImpl : public std::enable_shared_from_this<RendererImpl>
@@ -45,7 +48,7 @@ namespace Takoyaki
 
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
         std::unique_ptr<RootSignatureImpl> createRootSignature(const std::string&);
-        void createVertexBuffer(uint8_t*, uint_fast64_t, uint8_t*, uint_fast64_t);
+        std::unique_ptr<VertexBufferImpl> createVertexBuffer(uint8_t*, uint_fast64_t);
 
         void createPipelineState(const std::string&, const PipelineStateDesc&);
 
@@ -55,6 +58,10 @@ namespace Takoyaki
 
     private:
         std::shared_ptr<DX12Context> context_;
+
+        // the "generator" is mostly for user resources that need to be
+        // released upon destruction
+        std::atomic<uint_fast32_t> uidGenerator_;
     };
 }
 // namespace Takoyaki

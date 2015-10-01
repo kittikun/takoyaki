@@ -37,60 +37,22 @@ namespace Takoyaki
         , descHeapRTV_{ device }
         , descHeapSRV_{ device }
     {
+        // somehow cannot default construct or move RWLockMap, oh well..
+        shaders_.reserve(6);
+        shaders_[EShaderType::COMPUTE];
+        shaders_[EShaderType::DOMAIN];
+        shaders_[EShaderType::GEOMETRY];
+        shaders_[EShaderType::HULL];
+        shaders_[EShaderType::PIXEL];
+        shaders_[EShaderType::VERTEX];
     }
 
     void DX12Context::addShader(EShaderType type, const std::string& name, D3D12_SHADER_BYTECODE&& bc)
     {
-        switch (type) {
-            case Takoyaki::EShaderType::COMPUTE:
-            {
-                auto lock = shaderVertex_.getWriteLock();
+        auto& map = shaders_[type];
+        auto lock = map.getWriteLock();
 
-                shaderCompute_.insert(std::make_pair(name, std::move(bc)));
-            }
-            break;
-
-            case Takoyaki::EShaderType::DOMAIN:
-            {
-                auto lock = shaderVertex_.getWriteLock();
-
-                shaderDomain_.insert(std::make_pair(name, std::move(bc)));
-            }
-            break;
-
-            case Takoyaki::EShaderType::GEOMETRY:
-            {
-                auto lock = shaderVertex_.getWriteLock();
-
-                shaderGeometry_.insert(std::make_pair(name, std::move(bc)));
-            }
-            break;
-
-            case Takoyaki::EShaderType::HULL:
-            {
-                auto lock = shaderVertex_.getWriteLock();
-
-                shaderPixel_.insert(std::make_pair(name, std::move(bc)));
-            }
-            break;
-
-            case Takoyaki::EShaderType::PIXEL:
-            {
-                auto lock = shaderVertex_.getWriteLock();
-
-                shaderPixel_.insert(std::make_pair(name, std::move(bc)));
-
-            }
-            break;
-
-            case Takoyaki::EShaderType::VERTEX:
-            {
-                auto lock = shaderVertex_.getWriteLock();
-
-                shaderVertex_.insert(std::make_pair(name, std::move(bc)));
-            }
-            break;
-        }
+        map.insert(std::make_pair(name, std::move(bc)));
     }
 
     void DX12Context::commit()
@@ -167,17 +129,31 @@ namespace Takoyaki
         return textures_.push(DX12Texture{ shared_from_this() });
     }
 
-    void DX12Context::createVertexBuffer(const std::string& name, uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint8_t* indices, uint_fast64_t sizeIndicesByte)
+    void DX12Context::createVertexBuffer(uint_fast32_t id, uint8_t* vertices, uint_fast64_t sizeVecticesByte)
     {
-        {
-            auto lock = vertexBuffers_.getWriteLock();
+        auto lock = vertexBuffers_.getWriteLock();
 
-            vertexBuffers_.insert(std::make_pair(name, DX12VertexBuffer{ vertices, sizeVecticesByte, indices, sizeIndicesByte }));
-        }
+        auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ vertices, sizeVecticesByte }));
 
-        auto pair = getVertexBuffer(name);
+        // then build a command to build underlaying resources
+        threadPool_->submit(WORKER_COPY, std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1));
+    }
 
-        threadPool_->submit(WORKER_COPY, std::bind(&DX12VertexBuffer::create, &pair.first, std::placeholders::_1));
+    void DX12Context::destroyResource(EResourceType type, uint_fast32_t id)
+    {
+        //copyWorker_.submit()
+        //auto lock = vertexBuffers_.getWriteLock();
+
+        //// then build a command to build underlaying resources
+        //threadPool_->submit(WORKER_COPY, std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1));
+
+        //vertexBuffers_.erase(id);
+    }
+
+    std::function<void()> DX12Context::destroyMain(void* context)
+    {
+
+        return std::bind(&DX12Context::onDestroyDone, this);
     }
 
     auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn
@@ -240,39 +216,6 @@ namespace Takoyaki
         return std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
     }
 
-    D3D12_SHADER_BYTECODE DX12Context::getShader(EShaderType type, const std::string& name)
-    {
-        D3D12_SHADER_BYTECODE res;
-
-        switch (type) {
-            case Takoyaki::EShaderType::COMPUTE:
-                res = getShaderImpl(shaderCompute_, name);
-                break;
-
-            case Takoyaki::EShaderType::DOMAIN:
-                res = getShaderImpl(shaderDomain_, name);
-                break;
-
-            case Takoyaki::EShaderType::GEOMETRY:
-                res = getShaderImpl(shaderGeometry_, name);
-                break;
-
-            case Takoyaki::EShaderType::HULL:
-                res = getShaderImpl(shaderHull_, name);
-                break;
-
-            case Takoyaki::EShaderType::PIXEL:
-                res = getShaderImpl(shaderPixel_, name);
-                break;
-
-            case Takoyaki::EShaderType::VERTEX:
-                res = getShaderImpl(shaderVertex_, name);
-                break;
-        }
-
-        return res;
-    }
-
     D3D12_SHADER_BYTECODE DX12Context::getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>& map, const std::string& name)
     {
         // called when trying to create a PSO so if needed, wait until shader is compiled
@@ -289,22 +232,44 @@ namespace Takoyaki
         return found->second;
     }
 
-    auto DX12Context::getVertexBuffer(const std::string& name)->VertexBufferReturn
+    const DX12VertexBuffer& DX12Context::getVertexBuffer(uint_fast32_t id)
     {
         auto lock = vertexBuffers_.getReadLock();
-        auto found = vertexBuffers_.find(name);
+        auto found = vertexBuffers_.find(id);
 
         if (found == vertexBuffers_.end()) {
-            auto fmt = boost::format{ "DX12DeviceContext::getVertexBuffer, cannot find key \"%1%\"" } % name;
+            auto fmt = boost::format{ "DX12DeviceContext::getVertexBuffer, cannot find key \"%1%\"" } % id;
 
             throw new std::runtime_error{ boost::str(fmt) };
         }
-
-        return std::pair<DX12VertexBuffer&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
+        
+        return found->second;
     }
 
-    void DX12Context::initialize()
+    void DX12Context::initializeWorkers()
     {
         copyWorker_.initialize(device_, threadPool_);
+    }
+
+    void DX12Context::onDestroyDone()
+    {
+        //++destroyCount_;
+
+        //if (destroyCount_ == destroyStack_.size()) {
+        //    for (auto& iter : destroyStack_) {
+        //        switch (iter->first) {
+        //            case EResourceType::VERTEX_BUFFER: 
+        //            {
+        //                auto lock = vertexBuffers_.getWriteLock();
+
+        //                vertexBuffers_.erase(iter->second);
+        //            }
+        //            break;
+        //        }
+        //    }
+
+        //    destroyStack_.clear();
+        //    destroyStack_.unlock();
+        //}
     }
 } // namespace Takoyaki

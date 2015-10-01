@@ -21,13 +21,15 @@
 #include "pch.h"
 #include "vertex_buffer_impl.h"
 
+#include "../dx12/context.h"
 #include "../dx12/dx12_vertex_buffer.h"
 
 namespace Takoyaki
 {
-    VertexBufferImpl::VertexBufferImpl(DX12VertexBuffer& buffer, boost::shared_lock<boost::shared_mutex> lock) noexcept
-        : buffer_(buffer)
-        , bufferLock_(std::move(lock))
+    VertexBufferImpl::VertexBufferImpl(const std::shared_ptr<DX12Context>& context, const DX12VertexBuffer& buffer, uint_fast32_t handle) noexcept
+        : context_{ context }
+        , buffer_{ buffer }
+        , handle_{ handle }
     {
 
     }

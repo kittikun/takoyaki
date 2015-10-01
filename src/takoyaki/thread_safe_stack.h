@@ -33,12 +33,17 @@ namespace Takoyaki
     public:
         ThreadSafeStack() = default;
 
+        // not thread-safe
+        void clear() { stack_.clear(); }
+
         bool empty() const
         {
             std::lock_guard<std::mutex> lock{ mutex_ };
 
             return stack_.empty();
         }
+
+        void lock() { mutex_.lock(); }
 
         void pop(T& value)
         {
@@ -59,6 +64,11 @@ namespace Takoyaki
 
             return stack_.back();
         }
+
+        // not thread-safe
+        size_t size() const { return stack_.size(); }
+
+        void unlock() { mutex_.unlock(); }
 
     private:
         mutable std::mutex mutex_;

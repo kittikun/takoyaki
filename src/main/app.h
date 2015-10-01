@@ -20,29 +20,24 @@
 
 #pragma once
 
-#include "../public/definitions.h"
+#include <framework.h>
+#include <renderer.h>
+#include <vertex_buffer.h>
 
-namespace Takoyaki
+class App
 {
-    class DX12Context;
-    class DX12VertexBuffer;
+    App(const App&) = delete;
+    App& operator=(const App&) = delete;
+    App(App&&) = delete;
+    App& operator=(App&&) = delete;
 
-    class VertexBufferImpl
-    {
-        VertexBufferImpl(const VertexBufferImpl&) = delete;
-        VertexBufferImpl& operator=(const VertexBufferImpl&) = delete;
-        VertexBufferImpl(VertexBufferImpl&&) = delete;
-        VertexBufferImpl& operator=(VertexBufferImpl&&) = delete;
+public:
+    App() = default;
+    ~App() = default;
 
-    public:
-        explicit VertexBufferImpl(const std::shared_ptr<DX12Context>&, const DX12VertexBuffer&, uint_fast32_t) noexcept;
-        ~VertexBufferImpl() = default;
+    void initialize(const std::shared_ptr<Takoyaki::Framework>& framework);
+    void render(Takoyaki::Renderer* renderer);
 
-    private:
-        // must own pointer to context for destruction
-        std::weak_ptr<DX12Context> context_;
-        const DX12VertexBuffer& buffer_;
-        uint_fast32_t handle_;
-    };
-}
-// namespace Takoyaki
+private:
+    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
+};

@@ -34,13 +34,14 @@ namespace Takoyaki
         DX12VertexBuffer& operator=(DX12VertexBuffer&&) = delete;
 
     public:
-        DX12VertexBuffer(uint8_t*, uint_fast64_t, uint8_t*, uint_fast64_t) noexcept;
+        DX12VertexBuffer(uint8_t*, uint_fast64_t) noexcept;
         DX12VertexBuffer(DX12VertexBuffer&&) noexcept;
         ~DX12VertexBuffer() = default;
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
-        std::function<void()> create(void *);
+        std::function<void()> create(void*);
+        void destroy(void*);
         void onCreateDone();
 
         //////////////////////////////////////////////////////////////////////////

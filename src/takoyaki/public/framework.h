@@ -50,7 +50,7 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc& desc);
         void setProperty(EPropertyID id, const boost::any& value);
-        void render();
+        void present();
         void terminate();
         void validateDevice() const;
         void loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& result);
@@ -59,6 +59,8 @@ namespace Takoyaki
         // App should use those
         void compileShader(const ShaderDesc& desc);
 
+        //////////////////////////////////////////////////////////////////////////
+        // Accessors
         std::unique_ptr<Renderer> getRenderer();
 
     private:

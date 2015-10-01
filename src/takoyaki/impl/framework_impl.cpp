@@ -32,9 +32,6 @@
 #include "../utility/log.h"
 #include "../utility/win_utility.h"
 
-extern void appMain(const std::shared_ptr<Takoyaki::Framework>&);
-extern void appRender(Takoyaki::Renderer& renderer);
-
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
@@ -62,7 +59,7 @@ namespace Takoyaki
         }
 
         device_->create(desc, context_);
-        context_->initialize();
+        context_->initializeWorkers();
         threadPool_->initialize(desc.numWorkerThreads);
 
         if (!desc.loadAsyncFunc)
@@ -76,11 +73,6 @@ namespace Takoyaki
         renderer_.reset(new RendererImpl(context_));
 
         LOGC_INDENT_END << "Initialization complete.";
-
-        LOGC << "Launching application...";
-
-        auto func = std::bind(appMain, framework);
-        threadPool_->submit(func);
     }
 
     void FrameworkImpl::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
@@ -88,14 +80,8 @@ namespace Takoyaki
         io_.loadAsyncFileResult(makeUnixPath(filename), res);
     }
 
-    void FrameworkImpl::render()
+    void FrameworkImpl::present()
     {
-        LOG_IDENTIFY_THREAD;
-
-        Renderer renderer{ renderer_ };
-
-        appRender(renderer);
-
         device_->present();
     }
 

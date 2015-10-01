@@ -18,16 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
+
+#include "app.h"
+
 #include <array>
 #include <memory>
 
 #include <constant_table.h>
-#include <d3d12.h>  // will be removed later once vulkan abstraction has been added
-#include <framework.h>
+#include <d3d12.h>  // will be removed later once Vulkan abstraction has been added
 #include <glm/glm.hpp>
 #include <input_layout.h>
 #include <pipeline_state.h>
-#include <renderer.h>
 #include <root_signature.h>
 
 struct Vertex
@@ -36,7 +38,7 @@ struct Vertex
     glm::vec3 color;
 };
 
-void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
+void App::initialize(const std::shared_ptr<Takoyaki::Framework>& framework)
 {
     auto renderer = framework->getRenderer();
 
@@ -93,16 +95,16 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
 
     // cube vertices (pos, color)
     std::array<Vertex, 8> cubeVertices =
-    {{
-        { glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec3{0.0f, 0.0f, 0.0f} },
-        { glm::vec3{-0.5f, -0.5f,  0.5f}, glm::vec3{0.0f, 0.0f, 1.0f} },
-        { glm::vec3{-0.5f,  0.5f, -0.5f}, glm::vec3{0.0f, 1.0f, 0.0f} },
-        { glm::vec3{-0.5f,  0.5f,  0.5f}, glm::vec3{0.0f, 1.0f, 1.0f} },
-        { glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec3{1.0f, 0.0f, 0.0f} },
-        { glm::vec3{0.5f, -0.5f,  0.5f}, glm::vec3{1.0f, 0.0f, 1.0f} },
-        { glm::vec3{0.5f,  0.5f, -0.5f}, glm::vec3{1.0f, 1.0f, 0.0f} },
-        { glm::vec3{0.5f,  0.5f,  0.5f}, glm::vec3{1.0f, 1.0f, 1.0f} },
-    }};
+    { {
+        { glm::vec3{ -0.5f, -0.5f, -0.5f }, glm::vec3{ 0.0f, 0.0f, 0.0f } },
+        { glm::vec3{ -0.5f, -0.5f,  0.5f }, glm::vec3{ 0.0f, 0.0f, 1.0f } },
+        { glm::vec3{ -0.5f,  0.5f, -0.5f }, glm::vec3{ 0.0f, 1.0f, 0.0f } },
+        { glm::vec3{ -0.5f,  0.5f,  0.5f }, glm::vec3{ 0.0f, 1.0f, 1.0f } },
+        { glm::vec3{ 0.5f, -0.5f, -0.5f }, glm::vec3{ 1.0f, 0.0f, 0.0f } },
+        { glm::vec3{ 0.5f, -0.5f,  0.5f }, glm::vec3{ 1.0f, 0.0f, 1.0f } },
+        { glm::vec3{ 0.5f,  0.5f, -0.5f }, glm::vec3{ 1.0f, 1.0f, 0.0f } },
+        { glm::vec3{ 0.5f,  0.5f,  0.5f }, glm::vec3{ 1.0f, 1.0f, 1.0f } },
+        } };
 
     // cube indices as triangle list
     std::array<uint_fast32_t, 36> cubeIndices =
@@ -126,12 +128,12 @@ void appMain(const std::shared_ptr<Takoyaki::Framework>& framework)
         1, 7, 5,
     };
 
-    renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex), reinterpret_cast<uint8_t*>(&cubeIndices[0]), cubeIndices.size() * sizeof(uint_fast32_t));
+    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex)));
 }
 
-void appRender(Takoyaki::Renderer& renderer)
+void App::render(Takoyaki::Renderer* renderer)
 {
-    auto viewProj = renderer.getConstantBuffer("CBModelViewProjection");
+    auto viewProj = renderer->getConstantBuffer("CBModelViewProjection");
 
     // cbuffer might by empty if shader hasn't been loaded yet
     if (viewProj) {

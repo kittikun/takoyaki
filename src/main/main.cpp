@@ -4,6 +4,8 @@
 #include <ppltasks.h>
 #include <wrl.h>
 
+#include "app.h"
+
 using namespace concurrency;
 using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
@@ -33,7 +35,8 @@ IFrameworkView^ AppMainView::CreateView()
 namespace AppMain
 {
     Main::Main()
-        : framework_{std::make_shared<Takoyaki::Framework >()}
+        : app_(std::make_unique<App>())
+        , framework_{std::make_shared<Takoyaki::Framework >()}
         , mWindowClosed{ false }
         , mWindowVisible{ true }
     {
@@ -85,6 +88,7 @@ namespace AppMain
     // Initializes scene resources, or loads a previously saved app state.
     void Main::Load(Platform::String^ entryPoint)
     {
+        // configure Takoyaki framework
         auto window = CoreWindow::GetForCurrentThread();
         DisplayInformation^ disp = DisplayInformation::GetForCurrentView();
 
@@ -109,16 +113,22 @@ namespace AppMain
         }, std::placeholders::_1);
 
         framework_->initialize(desc);
+
+        // initalize app
+        app_->initialize(framework_);
     }
 
     // This method is called after the window becomes active.
     void Main::Run()
     {
+        auto renderer = framework_->getRenderer();
+
         while (!mWindowClosed) {
             if (mWindowVisible) {
                 CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-                framework_->render();
+                app_->render(renderer.get());
+                framework_->present();
             } else {
                 CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
             }

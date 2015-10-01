@@ -135,10 +135,8 @@ namespace Takoyaki
         WINDOW_DPI
     };
 
-#ifdef WIN32
-// undefined the one from math.h
+// undef the one from math.h
 #undef DOMAIN
-#endif
 
     enum class EShaderType
     {

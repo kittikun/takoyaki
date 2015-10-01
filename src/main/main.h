@@ -6,6 +6,8 @@
 
 #include <framework.h>
 
+class App;
+
 namespace AppMain
 {
 	// Main entry point for our app. Connects the app with the Windows shell and handles application lifecycle events.
@@ -42,6 +44,7 @@ namespace AppMain
         Concurrency::task<std::vector<byte>> loadFileAsync(const std::wstring&);
 
 	private:
+        std::unique_ptr<App> app_;
         std::shared_ptr<Takoyaki::Framework> framework_;
 		bool mWindowClosed;
 		bool mWindowVisible;

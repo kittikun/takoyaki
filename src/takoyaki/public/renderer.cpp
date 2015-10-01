@@ -24,12 +24,14 @@
 #include "constant_table.h"
 #include "input_layout.h"
 #include "root_signature.h"
+#include "vertex_buffer.h"
 
 #include "../impl/constant_table_impl.h"
 #include "../impl/input_layout_impl.h"
 #include "../impl/pipeline_state_impl.h"
 #include "../impl/renderer_impl.h"
 #include "../impl/root_signature_impl.h"
+#include "../impl/vertex_buffer_impl.h"
 
 namespace Takoyaki
 {
@@ -60,9 +62,9 @@ namespace Takoyaki
         return std::make_unique<RootSignature>(impl_->createRootSignature(name));
     }
 
-    void Renderer::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint8_t* indices, uint_fast64_t sizeIndicesByte)
+    std::unique_ptr<VertexBuffer> Renderer::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte)
     {
-        impl_->createVertexBuffer(vertices, sizeVecticesByte, indices, sizeIndicesByte);
+        return std::make_unique<VertexBuffer>(impl_->createVertexBuffer(vertices, sizeVecticesByte));
     }
 
     std::unique_ptr<ConstantTable> Renderer::getConstantBuffer(const std::string& name)

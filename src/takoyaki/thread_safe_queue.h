@@ -31,6 +31,8 @@ namespace Takoyaki
         ThreadSafeQueue& operator=(ThreadSafeQueue&&) = delete;
 
     public:
+        using ValueType = typename std::queue<T>::value_type;
+
         ThreadSafeQueue() = default;
 
         bool empty() const
@@ -38,6 +40,18 @@ namespace Takoyaki
             std::lock_guard<std::mutex> lock{ mutex_ };
 
             return queue_.empty();
+        }
+
+        std::unique_lock<std::mutex> front(T& value) const
+        {
+            std::unique_lock<std::mutex> lock{ mutex_ };
+
+            if (queue_.empty())
+                throw std::runtime_error{ "Trying to get front while ThreadSafeQueue is empty" };
+
+            value = queue_.front();
+
+            return lock;
         }
 
         void push(T value)

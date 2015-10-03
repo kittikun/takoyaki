@@ -91,7 +91,7 @@ namespace Takoyaki
         void createVertexBuffer(uint_fast32_t, uint8_t*, uint_fast64_t);
 
         void destroyResource(EResourceType, uint_fast32_t);
-        std::function<void()> destroyMain(void*);
+        void destroyMain(void*, void*);
         void onDestroyDone();
 
         auto getInputLayout(const std::string&) -> InputLayoutReturn;
@@ -129,8 +129,8 @@ namespace Takoyaki
         ThreadSafeStack<DX12Texture> textures_;
 
         // resource destruction have to be handled by the context
-        ThreadSafeStack<std::pair<EResourceType, uint_fast32_t>> destroyStack_;
-        uint_fast32_t destroyCount_;
+        using DestroyQueueType = ThreadSafeQueue<std::pair<EResourceType, uint_fast32_t>>;
+        DestroyQueueType destroyQueue_;
 
         // workers
         CopyWorker copyWorker_;

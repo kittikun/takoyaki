@@ -136,24 +136,40 @@ namespace Takoyaki
         auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ vertices, sizeVecticesByte }));
 
         // then build a command to build underlaying resources
-        threadPool_->submit(WORKER_COPY, std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1));
+        copyWorker_.submit(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
     }
 
     void DX12Context::destroyResource(EResourceType type, uint_fast32_t id)
     {
-        //copyWorker_.submit()
-        //auto lock = vertexBuffers_.getWriteLock();
+        // destruction is deferred so add to destroy queue and submit a job request
 
-        //// then build a command to build underlaying resources
-        //threadPool_->submit(WORKER_COPY, std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1));
-
-        //vertexBuffers_.erase(id);
+        destroyQueue_.push(std::make_pair(type, id));
+        threadPool_->submit(WORKER_COPY, std::bind(&DX12Context::destroyMain, this, std::placeholders::_1, std::placeholders::_2));
     }
 
-    std::function<void()> DX12Context::destroyMain(void* context)
+    void DX12Context::destroyMain(void* p, void* r)
     {
+        auto context = static_cast<CopyWorker::Context*>(p);
+        auto res = static_cast<CopyWorker::Result*>(r);
+        DestroyQueueType::ValueType pair;
 
-        return std::bind(&DX12Context::onDestroyDone, this);
+        destroyQueue_.front(pair);
+
+        switch (pair.first) {
+            case EResourceType::VERTEX_BUFFER:
+            {
+                auto lock = vertexBuffers_.getReadLock();
+                auto found = vertexBuffers_.find(pair.second);
+
+                if (found != vertexBuffers_.end()) {
+                    found->second.destroy(context->commandList.Get());
+                }
+            }
+            break;
+        }
+
+        res->type = CopyWorker::ReturnType::NOTIFY;
+        res->funcNotify = std::bind(&DX12Context::onDestroyDone, this);
     }
 
     auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn
@@ -253,23 +269,20 @@ namespace Takoyaki
 
     void DX12Context::onDestroyDone()
     {
-        //++destroyCount_;
+        DestroyQueueType::ValueType pair;
 
-        //if (destroyCount_ == destroyStack_.size()) {
-        //    for (auto& iter : destroyStack_) {
-        //        switch (iter->first) {
-        //            case EResourceType::VERTEX_BUFFER: 
-        //            {
-        //                auto lock = vertexBuffers_.getWriteLock();
+        if (destroyQueue_.tryPop(pair)) {
+            switch (pair.first) {
+                case EResourceType::VERTEX_BUFFER:
+                {
+                    auto lock = vertexBuffers_.getWriteLock();
 
-        //                vertexBuffers_.erase(iter->second);
-        //            }
-        //            break;
-        //        }
-        //    }
-
-        //    destroyStack_.clear();
-        //    destroyStack_.unlock();
-        //}
+                    vertexBuffers_.erase(pair.second);
+                }
+                break;
+            }
+        } else {
+            throw new std::runtime_error{ "DX12Context::onDestroyDone called but queue empty" };
+        }
     }
 } // namespace Takoyaki

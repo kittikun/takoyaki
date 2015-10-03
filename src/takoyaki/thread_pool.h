@@ -63,7 +63,7 @@ namespace Takoyaki
         struct SpecializedWorkerDesc
         {
             std::function<void()> mainFunc;
-            std::function<void(MoveOnlyFuncParamReturn)> submitFunc;
+            std::function<void(MoveOnlyFuncParamTwo)> submitFunc;
             std::string name;
             uint_fast32_t id;
         };
@@ -101,7 +101,7 @@ namespace Takoyaki
         JoinThreads joiner;
 
         // map to specialized worker submit function
-        std::unordered_map<uint_fast32_t, std::function<void(MoveOnlyFuncParamReturn)>> specializedWorkers_;
+        std::unordered_map<uint_fast32_t, std::function<void(MoveOnlyFuncParamTwo)>> specializedWorkers_;
     };
 } // namespace Takoyaki
 

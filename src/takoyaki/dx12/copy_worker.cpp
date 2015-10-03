@@ -76,6 +76,7 @@ namespace Takoyaki
     {
         LOG_IDENTIFY_THREAD;
 
+        Result res;
         Context context;
 
         {
@@ -86,17 +87,23 @@ namespace Takoyaki
 
         context.device = device_;
 
-        MoveOnlyFuncParamReturn specTask;
+        MoveOnlyFuncParamTwo specTask;
         MoveOnlyFunc task;
-        std::vector<std::function<void()>> doneCallbacks;
+        std::vector<MoveOnlyFunc> doneCallbacks;
+        std::vector<MoveOnlyFuncParamTwo> doneTasks;
+        ID3D12CommandList* list[] = { context.commandList.Get() };
 
         while (!done_) {            
             if (!workQueue_.empty()) {
                 // run copy jobs if any
-                context.commandList->Reset(commandAllocator_.Get(), nullptr);
-
                 while (workQueue_.tryPop(specTask)) {
-                    doneCallbacks.push_back(specTask(&context));
+                    specTask(&context, &res);
+
+                    // some jobs needs to do addition work, other only notification
+                    if (res.type == ReturnType::TASK)
+                        doneTasks.push_back(std::move(res.funcTask));
+                    else if (res.type == ReturnType::NOTIFY)
+                        doneCallbacks.push_back(std::move(res.funcNotify));
                 }
 
                 // Schedule a signal on completion
@@ -104,8 +111,6 @@ namespace Takoyaki
                 DXCheckThrow(fence_->SetEventOnCompletion(fenceValue_, fenceEvent_));
 
                 DXCheckThrow(context.commandList->Close());
-
-                ID3D12CommandList* list[] = { context.commandList.Get() };
 
                 commandQueue_->ExecuteCommandLists(1, list);
 
@@ -115,11 +120,17 @@ namespace Takoyaki
                 // Increment the fence value for the next round
                 fenceValue_++;
 
-                // notify users so they can clean up intermediate data
-                for (auto func : doneCallbacks)
+                // notify users
+                for (auto& func : doneCallbacks)
                     func();
 
+                // submit any returned new task to the job queue
+                for (int i = 0; i < doneTasks.size(); ++i)
+                    workQueue_.push(std::move(doneTasks[i]));
+
+                context.commandList->Reset(commandAllocator_.Get(), nullptr);
                 doneCallbacks.clear();
+                doneTasks.clear();
             } else {             
                 // to avoid mutual reference counting lock, we cannot own the thread pool...
                 auto threadPool = threadPool_.lock();
@@ -135,7 +146,7 @@ namespace Takoyaki
         }
     }
 
-    void CopyWorker::submit(MoveOnlyFuncParamReturn func)
+    void CopyWorker::submit(MoveOnlyFuncParamTwo func)
     {
         workQueue_.push(std::move(func));
     }

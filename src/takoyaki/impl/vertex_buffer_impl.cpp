@@ -33,5 +33,12 @@ namespace Takoyaki
     {
 
     }
+
+    VertexBufferImpl::~VertexBufferImpl()
+    {
+        auto context = context_.lock();
+
+        context->destroyResource(DX12Context::EResourceType::VERTEX_BUFFER, handle_);
+    }
 }
 // namespace Takoyaki

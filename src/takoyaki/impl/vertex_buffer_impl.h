@@ -36,7 +36,7 @@ namespace Takoyaki
 
     public:
         explicit VertexBufferImpl(const std::shared_ptr<DX12Context>&, const DX12VertexBuffer&, uint_fast32_t) noexcept;
-        ~VertexBufferImpl() = default;
+        ~VertexBufferImpl();
 
     private:
         // must own pointer to context for destruction

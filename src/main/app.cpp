@@ -127,8 +127,8 @@ void App::initialize(const std::shared_ptr<Takoyaki::Framework>& framework)
         1, 3, 7, // +z
         1, 7, 5,
     };
-
-    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex)));
+    renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex));
+    //vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex)));
 }
 
 void App::render(Takoyaki::Renderer* renderer)

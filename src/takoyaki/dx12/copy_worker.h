@@ -45,20 +45,34 @@ namespace Takoyaki
             Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList;            
         };
 
+        enum class ReturnType
+        {
+            NONE,
+            NOTIFY,
+            TASK
+        };
+
+        struct Result
+        {
+            ReturnType type;
+            MoveOnlyFunc funcNotify;
+            MoveOnlyFuncParamTwo funcTask;
+        };
+
         CopyWorker() noexcept;
         ~CopyWorker() noexcept;
 
         void initialize(std::weak_ptr<DX12Device>, std::weak_ptr<ThreadPool>);
+        void submit(MoveOnlyFuncParamTwo);
 
     private:
         void main();
-        void submit(MoveOnlyFuncParamReturn);
 
     private:
         bool done_;
         std::weak_ptr<DX12Device> device_;
         std::weak_ptr<ThreadPool> threadPool_;
-        ThreadSafeQueue<MoveOnlyFuncParamReturn> workQueue_;
+        ThreadSafeQueue<MoveOnlyFuncParamTwo> workQueue_;
 
         // local command queue
         Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;

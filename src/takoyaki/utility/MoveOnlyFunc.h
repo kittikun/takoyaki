@@ -123,6 +123,57 @@ namespace Takoyaki
         std::unique_ptr<ImplBase> impl;
     };
 
+    // Version with two void* parameter
+    class MoveOnlyFuncParamTwo
+    {
+        MoveOnlyFuncParamTwo(const MoveOnlyFuncParamTwo&) = delete;
+        MoveOnlyFuncParamTwo(MoveOnlyFuncParamTwo&) = delete;
+        MoveOnlyFuncParamTwo& operator=(const MoveOnlyFuncParamTwo&) = delete;
+
+        struct ImplBase
+        {
+            virtual void call(void*, void*) = 0;
+            virtual ~ImplBase() {}
+        };
+
+        template<typename F>
+        struct Impl : ImplBase
+        {
+            F f;
+            Impl(F&& f_) noexcept
+                : f(std::move(f_))
+            {
+            }
+
+            void call(void* one, void* two) { f(one, two); }
+        };
+
+    public:
+        MoveOnlyFuncParamTwo() = default;
+
+        MoveOnlyFuncParamTwo(MoveOnlyFuncParamTwo&& other) :
+            impl(std::move(other.impl))
+        {
+        }
+
+        template<typename F>
+        MoveOnlyFuncParamTwo(F&& f)
+            : impl(new Impl<F>(std::move(f)))
+        {
+        }
+
+        inline void operator()(void* one, void* two) { impl->call(one, two); }
+        //std::function<void()> operator()(void* var);
+
+        inline MoveOnlyFuncParamTwo& operator=(MoveOnlyFuncParamTwo&& other)
+        {
+            impl = std::move(other.impl);
+            return *this;
+        }
+
+    private:
+        std::unique_ptr<ImplBase> impl;
+    };
 
     // Version with void* param and return value for specialized workers
     using VoidReturnFunc = std::function<void()>;
@@ -166,7 +217,6 @@ namespace Takoyaki
         }
 
         inline VoidReturnFunc operator()(void* var) { return impl->call(var); }
-        //std::function<void()> operator()(void* var);
 
         inline MoveOnlyFuncParamReturn& operator=(MoveOnlyFuncParamReturn&& other)
         {

@@ -35,9 +35,14 @@ namespace Takoyaki
         , uploadVertexBuffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, sizeVecticesByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
         , intermediate_{ std::make_unique<Intermediate>() }
     {
-        intermediate_->vertexData.pData = vertices;
-        intermediate_->vertexData.RowPitch = sizeVecticesByte;
-        intermediate_->vertexData.SlicePitch = sizeVecticesByte;
+        // we cannot guarantee that data will still be valid so make a copy of data
+        intermediate_->data.resize(sizeVecticesByte);
+
+        memcpy_s(&intermediate_->data.front(), intermediate_->data.size(), vertices, sizeVecticesByte);
+
+        intermediate_->dataDesc.pData = &intermediate_->data.front();
+        intermediate_->dataDesc.RowPitch = sizeVecticesByte;
+        intermediate_->dataDesc.SlicePitch = sizeVecticesByte;
     }
 
     DX12VertexBuffer::DX12VertexBuffer(DX12VertexBuffer&& other) noexcept
@@ -57,6 +62,21 @@ namespace Takoyaki
         vertexBuffer_->Create(device);
         uploadVertexBuffer_->Create(device);
 
+        // upload data to the gpu
+        UpdateSubresourceDesc desc;
+
+        desc.device = context->device;
+        desc.cmdList = context->commandList.Get();
+        desc.destinationResource = vertexBuffer_->getResource();
+        desc.intermediate = uploadVertexBuffer_->getResource();
+        desc.intermediateOffset = 0;
+        desc.firstSubResource = 0;
+        desc.numSubResource = 1;
+        desc.srcData = &intermediate_->dataDesc;
+
+        UpdateSubresourcesHeapAlloc(desc);
+
+        // on the gpu, copy data from upload buffer to vertex buffer
         D3D12_RESOURCE_BARRIER barrier;
 
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -67,6 +87,17 @@ namespace Takoyaki
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
         context->commandList->ResourceBarrier(1, &barrier);
+
+        res->type = CopyWorker::ReturnType::TASK;
+        res->funcTask = std::bind(&DX12VertexBuffer::createCleanup, this, std::placeholders::_1, std::placeholders::_2);
+    }
+
+    void DX12VertexBuffer::createCleanup(void* p, void* r)
+    {
+        auto context = static_cast<CopyWorker::Context*>(p);
+        auto res = static_cast<CopyWorker::Result*>(r);
+
+        context->commandList->DiscardResource(uploadVertexBuffer_->getResource(), nullptr);
 
         res->type = CopyWorker::ReturnType::NOTIFY;
         res->funcNotify = std::bind(&DX12VertexBuffer::onCreateDone, this);
@@ -80,6 +111,5 @@ namespace Takoyaki
     void DX12VertexBuffer::destroy(ID3D12GraphicsCommandList* commandList)
     {
         commandList->DiscardResource(vertexBuffer_->getResource(), nullptr);
-        commandList->DiscardResource(uploadVertexBuffer_->getResource(), nullptr);
     }
 } // namespace Takoyaki

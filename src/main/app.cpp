@@ -127,16 +127,16 @@ void App::initialize(const std::shared_ptr<Takoyaki::Framework>& framework)
         1, 3, 7, // +z
         1, 7, 5,
     };
-    renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex));
-    //vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex)));
+    //renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex));
+    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex)));
 }
 
 void App::render(Takoyaki::Renderer* renderer)
 {
-    auto viewProj = renderer->getConstantBuffer("CBModelViewProjection");
+    auto viewProj = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
 
     // cbuffer might by empty if shader hasn't been loaded yet
     if (viewProj) {
-        viewProj->setMatrix4x4("matViewProjection", glm::mat4x4());
+        viewProj->setMatrix4x4("model", glm::mat4x4());
     }
 }

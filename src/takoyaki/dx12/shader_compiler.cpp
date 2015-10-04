@@ -225,9 +225,9 @@ namespace Takoyaki
         bc.BytecodeLength = shaderBlob->GetBufferSize();
         bc.pShaderBytecode = shaderBlob->GetBufferPointer();
 
-        context->addShader(desc.type, desc.name, std::move(bc));
-
         getShaderResources(shaderBlob, context);
+
+        context->addShader(desc.type, desc.name, std::move(bc));
 
         LOGS_INDENT_END << "Shader done.";
     }

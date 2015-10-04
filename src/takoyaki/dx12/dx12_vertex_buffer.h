@@ -43,6 +43,7 @@ namespace Takoyaki
 
         // tasks
         void create(void*, void*);
+        void createCleanup(void*, void*);
         void destroy(ID3D12GraphicsCommandList*);
         void onCreateDone();
 
@@ -52,7 +53,8 @@ namespace Takoyaki
     private:
         struct Intermediate
         {
-            D3D12_SUBRESOURCE_DATA vertexData;            
+            std::vector<uint8_t> data;
+            D3D12_SUBRESOURCE_DATA dataDesc;
         };
 
         std::unique_ptr<DX12Buffer> vertexBuffer_;

@@ -248,7 +248,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <AdditionalDependencies>App.lib;Takoyaki.lib;mincore.lib;d3d12.lib;dxgi.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Takoyaki.lib;mincore.lib;d3d12.lib;dxgi.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store\amd64;$(VCInstallDir)\lib\amd64;$(Outdir);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>

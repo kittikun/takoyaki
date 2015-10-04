@@ -106,13 +106,11 @@ namespace Takoyaki
             throw new std::runtime_error{ "UpdateSubresourcesHeapAlloc memToAlloc too big" };
         }
 
-        void* mem = HeapAlloc(GetProcessHeap(), 0, static_cast<SIZE_T>(memToAlloc));
+        std::vector<uint8_t> mem;
 
-        if (mem == NULL) {
-            throw new std::runtime_error{ "UpdateSubresourcesHeapAlloc could not allocate memory" };
-        }
+        mem.resize(memToAlloc);
 
-        D3D12_PLACED_SUBRESOURCE_FOOTPRINT* layout = reinterpret_cast<D3D12_PLACED_SUBRESOURCE_FOOTPRINT*>(mem);
+        D3D12_PLACED_SUBRESOURCE_FOOTPRINT* layout = reinterpret_cast<D3D12_PLACED_SUBRESOURCE_FOOTPRINT*>(&mem.front());
         uint_fast64_t* rowSizesInBytes = reinterpret_cast<uint_fast64_t*>(layout + params.numSubResource);
         UINT* numRows = reinterpret_cast<uint_fast32_t*>(rowSizesInBytes + params.numSubResource);
 
@@ -126,10 +124,6 @@ namespace Takoyaki
             device->getDXDevice()->GetCopyableFootprints(&desc, params.firstSubResource, params.numSubResource, params.intermediateOffset, layout, numRows, rowSizesInBytes, &requiredSize);
         }
 
-        uint_fast64_t res = UpdateSubresources(params, requiredSize, layout, numRows, rowSizesInBytes);
-
-        HeapFree(GetProcessHeap(), 0, mem);
-
-        return res;
+        return UpdateSubresources(params, requiredSize, layout, numRows, rowSizesInBytes);
     }
 } // namespace Takoyaki

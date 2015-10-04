@@ -129,14 +129,29 @@ namespace Takoyaki
         return textures_.push(DX12Texture{ shared_from_this() });
     }
 
-    void DX12Context::createVertexBuffer(uint_fast32_t id, uint8_t* vertices, uint_fast64_t sizeVecticesByte)
+    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, uint_fast64_t sizeByte)
     {
-        auto lock = vertexBuffers_.getWriteLock();
+        switch (type) {
+            case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
+            {
+                auto lock = indexBuffers_.getWriteLock();
+                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, sizeByte, id }));
 
-        auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ vertices, sizeVecticesByte }));
+                // then build a command to build underlaying resources
+                copyWorker_.submit(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
 
-        // then build a command to build underlaying resources
-        copyWorker_.submit(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
+            case Takoyaki::DX12Context::EResourceType::VERTEX_BUFFER:
+            {
+                auto lock = vertexBuffers_.getWriteLock();
+                auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, sizeByte, id }));
+
+                // then build a command to build underlaying resources
+                copyWorker_.submit(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
     }
 
     void DX12Context::destroyResource(EResourceType type, uint_fast32_t id)
@@ -156,6 +171,17 @@ namespace Takoyaki
         destroyQueue_.front(pair);
 
         switch (pair.first) {
+            case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
+            {
+                auto lock = indexBuffers_.getReadLock();
+                auto found = indexBuffers_.find(pair.second);
+
+                if (found != indexBuffers_.end()) {
+                    found->second.destroy(context->commandList.Get());
+                }
+            }
+            break;
+
             case EResourceType::VERTEX_BUFFER:
             {
                 auto lock = vertexBuffers_.getReadLock();
@@ -188,6 +214,20 @@ namespace Takoyaki
         // it will be released once the user is done with it
         // somehow make_pair is not happy here..
         return ConstantBufferReturn(std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock)));
+    }
+
+    const DX12IndexBuffer& DX12Context::getIndexBuffer(uint_fast32_t id)
+    {
+        auto lock = indexBuffers_.getReadLock();
+        auto found = indexBuffers_.find(id);
+
+        if (found == indexBuffers_.end()) {
+            auto fmt = boost::format{ "DX12DeviceContext::getIndexBuffer, cannot find key \"%1%\"" } % id;
+
+            throw new std::runtime_error{ boost::str(fmt) };
+        }
+
+        return found->second;
     }
 
     auto DX12Context::getInputLayout(const std::string& name) -> InputLayoutReturn
@@ -273,6 +313,14 @@ namespace Takoyaki
 
         if (destroyQueue_.tryPop(pair)) {
             switch (pair.first) {
+                case EResourceType::INDEX_BUFFER:
+                {
+                    auto lock = indexBuffers_.getWriteLock();
+
+                    indexBuffers_.erase(pair.second);
+                }
+                break;
+
                 case EResourceType::VERTEX_BUFFER:
                 {
                     auto lock = vertexBuffers_.getWriteLock();

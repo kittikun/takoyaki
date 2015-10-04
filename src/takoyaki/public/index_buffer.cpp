@@ -18,26 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "index_buffer.h"
 
-#include <memory>
-#include <fwd.h>
+#include "../impl/index_buffer_impl.h"
 
-class App
+namespace Takoyaki
 {
-    App(const App&) = delete;
-    App& operator=(const App&) = delete;
-    App(App&&) = delete;
-    App& operator=(App&&) = delete;
+    IndexBuffer::IndexBuffer(std::unique_ptr<IndexBufferImpl> impl) noexcept
+        : impl_{ std::move(impl) }
+    {
+    }
 
-public:
-    App() = default;
-    ~App() = default;
-
-    void initialize(const std::shared_ptr<Takoyaki::Framework>& framework);
-    void render(Takoyaki::Renderer* renderer);
-
-private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-};
+    IndexBuffer::~IndexBuffer() = default;
+}
+// namespace Takoyaki

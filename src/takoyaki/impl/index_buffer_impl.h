@@ -20,24 +20,29 @@
 
 #pragma once
 
-#include <memory>
-#include <fwd.h>
+#include "../public/definitions.h"
 
-class App
+namespace Takoyaki
 {
-    App(const App&) = delete;
-    App& operator=(const App&) = delete;
-    App(App&&) = delete;
-    App& operator=(App&&) = delete;
+    class DX12Context;
+    class DX12IndexBuffer;
 
-public:
-    App() = default;
-    ~App() = default;
+    class IndexBufferImpl
+    {
+        IndexBufferImpl(const IndexBufferImpl&) = delete;
+        IndexBufferImpl& operator=(const IndexBufferImpl&) = delete;
+        IndexBufferImpl(IndexBufferImpl&&) = delete;
+        IndexBufferImpl& operator=(IndexBufferImpl&&) = delete;
 
-    void initialize(const std::shared_ptr<Takoyaki::Framework>& framework);
-    void render(Takoyaki::Renderer* renderer);
+    public:
+        explicit IndexBufferImpl(const std::shared_ptr<DX12Context>&, const DX12IndexBuffer&, uint_fast32_t) noexcept;
+        ~IndexBufferImpl();
 
-private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-};
+    private:
+        // must own pointer to context for destruction
+        std::weak_ptr<DX12Context> context_;
+        const DX12IndexBuffer& buffer_;
+        uint_fast32_t handle_;
+    };
+}
+// namespace Takoyaki

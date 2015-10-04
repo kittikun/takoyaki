@@ -26,6 +26,7 @@
 namespace Takoyaki
 {
     class ConstantTable;
+    class IndexBuffer;
     class InputLayout;
     class RendererImpl;
     class RootSignature;
@@ -43,9 +44,10 @@ namespace Takoyaki
         explicit Renderer(std::shared_ptr<RendererImpl>&) noexcept;
         ~Renderer() noexcept;
 
+        std::unique_ptr<IndexBuffer> createIndexBuffer(uint8_t* indexes, uint_fast64_t sizeByte);
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
         std::unique_ptr<RootSignature> createRootSignature(const std::string& name);
-        std::unique_ptr<VertexBuffer> createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte);
+        std::unique_ptr<VertexBuffer> createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeByte);
 
         void createPipelineState(const std::string& name, const PipelineStateDesc&);
 

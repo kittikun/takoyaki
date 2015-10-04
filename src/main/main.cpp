@@ -4,6 +4,8 @@
 #include <ppltasks.h>
 #include <wrl.h>
 
+#include <takoyaki.h>
+
 #include "app.h"
 
 using namespace concurrency;

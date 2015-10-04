@@ -5,6 +5,7 @@
 #include <synchapi.h>
 
 #include <framework.h>
+#include <fwd.h>
 
 class App;
 

@@ -22,6 +22,7 @@
 #include "renderer_impl.h"
 
 #include "constant_table_impl.h"
+#include "index_buffer_impl.h"
 #include "input_layout_impl.h"
 #include "root_signature_impl.h"
 #include "vertex_buffer_impl.h"
@@ -39,6 +40,15 @@ namespace Takoyaki
     void RendererImpl::commit()
     {
         context_->commit();
+    }
+
+    std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, uint_fast64_t sizeByte)
+    {
+        auto id = uidGenerator_.fetch_add(1);
+
+        context_->createBuffer(DX12Context::EResourceType::INDEX_BUFFER, id, data, sizeByte);
+
+        return std::make_unique<IndexBufferImpl>(context_, context_->getIndexBuffer(id), id);
     }
 
     std::unique_ptr<InputLayoutImpl> RendererImpl::createInputLayout(const std::string& name)
@@ -64,11 +74,11 @@ namespace Takoyaki
         return std::make_unique<RootSignatureImpl>(pair.first, std::move(pair.second));
     }
 
-    std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte)
+    std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* data, uint_fast64_t sizeByte)
     {
         auto id = uidGenerator_.fetch_add(1);
 
-        context_->createVertexBuffer(id, vertices, sizeVecticesByte);
+        context_->createBuffer(DX12Context::EResourceType::VERTEX_BUFFER, id, data, sizeByte);
 
         return std::make_unique<VertexBufferImpl>(context_, context_->getVertexBuffer(id), id);
     }

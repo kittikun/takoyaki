@@ -18,26 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "index_buffer_impl.h"
 
-#include <memory>
-#include <fwd.h>
+#include "../dx12/context.h"
+#include "../dx12/dx12_index_buffer.h"
 
-class App
+namespace Takoyaki
 {
-    App(const App&) = delete;
-    App& operator=(const App&) = delete;
-    App(App&&) = delete;
-    App& operator=(App&&) = delete;
+    IndexBufferImpl::IndexBufferImpl(const std::shared_ptr<DX12Context>& context, const DX12IndexBuffer& buffer, uint_fast32_t handle) noexcept
+        : context_{ context }
+        , buffer_{ buffer }
+        , handle_{ handle }
+    {
 
-public:
-    App() = default;
-    ~App() = default;
+    }
 
-    void initialize(const std::shared_ptr<Takoyaki::Framework>& framework);
-    void render(Takoyaki::Renderer* renderer);
+    IndexBufferImpl::~IndexBufferImpl()
+    {
+        auto context = context_.lock();
 
-private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-};
+        context->destroyResource(DX12Context::EResourceType::VERTEX_BUFFER, handle_);
+    }
+}
+// namespace Takoyaki

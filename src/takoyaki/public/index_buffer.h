@@ -21,23 +21,24 @@
 #pragma once
 
 #include <memory>
-#include <fwd.h>
 
-class App
+namespace Takoyaki
 {
-    App(const App&) = delete;
-    App& operator=(const App&) = delete;
-    App(App&&) = delete;
-    App& operator=(App&&) = delete;
+    class IndexBufferImpl;
 
-public:
-    App() = default;
-    ~App() = default;
+    class IndexBuffer
+    {
+        IndexBuffer(const IndexBuffer&) = delete;
+        IndexBuffer& operator=(const IndexBuffer&) = delete;
+        IndexBuffer(IndexBuffer&&) = delete;
+        IndexBuffer& operator=(IndexBuffer&&) = delete;
 
-    void initialize(const std::shared_ptr<Takoyaki::Framework>& framework);
-    void render(Takoyaki::Renderer* renderer);
+    public:
+        explicit IndexBuffer(std::unique_ptr<IndexBufferImpl>) noexcept;
+        ~IndexBuffer() noexcept;
 
-private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-};
+    private:
+        std::unique_ptr<IndexBufferImpl> impl_;
+    };
+}
+// namespace Takoyaki

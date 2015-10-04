@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "dx12_vertex_buffer.h"
+#include "dx12_index_buffer.h"
 
 #include "copy_worker.h"
 #include "device.h"
@@ -30,44 +30,44 @@
 
 namespace Takoyaki
 {
-    DX12VertexBuffer::DX12VertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint_fast32_t id) noexcept
-        : vertexBuffer_{ std::make_unique<DX12Buffer>(EBufferType::NO_CPU_GPU_FAST, sizeVecticesByte, D3D12_RESOURCE_STATE_COPY_DEST) }
-        , uploadBuffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, sizeVecticesByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
+    DX12IndexBuffer::DX12IndexBuffer(uint8_t* indexes, uint_fast64_t sizeByte, uint_fast32_t id) noexcept
+        : indexBuffer_{ std::make_unique<DX12Buffer>(EBufferType::NO_CPU_GPU_FAST, sizeByte, D3D12_RESOURCE_STATE_COPY_DEST) }
+        , uploadBuffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, sizeByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
         , intermediate_{ std::make_unique<Intermediate>() }
     {
         // we cannot guarantee that data will still be valid so make a copy of data
-        intermediate_->data.resize(sizeVecticesByte);
+        intermediate_->data.resize(sizeByte);
 
-        memcpy_s(&intermediate_->data.front(), intermediate_->data.size(), vertices, sizeVecticesByte);
+        memcpy_s(&intermediate_->data.front(), intermediate_->data.size(), indexes, sizeByte);
 
         intermediate_->dataDesc.pData = &intermediate_->data.front();
-        intermediate_->dataDesc.RowPitch = sizeVecticesByte;
-        intermediate_->dataDesc.SlicePitch = sizeVecticesByte;
+        intermediate_->dataDesc.RowPitch = sizeByte;
+        intermediate_->dataDesc.SlicePitch = sizeByte;
         intermediate_->id = id;
     }
 
-    DX12VertexBuffer::DX12VertexBuffer(DX12VertexBuffer&& other) noexcept
-        : vertexBuffer_{ std::move(other.vertexBuffer_) }
+    DX12IndexBuffer::DX12IndexBuffer(DX12IndexBuffer&& other) noexcept
+        : indexBuffer_{ std::move(other.indexBuffer_) }
         , uploadBuffer_{ std::move(other.uploadBuffer_) }
         , intermediate_{ std::move(other.intermediate_) }
     {
 
     }
 
-    void DX12VertexBuffer::create(void* p, void* r)
+    void DX12IndexBuffer::create(void* p, void* r)
     {
         auto context = static_cast<CopyWorker::Context*>(p);
         auto res = static_cast<CopyWorker::Result*>(r);
         auto device = context->device.lock();
 
-        vertexBuffer_->Create(device);
+        indexBuffer_->Create(device);
         uploadBuffer_->Create(device);
 
         // set a name for debug purposes
-        auto fmt = boost::wformat{ L"Vertex Buffer %1%" } % intermediate_->id;
-        
-        vertexBuffer_->getResource()->SetName(boost::str(fmt).c_str());
-        fmt = boost::wformat{ L"Vertex Buffer %1% Intermediate" } % intermediate_->id;
+        auto fmt = boost::wformat{ L"Index Buffer %1%" } % intermediate_->id;
+
+        indexBuffer_->getResource()->SetName(boost::str(fmt).c_str());
+        fmt = boost::wformat{ L"Index Buffer %1% Intermediate" } % intermediate_->id;
         uploadBuffer_->getResource()->SetName(boost::str(fmt).c_str());
 
         // upload data to the gpu
@@ -75,7 +75,7 @@ namespace Takoyaki
 
         desc.device = context->device;
         desc.cmdList = context->commandList.Get();
-        desc.destinationResource = vertexBuffer_->getResource();
+        desc.destinationResource = indexBuffer_->getResource();
         desc.intermediate = uploadBuffer_->getResource();
         desc.intermediateOffset = 0;
         desc.firstSubResource = 0;
@@ -89,7 +89,7 @@ namespace Takoyaki
 
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        barrier.Transition.pResource = vertexBuffer_->getResource();
+        barrier.Transition.pResource = indexBuffer_->getResource();
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -97,10 +97,10 @@ namespace Takoyaki
         context->commandList->ResourceBarrier(1, &barrier);
 
         res->type = CopyWorker::ReturnType::TASK;
-        res->funcTask = std::bind(&DX12VertexBuffer::createCleanup, this, std::placeholders::_1, std::placeholders::_2);
+        res->funcTask = std::bind(&DX12IndexBuffer::createCleanup, this, std::placeholders::_1, std::placeholders::_2);
     }
 
-    void DX12VertexBuffer::createCleanup(void* p, void* r)
+    void DX12IndexBuffer::createCleanup(void* p, void* r)
     {
         auto context = static_cast<CopyWorker::Context*>(p);
         auto res = static_cast<CopyWorker::Result*>(r);
@@ -108,16 +108,16 @@ namespace Takoyaki
         context->commandList->DiscardResource(uploadBuffer_->getResource(), nullptr);
 
         res->type = CopyWorker::ReturnType::NOTIFY;
-        res->funcNotify = std::bind(&DX12VertexBuffer::onCreateDone, this);
+        res->funcNotify = std::bind(&DX12IndexBuffer::onCreateDone, this);
     }
 
-    void DX12VertexBuffer::onCreateDone()
+    void DX12IndexBuffer::onCreateDone()
     {
         intermediate_.reset();
     }
 
-    void DX12VertexBuffer::destroy(ID3D12GraphicsCommandList* commandList)
+    void DX12IndexBuffer::destroy(ID3D12GraphicsCommandList* commandList)
     {
-        commandList->DiscardResource(vertexBuffer_->getResource(), nullptr);
+        commandList->DiscardResource(indexBuffer_->getResource(), nullptr);
     }
 } // namespace Takoyaki

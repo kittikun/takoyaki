@@ -25,6 +25,7 @@
 #include "device.h"
 #include "descriptor_heap.h"
 #include "dx12_buffer.h"
+#include "dx12_index_buffer.h"
 #include "dx12_input_layout.h"
 #include "dx12_pipeline_state.h"
 #include "dx12_root_signature.h"
@@ -85,15 +86,16 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
 
+        void createBuffer(EResourceType, uint_fast32_t, uint8_t*, uint_fast64_t);
         void createInputLayout(const std::string&);
         void createPipelineState(const std::string&, const PipelineStateDesc&);
         void createRootSignature(const std::string&);
-        void createVertexBuffer(uint_fast32_t, uint8_t*, uint_fast64_t);
 
         void destroyResource(EResourceType, uint_fast32_t);
         void destroyMain(void*, void*);
         void onDestroyDone();
 
+        const DX12IndexBuffer& getIndexBuffer(uint_fast32_t);
         auto getInputLayout(const std::string&) -> InputLayoutReturn;
         auto getPipelineState(const std::string&) -> PipelineStateReturn;
         auto getRootSignature(const std::string&) -> RootSignatureReturn;
@@ -117,6 +119,7 @@ namespace Takoyaki
         DescriptorHeapSR descHeapSRV_;
 
         RWLockMap<std::string, DX12ConstantBuffer> constantBuffers_;
+        RWLockMap<uint_fast32_t, DX12IndexBuffer> indexBuffers_;
         RWLockMap<std::string, DX12InputLayout> inputLayouts_;
         RWLockMap<std::string, DX12PipelineState> pipelineStates_;
         RWLockMap<std::string, DX12RootSignature> rootSignatures_;

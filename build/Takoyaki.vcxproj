@@ -33,6 +33,7 @@
     <ClCompile Include="..\src\takoyaki\dx12\descriptor_ranges.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\device.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\context.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_index_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_pipeline_state.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_root_signature.cpp" />
@@ -44,6 +45,7 @@
     <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\constant_table_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
+    <ClCompile Include="..\src\takoyaki\impl\index_buffer_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\input_layout_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\pipeline_state_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\renderer_impl.cpp" />
@@ -57,6 +59,7 @@
     <ClCompile Include="..\src\takoyaki\public\constant_table.cpp" />
     <ClCompile Include="..\src\takoyaki\public\definition.cpp" />
     <ClCompile Include="..\src\takoyaki\public\framework.cpp" />
+    <ClCompile Include="..\src\takoyaki\public\index_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\public\input_layout.cpp" />
     <ClCompile Include="..\src\takoyaki\public\pipeline_state.cpp" />
     <ClCompile Include="..\src\takoyaki\public\renderer.cpp" />
@@ -74,6 +77,7 @@
     <ClInclude Include="..\src\takoyaki\dx12\device.h" />
     <ClInclude Include="..\src\takoyaki\dx12\context.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_buffer.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_index_buffer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_root_signature.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_vertex_buffer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dxsystem.h" />
@@ -84,6 +88,7 @@
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h" />
     <ClInclude Include="..\src\takoyaki\impl\constant_table_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
+    <ClInclude Include="..\src\takoyaki\impl\index_buffer_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\input_layout_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\pipeline_state_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\renderer_impl.h" />
@@ -94,10 +99,13 @@
     <ClInclude Include="..\src\takoyaki\public\constant_table.h" />
     <ClInclude Include="..\src\takoyaki\public\definitions.h" />
     <ClInclude Include="..\src\takoyaki\public\framework.h" />
+    <ClInclude Include="..\src\takoyaki\public\fwd.h" />
+    <ClInclude Include="..\src\takoyaki\public\index_buffer.h" />
     <ClInclude Include="..\src\takoyaki\public\input_layout.h" />
     <ClInclude Include="..\src\takoyaki\public\pipeline_state.h" />
     <ClInclude Include="..\src\takoyaki\public\renderer.h" />
     <ClInclude Include="..\src\takoyaki\public\root_signature.h" />
+    <ClInclude Include="..\src\takoyaki\public\takoyaki.h" />
     <ClInclude Include="..\src\takoyaki\public\vertex_buffer.h" />
     <ClInclude Include="..\src\takoyaki\rwlock_map.h" />
     <ClInclude Include="..\src\takoyaki\thread_pool.h" />

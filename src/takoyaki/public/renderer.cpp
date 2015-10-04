@@ -22,11 +22,13 @@
 #include "renderer.h"
 
 #include "constant_table.h"
+#include "index_buffer.h"
 #include "input_layout.h"
 #include "root_signature.h"
 #include "vertex_buffer.h"
 
 #include "../impl/constant_table_impl.h"
+#include "../impl/index_buffer_impl.h"
 #include "../impl/input_layout_impl.h"
 #include "../impl/pipeline_state_impl.h"
 #include "../impl/renderer_impl.h"
@@ -47,6 +49,11 @@ namespace Takoyaki
         impl_->commit();
     }
 
+    std::unique_ptr<IndexBuffer> Renderer::createIndexBuffer(uint8_t* indexes, uint_fast64_t sizeByte)
+    {
+        return std::make_unique<IndexBuffer>(impl_->createIndexBuffer(indexes, sizeByte));
+    }
+
     std::unique_ptr<InputLayout> Renderer::createInputLayout(const std::string& name)
     {
         return std::make_unique<InputLayout>(impl_->createInputLayout(name));
@@ -62,9 +69,9 @@ namespace Takoyaki
         return std::make_unique<RootSignature>(impl_->createRootSignature(name));
     }
 
-    std::unique_ptr<VertexBuffer> Renderer::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte)
+    std::unique_ptr<VertexBuffer> Renderer::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeByte)
     {
-        return std::make_unique<VertexBuffer>(impl_->createVertexBuffer(vertices, sizeVecticesByte));
+        return std::make_unique<VertexBuffer>(impl_->createVertexBuffer(vertices, sizeByte));
     }
 
     std::unique_ptr<ConstantTable> Renderer::getConstantBuffer(const std::string& name)

@@ -23,14 +23,10 @@
 #include "app.h"
 
 #include <array>
-#include <memory>
 
-#include <constant_table.h>
 #include <d3d12.h>  // will be removed later once Vulkan abstraction has been added
 #include <glm/glm.hpp>
-#include <input_layout.h>
-#include <pipeline_state.h>
-#include <root_signature.h>
+#include <takoyaki.h>
 
 struct Vertex
 {
@@ -127,8 +123,9 @@ void App::initialize(const std::shared_ptr<Takoyaki::Framework>& framework)
         1, 3, 7, // +z
         1, 7, 5,
     };
-    //renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex));
-    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), cubeVertices.size() * sizeof(Vertex)));
+
+    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices.front()), cubeVertices.size() * sizeof(Vertex)));
+    indexBuffer_ = std::move(renderer->createIndexBuffer(reinterpret_cast<uint8_t*>(&cubeIndices.front()), cubeIndices.size() * sizeof(uint_fast32_t)));
 }
 
 void App::render(Takoyaki::Renderer* renderer)

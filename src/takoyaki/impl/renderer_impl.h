@@ -25,6 +25,7 @@
 namespace Takoyaki
 {
     class ConstantTableImpl;
+    class IndexBufferImpl;
     class InputLayoutImpl;
     class DX12Context;
     class RootSignatureImpl;
@@ -46,6 +47,7 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
 
+        std::unique_ptr<IndexBufferImpl> createIndexBuffer(uint8_t*, uint_fast64_t);
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
         std::unique_ptr<RootSignatureImpl> createRootSignature(const std::string&);
         std::unique_ptr<VertexBufferImpl> createVertexBuffer(uint8_t*, uint_fast64_t);

@@ -16,28 +16,13 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
 #pragma once
 
-#include <memory>
-#include <fwd.h>
-
-class App
+namespace Takoyaki
 {
-    App(const App&) = delete;
-    App& operator=(const App&) = delete;
-    App(App&&) = delete;
-    App& operator=(App&&) = delete;
-
-public:
-    App() = default;
-    ~App() = default;
-
-    void initialize(const std::shared_ptr<Takoyaki::Framework>& framework);
-    void render(Takoyaki::Renderer* renderer);
-
-private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-};
+    class Framework;
+    class IndexBuffer;
+    class Renderer;
+    class VertexBuffer;
+}

@@ -27,16 +27,16 @@ namespace Takoyaki
     class ThreadPool;
 
     // For simplicity, bundle vertex and index buffer here
-    class DX12VertexBuffer
+    class DX12IndexBuffer
     {
-        DX12VertexBuffer(const DX12VertexBuffer&) = delete;
-        DX12VertexBuffer& operator=(const DX12VertexBuffer&) = delete;
-        DX12VertexBuffer& operator=(DX12VertexBuffer&&) = delete;
+        DX12IndexBuffer(const DX12IndexBuffer&) = delete;
+        DX12IndexBuffer& operator=(const DX12IndexBuffer&) = delete;
+        DX12IndexBuffer& operator=(DX12IndexBuffer&&) = delete;
 
     public:
-        DX12VertexBuffer(uint8_t*, uint_fast64_t, uint_fast32_t) noexcept;
-        DX12VertexBuffer(DX12VertexBuffer&&) noexcept;
-        ~DX12VertexBuffer() = default;
+        DX12IndexBuffer(uint8_t*, uint_fast64_t, uint_fast32_t) noexcept;
+        DX12IndexBuffer(DX12IndexBuffer&&) noexcept;
+        ~DX12IndexBuffer() = default;
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
@@ -53,12 +53,12 @@ namespace Takoyaki
     private:
         struct Intermediate
         {
-            uint_fast32_t id;
             std::vector<uint8_t> data;
             D3D12_SUBRESOURCE_DATA dataDesc;
+            uint_fast32_t id;
         };
 
-        std::unique_ptr<DX12Buffer> vertexBuffer_;
+        std::unique_ptr<DX12Buffer> indexBuffer_;
         std::unique_ptr<DX12Buffer> uploadBuffer_;
         std::unique_ptr<Intermediate> intermediate_;
     };

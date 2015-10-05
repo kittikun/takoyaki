@@ -8,60 +8,62 @@ platform: x64
 environment:
   BOOST_ROOT: $(APPVEYOR_BUILD_FOLDER)\boost_1_59_0
 before_build:
-- ps: >- 
-  Write-Host "Downloading boost.."
-  Add-Type -assembly "System.IO.Compression.Filesystem"
-  (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
-  
-  Write-Host "Extracting archive.."
-  [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)
-  Set-Location "$path\boost_1_59_0"
-  
-  Write-Host "Building boost.."
-  .\bootstrap.bat
-  if ($type -eq "Release") {
-    .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
-    } else {
-    .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
-  }
-build_script:
-- ps: >-
-  if ($env:CONFIGURATION -eq "Coverity") {
-  
-  $buildCmd = "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe"
-  $buildArgs = @(
-      "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",
-      "/m",
-      "/l:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll",
-      "/p:Configuration=Debug",
-      "/p:Platform=$env:PLATFORM",
-      "/verbosity:minimal")
-  Write-Host "Building project with Coverity..."
-  "cov-build.exe" --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
-  Write-Host "Compressing Coverity results..."
-  $zipEncoderDef = @'
-    namespace AnalyzeCode {
-      public class PortableFileNameEncoder: System.Text.UTF8Encoding {
-        public PortableFileNameEncoder() {}
-        public override byte[] GetBytes(string entry) {
-          return base.GetBytes(entry.Replace("\\", "/"));
-        }
-      }
+- ps: |
+    Add-Type -assembly "System.IO.Compression.Filesystem"
+    $path = $Env:APPVEYOR_BUILD_FOLDER
+    $type = $Env:CONFIGURATION
+    Write-Host "CONFIGURATION="$type
+    Write-Host "APPVEYOR_BUILD_FOLDER="$path
+    Write-Host "Downloading boost.."
+    (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
+    Write-Host "Extracting archive.."
+    [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)
+    Set-Location "$path\boost_1_59_0"
+    Write-Host "Building boost.."
+    .\bootstrap.bat
+    if ($type -eq "Release") {
+        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
+        } else {
+        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
     }
-  '@
-  Add-Type -TypeDefinition $zipEncoderDef
-  [IO.Compression.ZipFile]::CreateFromDirectory(
-    "$env:APPVEYOR_BUILD_FOLDER\cov-int",
-    "$env:APPVEYOR_BUILD_FOLDER\$env:APPVEYOR_PROJECT_NAME.zip",
-    [IO.Compression.CompressionLevel]::Optimal,
-    $true,  # include root directory
-    (New-Object AnalyzeCode.PortableFileNameEncoder))
-  }
+build_script:
+- ps: |
+    if ($env:CONFIGURATION -eq "Coverity") {
+    
+    $buildCmd = "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe"
+    $buildArgs = @(
+          "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",
+          "/m",
+          "/l:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll",
+          "/p:Configuration=Debug",
+          "/p:Platform=$env:PLATFORM",
+          "/verbosity:minimal")
+    Write-Host "Building project with Coverity..."
+    "cov-build.exe" --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
+    Write-Host "Compressing Coverity results..."
+    $zipEncoderDef = @'
+        namespace AnalyzeCode {
+            public class PortableFileNameEncoder: System.Text.UTF8Encoding {
+                public PortableFileNameEncoder() {}
+                public override byte[] GetBytes(string entry) {
+                    return base.GetBytes(entry.Replace("\\", "/"));
+                }
+            }
+        }
+    '@
+    Add-Type -TypeDefinition $zipEncoderDef
+    [IO.Compression.ZipFile]::CreateFromDirectory(
+        "$env:APPVEYOR_BUILD_FOLDER\cov-int",
+        "$env:APPVEYOR_BUILD_FOLDER\$env:APPVEYOR_PROJECT_NAME.zip",
+        [IO.Compression.CompressionLevel]::Optimal,
+        $true,  # include root directory
+        (New-Object AnalyzeCode.PortableFileNameEncoder))
+    }
 test: off
 notifications:
 - provider: Slack
   auth_token:
-  secure: NL05oTnkUQ8es7KG6L70RSOPTd6rV9/bq00OrCiEpfuIZ4NOV008mHhbG7J+YZeXBy1VzEzNgZXFNimtGhALXQ==
+    secure: NL05oTnkUQ8es7KG6L70RSOPTd6rV9/bq00OrCiEpfuIZ4NOV008mHhbG7J+YZeXBy1VzEzNgZXFNimtGhALXQ==
   channel: bots
   on_build_success: true
   on_build_failure: true

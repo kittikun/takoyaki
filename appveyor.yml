@@ -1,8 +1,8 @@
 version: 0.0.0.{build}
 os: Visual Studio 2015
 configuration:
-- Release
 - Coverity
+- Release
 - Debug
 platform: x64
 environment:
@@ -17,8 +17,8 @@ before_build:
     Add-Type -assembly "System.IO.Compression.Filesystem"
     $path = $Env:APPVEYOR_BUILD_FOLDER
     $type = $Env:CONFIGURATION
-    Write-Host "CONFIGURATION="$type
-    Write-Host "APPVEYOR_BUILD_FOLDER="$path
+    Write-Host "CONFIGURATION ="$type
+    Write-Host "APPVEYOR_BUILD_FOLDER ="$path
     Write-Host "Downloading boost.."
     (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
     Write-Host "Extracting archive.."
@@ -32,7 +32,7 @@ before_build:
             "address-model=64",
             "toolset=msvc-14.0",
             "windows-api=desktop",
-            "variant=debug",
+            "variant=release",
             "link=static",
             "threading=multi",
             "runtime-link=shared",

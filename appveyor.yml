@@ -8,17 +8,15 @@ platform: x64
 environment:
   BOOST_ROOT: $(APPVEYOR_BUILD_FOLDER)\boost_1_59_0
 before_build:
-- ps: >-
-  $path = $Env:APPVEYOR_BUILD_FOLDER
-  $type = $Env:CONFIGURATION
-  Write-Host "CONFIGURATION="$type
-  Write-Host "APPVEYOR_BUILD_FOLDER="$path
-  Add-Type -assembly "System.IO.Compression.Filesystem"
+- ps: >- 
   Write-Host "Downloading boost.."
+  Add-Type -assembly "System.IO.Compression.Filesystem"
   (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
+  
   Write-Host "Extracting archive.."
   [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)
   Set-Location "$path\boost_1_59_0"
+  
   Write-Host "Building boost.."
   .\bootstrap.bat
   if ($type -eq "Release") {

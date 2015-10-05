@@ -40,14 +40,14 @@ before_build:
 build_script:
 - ps: |
     Write-Host "Build step starting.."
+    $buildCmd = "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe"
+    $buildArgs = @(
+          "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",
+          "/l:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll",
+          "/p:Configuration=Release",
+          "/p:Platform=$env:PLATFORM",
+          "/verbosity:minimal")
     if ($env:CONFIGURATION -eq "Coverity") {
-        $buildCmd = "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe"
-        $buildArgs = @(
-              "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",
-              "/l:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll",
-              "/p:Configuration=Release",
-              "/p:Platform=$env:PLATFORM",
-              "/verbosity:minimal")
         Write-Host "Building project with Coverity..."
         cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
         Write-Host "Compressing Coverity results..."
@@ -60,7 +60,7 @@ build_script:
                     }
                 }
             }
-        '@
+'@
         Add-Type -TypeDefinition $zipEncoderDef
         [IO.Compression.ZipFile]::CreateFromDirectory(
             "$env:APPVEYOR_BUILD_FOLDER\cov-int",
@@ -69,7 +69,7 @@ build_script:
             $true,  # include root directory
             (New-Object AnalyzeCode.PortableFileNameEncoder))
     } else {
-        $buildCmd $buildArgs
+       & $buildCmd $buildArgs
     }
 test: off
 notifications:

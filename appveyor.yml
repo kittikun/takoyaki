@@ -36,6 +36,8 @@ before_build:
         cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
     } elseif ($type -eq "Debug") {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
+    } else {
+        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-thread
     }
 build_script:
 - ps: |

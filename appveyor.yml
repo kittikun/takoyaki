@@ -26,22 +26,27 @@ before_build:
     Set-Location "$path\boost_1_59_0"
     Write-Host "Building boost.."
     .\bootstrap.bat
-    if ($type -eq "Coverity") {
-        $buildCmd = "./b2"
-        $buildArgs = @(
-            "address-model=64",
-            "toolset=msvc-14.0",
-            "windows-api=desktop",
-            "variant=release",
-            "link=static",
-            "threading=multi",
-            "runtime-link=shared",
-            "--with-log")
-        cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
-    } elseif ($type -eq "Debug") {
+    if ($type -eq "Debug") {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
     } else {
-        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-thread --with-date_time
+        $buildCmd = "./b2"
+        
+        $buildArgs = @(
+        "address-model=64",
+        "toolset=msvc-14.0",
+        "windows-api=desktop",
+        "variant=release",
+        "link=static",
+        "threading=multi",
+        "runtime-link=shared",
+        "--with-thread",
+        "--with-date_time")
+    
+        if ($type -eq "Coverity") {
+            cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
+        } else {
+            & $buildCmd $buildArgs
+        }
     }
 build_script:
 - ps: |

@@ -39,7 +39,7 @@ build_script:
           "/p:Platform=$env:PLATFORM",
           "/verbosity:minimal")
     Write-Host "Building project with Coverity..."
-    "cov-build.exe" --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
+    cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
     Write-Host "Compressing Coverity results..."
     $zipEncoderDef = @'
         namespace AnalyzeCode {

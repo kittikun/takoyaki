@@ -9,11 +9,11 @@ environment:
   BOOST_ROOT: $(APPVEYOR_BUILD_FOLDER)\boost_1_59_0
 before_build:
 - ps: >-
-  Add-Type -assembly "System.IO.Compression.Filesystem"
   $path = $Env:APPVEYOR_BUILD_FOLDER
   $type = $Env:CONFIGURATION
   Write-Host "CONFIGURATION="$type
   Write-Host "APPVEYOR_BUILD_FOLDER="$path
+  Add-Type -assembly "System.IO.Compression.Filesystem"
   Write-Host "Downloading boost.."
   (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
   Write-Host "Extracting archive.."

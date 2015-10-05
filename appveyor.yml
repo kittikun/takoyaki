@@ -23,7 +23,15 @@ before_build:
     .\bootstrap.bat
     if ($type -eq "Coverity") {
         $buildCmd = "./b2"
-        $buildArgs = @(address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log)
+        $buildArgs = @(
+            "address-model=64",
+            "toolset=msvc-14.0",
+            "windows-api=desktop",
+            "variant=debug",
+            "link=static,
+            "threading=multi",
+            "runtime-link=shared",
+            "--with-log")
         cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
     } elseif ($type -eq "Debug") {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log

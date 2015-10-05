@@ -28,7 +28,7 @@ before_build:
             "toolset=msvc-14.0",
             "windows-api=desktop",
             "variant=debug",
-            "link=static,
+            "link=static",
             "threading=multi",
             "runtime-link=shared",
             "--with-log")

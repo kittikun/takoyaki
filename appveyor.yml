@@ -41,7 +41,7 @@ before_build:
     } elseif ($type -eq "Debug") {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
     } else {
-        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-thread
+        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-thread --with-date_time
     }
 build_script:
 - ps: |
@@ -56,7 +56,7 @@ build_script:
     if ($env:CONFIGURATION -eq "Coverity") {
         Write-Host "Building project with Coverity..."
         cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
-        Write-Host "Compressing Coverity results..."
+        Write-Host "Compressing Coverity report..."
         $zipEncoderDef = @'
             namespace AnalyzeCode {
                 public class PortableFileNameEncoder: System.Text.UTF8Encoding {
@@ -76,7 +76,7 @@ build_script:
             (New-Object AnalyzeCode.PortableFileNameEncoder))
             
         
-        Write-Host "Uploading report toCoverity..."
+        Write-Host "Uploading report to Coverity..."
         Add-Type -AssemblyName "System.Net.Http"
         $client = New-Object Net.Http.HttpClient
         $client.Timeout = [TimeSpan]::FromMinutes(30)

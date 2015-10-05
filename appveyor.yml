@@ -1,9 +1,9 @@
 version: 0.0.0.{build}
 os: Visual Studio 2015
 configuration:
+- Release
 - Coverity
 - Debug
-- Release
 platform: x64
 environment:
   BOOST_ROOT: $(APPVEYOR_BUILD_FOLDER)\boost_1_59_0
@@ -37,7 +37,7 @@ before_build:
     } elseif ($type -eq "Debug") {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
     } else {
-        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
+        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-format
     }
 build_script:
 - ps: |

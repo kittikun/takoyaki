@@ -60,7 +60,7 @@ build_script:
                     }
                 }
             }
-'@
+        '@
         Add-Type -TypeDefinition $zipEncoderDef
         [IO.Compression.ZipFile]::CreateFromDirectory(
             "$env:APPVEYOR_BUILD_FOLDER\cov-int",

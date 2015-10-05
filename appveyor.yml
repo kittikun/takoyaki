@@ -9,6 +9,7 @@ environment:
   BOOST_ROOT: $(APPVEYOR_BUILD_FOLDER)\boost_1_59_0
 before_build:
 - ps: |
+    Write-Host "Pre-build step starting.."
     Add-Type -assembly "System.IO.Compression.Filesystem"
     $path = $Env:APPVEYOR_BUILD_FOLDER
     $type = $Env:CONFIGURATION
@@ -34,18 +35,19 @@ before_build:
             "--with-log")
         cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
     } elseif ($type -eq "Debug") {
-        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
-    } else {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
+    } else {
+        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
     }
 build_script:
 - ps: |
+    Write-Host "Build step starting.."
     if ($env:CONFIGURATION -eq "Coverity") {
         $buildCmd = "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe"
         $buildArgs = @(
               "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",
               "/l:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll",
-              "/p:Configuration=Debug",
+              "/p:Configuration=Release",
               "/p:Platform=$env:PLATFORM",
               "/verbosity:minimal")
         Write-Host "Building project with Coverity..."

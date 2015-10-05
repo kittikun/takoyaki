@@ -1,6 +1,7 @@
 version: 0.0.0.{build}
 os: Visual Studio 2015
 configuration:
+- Coverity
 - Debug
 - Release
 platform: x64
@@ -21,9 +22,9 @@ before_build:
     Write-Host "Building boost.."
     & .\bootstrap.bat
     if ($type -eq "Release") {
-        & .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
+        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
         } else {
-        & .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
+        .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
     }
 build_script:
 - ps: >-

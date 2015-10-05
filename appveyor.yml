@@ -21,43 +21,47 @@ before_build:
     Set-Location "$path\boost_1_59_0"
     Write-Host "Building boost.."
     .\bootstrap.bat
-    if ($type -eq "Release") {
+    if ($type -eq "Coverity") {
+        $buildCmd = "./b2"
+        $buildArgs = @(address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log)
+        cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
+    } elseif ($type -eq "Debug") {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
-        } else {
+    } else {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=debug link=static threading=multi runtime-link=shared --with-log
     }
 build_script:
 - ps: |
     if ($env:CONFIGURATION -eq "Coverity") {
-    
-    $buildCmd = "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe"
-    $buildArgs = @(
-          "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",
-          "/m",
-          "/l:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll",
-          "/p:Configuration=Debug",
-          "/p:Platform=$env:PLATFORM",
-          "/verbosity:minimal")
-    Write-Host "Building project with Coverity..."
-    cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
-    Write-Host "Compressing Coverity results..."
-    $zipEncoderDef = @'
-        namespace AnalyzeCode {
-            public class PortableFileNameEncoder: System.Text.UTF8Encoding {
-                public PortableFileNameEncoder() {}
-                public override byte[] GetBytes(string entry) {
-                    return base.GetBytes(entry.Replace("\\", "/"));
+        $buildCmd = "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe"
+        $buildArgs = @(
+              "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",
+              "/l:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll",
+              "/p:Configuration=Debug",
+              "/p:Platform=$env:PLATFORM",
+              "/verbosity:minimal")
+        Write-Host "Building project with Coverity..."
+        cov-build.exe --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
+        Write-Host "Compressing Coverity results..."
+        $zipEncoderDef = @'
+            namespace AnalyzeCode {
+                public class PortableFileNameEncoder: System.Text.UTF8Encoding {
+                    public PortableFileNameEncoder() {}
+                    public override byte[] GetBytes(string entry) {
+                        return base.GetBytes(entry.Replace("\\", "/"));
+                    }
                 }
             }
-        }
-    '@
-    Add-Type -TypeDefinition $zipEncoderDef
-    [IO.Compression.ZipFile]::CreateFromDirectory(
-        "$env:APPVEYOR_BUILD_FOLDER\cov-int",
-        "$env:APPVEYOR_BUILD_FOLDER\$env:APPVEYOR_PROJECT_NAME.zip",
-        [IO.Compression.CompressionLevel]::Optimal,
-        $true,  # include root directory
-        (New-Object AnalyzeCode.PortableFileNameEncoder))
+        '@
+        Add-Type -TypeDefinition $zipEncoderDef
+        [IO.Compression.ZipFile]::CreateFromDirectory(
+            "$env:APPVEYOR_BUILD_FOLDER\cov-int",
+            "$env:APPVEYOR_BUILD_FOLDER\$env:APPVEYOR_PROJECT_NAME.zip",
+            [IO.Compression.CompressionLevel]::Optimal,
+            $true,  # include root directory
+            (New-Object AnalyzeCode.PortableFileNameEncoder))
+    } else {
+        $buildCmd $buildArgs
     }
 test: off
 notifications:

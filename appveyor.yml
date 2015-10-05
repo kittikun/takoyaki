@@ -20,7 +20,7 @@ before_build:
     [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)
     Set-Location "$path\boost_1_59_0"
     Write-Host "Building boost.."
-    & .\bootstrap.bat
+    .\bootstrap.bat
     if ($type -eq "Release") {
         .\b2 address-model=64 toolset=msvc-14.0 windows-api=desktop variant=release link=static threading=multi runtime-link=shared --with-log
         } else {
@@ -38,9 +38,8 @@ build_script:
           "/p:Configuration=Debug",
           "/p:Platform=$env:PLATFORM",
           "/verbosity:minimal")
-
     Write-Host "Building project with Coverity..."
-    & "cov-build.exe" --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
+    "cov-build.exe" --dir cov-int --encoding=UTF-8 $buildCmd $buildArgs
     Write-Host "Compressing Coverity results..."
     $zipEncoderDef = @'
         namespace AnalyzeCode {

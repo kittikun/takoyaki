@@ -26,10 +26,10 @@ before_build:
     Set-Location "$path\boost_1_59_0"
     Write-Host "Building boost.."
     .\bootstrap.bat
-        $buildCmd = "./b2"
-	
+    $buildCmd = "./b2"
+    
     if ($type -eq "Debug") {
-	    $buildArgs = @(
+        $buildArgs = @(
         "address-model=64",
         "toolset=msvc-14.0",
         "windows-api=desktop",
@@ -38,7 +38,7 @@ before_build:
         "threading=multi",
         "runtime-link=shared",
         "--with-log")
-		& $buildCmd $buildArgs
+        & $buildCmd $buildArgs
     } else {
         $buildArgs = @(
         "address-model=64",
@@ -53,7 +53,7 @@ before_build:
     
         if ($type -eq "Coverity") {
             #cov-build.exe --dir boost-int --encoding=UTF-8 $buildCmd $buildArgs
-			& $buildCmd $buildArgs
+            & $buildCmd $buildArgs
         } else {
             & $buildCmd $buildArgs
         }

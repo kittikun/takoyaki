@@ -22,20 +22,6 @@
 
 namespace Takoyaki
 {
-    enum class EBufferType
-    {
-        // Best bandwidth for GPU but no CPU access
-        NO_CPU_GPU_FAST,
-
-        // best for CPU-write-once, good GPU performance
-        // later CPU access is possible but not efficient 
-        CPU_SLOW_GPU_GOOD,
-
-        // slower GPU access but good CPU access
-        // best for GPU-write-once
-        CPU_FAST_GPU_SLOW
-    };
-
     class DX12Device;
 
     class DX12Buffer
@@ -46,7 +32,7 @@ namespace Takoyaki
         DX12Buffer(DX12Buffer&&) = delete;
 
     public:
-        explicit DX12Buffer(EBufferType, uint_fast64_t, D3D12_RESOURCE_STATES) noexcept;
+        explicit DX12Buffer(D3D12_HEAP_TYPE, uint_fast64_t, D3D12_RESOURCE_STATES) noexcept;
         ~DX12Buffer() = default;
 
         //////////////////////////////////////////////////////////////////////////
@@ -58,12 +44,9 @@ namespace Takoyaki
         // Internal & External
 
     private:
-        D3D12_HEAP_TYPE bufferTypeToDX(EBufferType);
-
-    private:
         struct Intermediate
         {
-            EBufferType type;
+            D3D12_HEAP_TYPE type;
             uint_fast64_t size;
             D3D12_RESOURCE_STATES initialState;
         };

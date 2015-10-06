@@ -32,7 +32,7 @@ namespace Takoyaki
     {
     }
 
-    ConstantTable::~ConstantTable() = default;
+    ConstantTable::~ConstantTable() noexcept = default;
 
     void ConstantTable::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
     {

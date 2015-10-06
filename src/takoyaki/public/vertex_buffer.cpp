@@ -30,6 +30,6 @@ namespace Takoyaki
     {
     }
 
-    VertexBuffer::~VertexBuffer() = default;
+    VertexBuffer::~VertexBuffer() noexcept = default;
 }
 // namespace Takoyaki

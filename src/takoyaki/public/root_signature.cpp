@@ -32,7 +32,7 @@ namespace Takoyaki
     {
     }
 
-    RootSignature::~RootSignature() = default;
+    RootSignature::~RootSignature() noexcept = default;
 
 
     void RootSignature::addConstant(uint_fast32_t numValues, uint_fast32_t shaderRegister)

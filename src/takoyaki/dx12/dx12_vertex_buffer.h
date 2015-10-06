@@ -34,7 +34,7 @@ namespace Takoyaki
         DX12VertexBuffer& operator=(DX12VertexBuffer&&) = delete;
 
     public:
-        DX12VertexBuffer(uint8_t*, uint_fast64_t, uint_fast32_t) noexcept;
+        explicit DX12VertexBuffer(uint8_t*, uint_fast32_t, uint_fast64_t, uint_fast32_t) noexcept;
         DX12VertexBuffer(DX12VertexBuffer&&) noexcept;
         ~DX12VertexBuffer() = default;
 
@@ -48,7 +48,9 @@ namespace Takoyaki
         void onCreateDone();
 
         //////////////////////////////////////////////////////////////////////////
-        // Internal & External    
+        // Internal & External
+
+
 
     private:
         struct Intermediate
@@ -61,5 +63,6 @@ namespace Takoyaki
         std::unique_ptr<DX12Buffer> vertexBuffer_;
         std::unique_ptr<DX12Buffer> uploadBuffer_;
         std::unique_ptr<Intermediate> intermediate_;
+        D3D12_VERTEX_BUFFER_VIEW view_;
     };
 } // namespace Takoyaki

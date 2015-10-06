@@ -32,9 +32,9 @@
 
 namespace Takoyaki
 {
-    DX12ConstantBuffer::DX12ConstantBuffer(std::weak_ptr<DX12Context> context, uint_fast32_t size)
+    DX12ConstantBuffer::DX12ConstantBuffer(DX12Context* context, uint_fast32_t size)
         : owner_{ context }
-        , buffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, size, D3D12_RESOURCE_STATE_GENERIC_READ) }
+        , buffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_UPLOAD, size, D3D12_RESOURCE_STATE_GENERIC_READ) }
         , mappedAddr_ {nullptr}
         , curOffset_{ 0 }
         , size_{ size }
@@ -43,7 +43,7 @@ namespace Takoyaki
     }
 
     DX12ConstantBuffer::DX12ConstantBuffer(DX12ConstantBuffer&& other) noexcept
-        : owner_{ std::move(other.owner_) }
+        : owner_{ other.owner_ }
         , buffer_{ std::move(other.buffer_) }
         , offsetMap_{ std::move(other.offsetMap_) }
         , rtvs_{ std::move(other.rtvs_) }
@@ -56,9 +56,7 @@ namespace Takoyaki
 
     DX12ConstantBuffer::~DX12ConstantBuffer()
     {
-        if (!owner_.expired()) {
-            owner_.lock()->getRTVDescHeapCollection().releaseRange(rtvs_.begin(), rtvs_.end());
-        }
+        owner_->getRTVDescHeapCollection().releaseRange(rtvs_.begin(), rtvs_.end());
     }
 
     void DX12ConstantBuffer::addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size)
@@ -77,12 +75,11 @@ namespace Takoyaki
         buffer_->create(device);
 
         auto res = buffer_->getResource();
-        auto context = owner_.lock();
         auto gpuAddress = res->GetGPUVirtualAddress();
         auto fmt = boost::wformat{ L"Constant Buffer %1%" } % name.c_str();
         auto bufCount = device->getBufferCount();
 
-        rtvs_.reserve(bufCount);
+        rtvs_ = std::move(owner_->getSRVDescHeapCollection().createRange(bufCount));
         buffer_->getResource()->SetName(boost::str(fmt).c_str());
 
         // create view
@@ -91,7 +88,6 @@ namespace Takoyaki
 
             desc.BufferLocation = gpuAddress;
             desc.SizeInBytes = size_;
-            rtvs_.push_back(context->getSRVDescHeapCollection().createOne());
 
             // TODO: creatOne will lock device too so it's will be double locked just for here
             {

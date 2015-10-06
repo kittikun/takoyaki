@@ -87,7 +87,7 @@ namespace Takoyaki
     {
         auto pair = getPipelineState(name);
 
-        pair.first.create(device_, shared_from_this());
+        pair.first.create(device_.get(), this);
     }
 
     DX12ConstantBuffer& DX12Context::createConstanBuffer(const std::string& name, uint_fast32_t size)
@@ -102,7 +102,7 @@ namespace Takoyaki
         size = (size + 255) & ~255;
 
         // we need a copy for each buffer in the swap chain
-        auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ shared_from_this(), size }));
+        auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ this, size }));
 
         lock.unlock();
 
@@ -134,16 +134,16 @@ namespace Takoyaki
 
     DX12Texture& DX12Context::createTexture()
     {
-        return textures_.push(DX12Texture{ shared_from_this() });
+        return textures_.push(DX12Texture{ this });
     }
 
-    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, uint_fast64_t sizeByte)
+    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast64_t sizeByte)
     {
         switch (type) {
             case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
             {
                 auto lock = indexBuffers_.getWriteLock();
-                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, sizeByte, id }));
+                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, static_cast<uint_fast32_t>(sizeByte), id }));
 
                 // then build a command to build underlaying resources
                 copyWorker_.submit(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
@@ -153,7 +153,7 @@ namespace Takoyaki
             case Takoyaki::DX12Context::EResourceType::VERTEX_BUFFER:
             {
                 auto lock = vertexBuffers_.getWriteLock();
-                auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, sizeByte, id }));
+                auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, stride, sizeByte, id }));
 
                 // then build a command to build underlaying resources
                 copyWorker_.submit(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));

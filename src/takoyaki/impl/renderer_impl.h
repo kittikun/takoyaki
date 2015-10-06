@@ -22,6 +22,8 @@
 
 #include <atomic>
 
+#include "../public/definitions.h"
+
 namespace Takoyaki
 {
     class ConstantTableImpl;
@@ -33,7 +35,7 @@ namespace Takoyaki
     class VertexBufferImpl;
     struct PipelineStateDesc;
 
-    class RendererImpl : public std::enable_shared_from_this<RendererImpl>
+    class RendererImpl
     {
         RendererImpl(const RendererImpl&) = delete;
         RendererImpl& operator=(const RendererImpl&) = delete;
@@ -47,10 +49,10 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
 
-        std::unique_ptr<IndexBufferImpl> createIndexBuffer(uint8_t*, uint_fast64_t);
+        std::unique_ptr<IndexBufferImpl> createIndexBuffer(uint8_t*, EFormat, uint_fast32_t);
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
         std::unique_ptr<RootSignatureImpl> createRootSignature(const std::string&);
-        std::unique_ptr<VertexBufferImpl> createVertexBuffer(uint8_t*, uint_fast64_t);
+        std::unique_ptr<VertexBufferImpl> createVertexBuffer(uint8_t*, uint_fast32_t, uint_fast64_t);
 
         void createPipelineState(const std::string&, const PipelineStateDesc&);
 

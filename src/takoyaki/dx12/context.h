@@ -39,7 +39,7 @@ namespace Takoyaki
 {
     class ThreadPool;
 
-    class DX12Context : public std::enable_shared_from_this<DX12Context>
+    class DX12Context
     {
         DX12Context(const DX12Context&) = delete;
         DX12Context& operator=(const DX12Context&) = delete;
@@ -86,7 +86,7 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
 
-        void createBuffer(EResourceType, uint_fast32_t, uint8_t*, uint_fast64_t);
+        void createBuffer(EResourceType, uint_fast32_t, uint8_t*, EFormat, uint_fast32_t, uint_fast64_t);
         void createInputLayout(const std::string&);
         void createPipelineState(const std::string&, const PipelineStateDesc&);
         void createRootSignature(const std::string&);

@@ -103,7 +103,7 @@ void App::initialize(const std::shared_ptr<Takoyaki::Framework>& framework)
         } };
 
     // cube indices as triangle list
-    std::array<uint_fast32_t, 36> cubeIndices =
+    std::array<uint16_t, 36> cubeIndices =
     {
         0, 2, 1, // -x
         1, 2, 3,
@@ -124,8 +124,8 @@ void App::initialize(const std::shared_ptr<Takoyaki::Framework>& framework)
         1, 7, 5,
     };
 
-    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices.front()), cubeVertices.size() * sizeof(Vertex)));
-    indexBuffer_ = std::move(renderer->createIndexBuffer(reinterpret_cast<uint8_t*>(&cubeIndices.front()), cubeIndices.size() * sizeof(uint_fast32_t)));
+    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), sizeof(Vertex), cubeVertices.size() * sizeof(Vertex)));
+    indexBuffer_ = std::move(renderer->createIndexBuffer(reinterpret_cast<uint8_t*>(&cubeIndices.front()), Takoyaki::EFormat::R16_UINT, static_cast<uint_fast32_t>(cubeIndices.size() * sizeof(uint16_t))));
 }
 
 void App::render(Takoyaki::Renderer* renderer)

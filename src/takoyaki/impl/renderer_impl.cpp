@@ -42,11 +42,11 @@ namespace Takoyaki
         context_->commit();
     }
 
-    std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, uint_fast64_t sizeByte)
+    std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, EFormat format, uint_fast32_t sizeByte)
     {
         auto id = uidGenerator_.fetch_add(1);
 
-        context_->createBuffer(DX12Context::EResourceType::INDEX_BUFFER, id, data, sizeByte);
+        context_->createBuffer(DX12Context::EResourceType::INDEX_BUFFER, id, data, format, 0, sizeByte);
 
         return std::make_unique<IndexBufferImpl>(context_, context_->getIndexBuffer(id), id);
     }
@@ -74,11 +74,11 @@ namespace Takoyaki
         return std::make_unique<RootSignatureImpl>(pair.first, std::move(pair.second));
     }
 
-    std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* data, uint_fast64_t sizeByte)
+    std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* data, uint_fast32_t stride, uint_fast64_t sizeByte)
     {
         auto id = uidGenerator_.fetch_add(1);
 
-        context_->createBuffer(DX12Context::EResourceType::VERTEX_BUFFER, id, data, sizeByte);
+        context_->createBuffer(DX12Context::EResourceType::VERTEX_BUFFER, id, data, EFormat::UNKNOWN, stride, sizeByte);
 
         return std::make_unique<VertexBufferImpl>(context_, context_->getVertexBuffer(id), id);
     }

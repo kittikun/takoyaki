@@ -132,6 +132,9 @@ namespace Takoyaki
             case EFormat::B8G8R8A8_UNORM:
                 return DXGI_FORMAT_B8G8R8A8_UNORM;
 
+            case EFormat::R16_UINT:
+                return DXGI_FORMAT_R16_UINT;
+
             case EFormat::R32G32B32_FLOAT:
                 return DXGI_FORMAT_R32G32B32_FLOAT;
         }

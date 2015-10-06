@@ -105,6 +105,7 @@ namespace Takoyaki
     {
         UNKNOWN,
         B8G8R8A8_UNORM,
+        R16_UINT,
         R32G32B32_FLOAT,
     };
 

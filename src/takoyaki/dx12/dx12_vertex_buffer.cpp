@@ -30,21 +30,24 @@
 
 namespace Takoyaki
 {
-    DX12VertexBuffer::DX12VertexBuffer(uint8_t* vertices, uint_fast64_t sizeVecticesByte, uint_fast32_t id) noexcept
-        : vertexBuffer_{ std::make_unique<DX12Buffer>(EBufferType::NO_CPU_GPU_FAST, sizeVecticesByte, D3D12_RESOURCE_STATE_COPY_DEST) }
-        , uploadBuffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, sizeVecticesByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
+    DX12VertexBuffer::DX12VertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast64_t sizeByte, uint_fast32_t id) noexcept
+        : vertexBuffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_DEFAULT, sizeByte, D3D12_RESOURCE_STATE_COPY_DEST) }
+        , uploadBuffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_UPLOAD, sizeByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
         , intermediate_{ std::make_unique<Intermediate>() }
     {
         // we cannot guarantee that data will still be valid so make a copy of data
         // TODO: UpdateSubresourcesHeapAlloc will also make a copy, so merge them 
-        intermediate_->data.resize(sizeVecticesByte);
+        intermediate_->data.resize(sizeByte);
 
-        memcpy_s(&intermediate_->data.front(), intermediate_->data.size(), vertices, sizeVecticesByte);
+        memcpy_s(&intermediate_->data.front(), intermediate_->data.size(), vertices, sizeByte);
 
         intermediate_->dataDesc.pData = &intermediate_->data.front();
-        intermediate_->dataDesc.RowPitch = sizeVecticesByte;
-        intermediate_->dataDesc.SlicePitch = sizeVecticesByte;
+        intermediate_->dataDesc.RowPitch = sizeByte;
+        intermediate_->dataDesc.SlicePitch = sizeByte;
         intermediate_->id = id;
+       
+        view_.StrideInBytes = stride;
+        view_.SizeInBytes = sizeByte;
     }
 
     DX12VertexBuffer::DX12VertexBuffer(DX12VertexBuffer&& other) noexcept
@@ -63,6 +66,9 @@ namespace Takoyaki
 
         vertexBuffer_->create(device);
         uploadBuffer_->create(device);
+
+        // finish the view
+        view_.BufferLocation = vertexBuffer_->getResource()->GetGPUVirtualAddress();
 
         // set a name for debug purposes
         auto fmt = boost::wformat{ L"Vertex Buffer %1%" } % intermediate_->id;

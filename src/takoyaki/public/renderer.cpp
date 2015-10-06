@@ -42,16 +42,16 @@ namespace Takoyaki
     {
     }
 
-    Renderer::~Renderer() = default;
+    Renderer::~Renderer() noexcept = default;
 
     void Renderer::commit()
     {
         impl_->commit();
     }
 
-    std::unique_ptr<IndexBuffer> Renderer::createIndexBuffer(uint8_t* indexes, uint_fast64_t sizeByte)
+    std::unique_ptr<IndexBuffer> Renderer::createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte)
     {
-        return std::make_unique<IndexBuffer>(impl_->createIndexBuffer(indexes, sizeByte));
+        return std::make_unique<IndexBuffer>(impl_->createIndexBuffer(indexes, format, sizeByte));
     }
 
     std::unique_ptr<InputLayout> Renderer::createInputLayout(const std::string& name)
@@ -69,9 +69,9 @@ namespace Takoyaki
         return std::make_unique<RootSignature>(impl_->createRootSignature(name));
     }
 
-    std::unique_ptr<VertexBuffer> Renderer::createVertexBuffer(uint8_t* vertices, uint_fast64_t sizeByte)
+    std::unique_ptr<VertexBuffer> Renderer::createVertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast64_t sizeByte)
     {
-        return std::make_unique<VertexBuffer>(impl_->createVertexBuffer(vertices, sizeByte));
+        return std::make_unique<VertexBuffer>(impl_->createVertexBuffer(vertices, stride, sizeByte));
     }
 
     std::unique_ptr<ConstantTable> Renderer::getConstantBuffer(const std::string& name)

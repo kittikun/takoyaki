@@ -30,9 +30,9 @@
 
 namespace Takoyaki
 {
-    DX12IndexBuffer::DX12IndexBuffer(uint8_t* indexes, uint_fast64_t sizeByte, uint_fast32_t id) noexcept
-        : indexBuffer_{ std::make_unique<DX12Buffer>(EBufferType::NO_CPU_GPU_FAST, sizeByte, D3D12_RESOURCE_STATE_COPY_DEST) }
-        , uploadBuffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, sizeByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
+    DX12IndexBuffer::DX12IndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte, uint_fast32_t id) noexcept
+        : indexBuffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_DEFAULT, sizeByte, D3D12_RESOURCE_STATE_COPY_DEST) }
+        , uploadBuffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_UPLOAD, sizeByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
         , intermediate_{ std::make_unique<Intermediate>() }
     {
         // we cannot guarantee that data will still be valid so make a copy of data
@@ -44,6 +44,9 @@ namespace Takoyaki
         intermediate_->dataDesc.RowPitch = sizeByte;
         intermediate_->dataDesc.SlicePitch = sizeByte;
         intermediate_->id = id;
+
+        view_.Format = FormatToDX(format);
+        view_.SizeInBytes = sizeByte;
     }
 
     DX12IndexBuffer::DX12IndexBuffer(DX12IndexBuffer&& other) noexcept
@@ -62,6 +65,9 @@ namespace Takoyaki
 
         indexBuffer_->create(device);
         uploadBuffer_->create(device);
+
+        // finish the view
+        view_.BufferLocation = indexBuffer_->getResource()->GetGPUVirtualAddress();
 
         // set a name for debug purposes
         auto fmt = boost::wformat{ L"Index Buffer %1%" } % intermediate_->id;

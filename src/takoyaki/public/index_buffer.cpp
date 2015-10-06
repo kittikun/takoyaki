@@ -30,6 +30,6 @@ namespace Takoyaki
     {
     }
 
-    IndexBuffer::~IndexBuffer() = default;
+    IndexBuffer::~IndexBuffer() noexcept = default;
 }
 // namespace Takoyaki

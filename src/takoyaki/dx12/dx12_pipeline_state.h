@@ -42,7 +42,7 @@ namespace Takoyaki
         // Internal usage:
 
         // device has already been locked from context
-        void create(const std::shared_ptr<DX12Device>&, const std::shared_ptr<DX12Context>&);
+        void create(DX12Device*, DX12Context*);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External

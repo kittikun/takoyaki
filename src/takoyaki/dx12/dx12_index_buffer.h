@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include "../public/definitions.h"
+
 namespace Takoyaki
 {
     class DX12Buffer;
@@ -34,7 +36,7 @@ namespace Takoyaki
         DX12IndexBuffer& operator=(DX12IndexBuffer&&) = delete;
 
     public:
-        DX12IndexBuffer(uint8_t*, uint_fast64_t, uint_fast32_t) noexcept;
+        explicit DX12IndexBuffer(uint8_t*, EFormat, uint_fast32_t, uint_fast32_t) noexcept;
         DX12IndexBuffer(DX12IndexBuffer&&) noexcept;
         ~DX12IndexBuffer() = default;
 
@@ -61,5 +63,6 @@ namespace Takoyaki
         std::unique_ptr<DX12Buffer> indexBuffer_;
         std::unique_ptr<DX12Buffer> uploadBuffer_;
         std::unique_ptr<Intermediate> intermediate_;
+        D3D12_INDEX_BUFFER_VIEW view_;
     };
 } // namespace Takoyaki

@@ -58,36 +58,25 @@ namespace Takoyaki
 
         ~DX12DescriptorHeapCollection() = default;
 
+        std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> createRange(uint_fast32_t count)
+        {
+            std::lock_guard<std::mutex> lock{ mutex_ };
+            std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> res;
+
+            res.reserve(3);
+
+            // TODO: don't be lazy dude..
+            for (uint_fast32_t i = 0; i < count; ++i)
+                res.push_back(createOneInternal());
+
+            return std::move(res);
+        }
+
         D3D12_CPU_DESCRIPTOR_HANDLE createOne()
         {
             std::lock_guard<std::mutex> lock{ mutex_ };
-            D3D12_CPU_DESCRIPTOR_HANDLE res;
-            bool found = false;
-            size_t i = 0;
 
-            while (!found) {
-                for (i; i < heaps_.size(); ++i) {
-                    auto& heap = heaps_[i];
-
-                    if (heap.freelist_.size() > 0) {
-
-                        auto offset = heap.freelist_.back();
-
-                        heap.freelist_.pop_back();
-                        res.ptr = heap.handle_.ptr + offset * descriptorSize_;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                    allocateHeap();
-            }
-
-            // we need to store which container it belonged to for later release
-            containerMap_.insert({ res.ptr, i });
-
-            return res;
+            return createOneInternal();
         }
 
         void releaseOne(D3D12_CPU_DESCRIPTOR_HANDLE handle)
@@ -117,6 +106,37 @@ namespace Takoyaki
         }
 
     private:
+        D3D12_CPU_DESCRIPTOR_HANDLE createOneInternal()
+        {
+            D3D12_CPU_DESCRIPTOR_HANDLE res;
+            bool found = false;
+            size_t i = 0;
+
+            while (!found) {
+                for (i; i < heaps_.size(); ++i) {
+                    auto& heap = heaps_[i];
+
+                    if (heap.freelist_.size() > 0) {
+
+                        auto offset = heap.freelist_.back();
+
+                        heap.freelist_.pop_back();
+                        res.ptr = heap.handle_.ptr + offset * descriptorSize_;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    allocateHeap();
+            }
+
+            // we need to store which container it belonged to for later release
+            containerMap_.insert({ res.ptr, i });
+
+            return std::move(res);
+        }
+
         void allocateHeap()
         {
             D3D12_DESCRIPTOR_HEAP_DESC desc = {};

@@ -37,8 +37,7 @@ before_build:
         "link=static",
         "threading=multi",
         "runtime-link=shared",
-        "--with-log",
-        "--with-thread")
+        "--with-log")
         & $buildCmd $buildArgs
     } else {
         $buildArgs = @(

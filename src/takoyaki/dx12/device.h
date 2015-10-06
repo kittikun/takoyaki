@@ -27,7 +27,7 @@ namespace Takoyaki
     struct FrameworkDesc;
     class DX12Context;
 
-    class DX12Device : public std::enable_shared_from_this<DX12Device>
+    class DX12Device
     {
         DX12Device(const DX12Device&) = delete;
         DX12Device& operator=(const DX12Device&) = delete;

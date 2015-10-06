@@ -42,7 +42,7 @@ namespace Takoyaki
     }
 
     // device has already been locked from context
-    void DX12PipelineState::create(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<DX12Context>& context)
+    void DX12PipelineState::create(DX12Device* device, DX12Context* context)
     {
         if (intermediate_) {
             D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};

@@ -33,7 +33,7 @@ namespace Takoyaki
         DX12ConstantBuffer& operator=(DX12ConstantBuffer&&) = delete;
 
     public:
-        explicit DX12ConstantBuffer(std::weak_ptr<DX12Context>, uint_fast32_t);
+        explicit DX12ConstantBuffer(DX12Context*, uint_fast32_t);
         DX12ConstantBuffer(DX12ConstantBuffer&&) noexcept;
         ~DX12ConstantBuffer();
 
@@ -57,7 +57,7 @@ namespace Takoyaki
             uint_fast32_t size;
         };
 
-        std::weak_ptr<DX12Context> owner_;
+        DX12Context* owner_;
         std::unique_ptr<DX12Buffer> buffer_;
         std::unordered_map<std::string, CBVariable> offsetMap_;     // TODO: thread unsafe but should be ok
         std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs_;

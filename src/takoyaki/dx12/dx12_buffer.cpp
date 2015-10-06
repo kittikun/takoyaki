@@ -25,7 +25,7 @@
 
 namespace Takoyaki
 {
-    DX12Buffer::DX12Buffer(EBufferType type, uint_fast64_t sizeByte, D3D12_RESOURCE_STATES initialState) noexcept
+    DX12Buffer::DX12Buffer(D3D12_HEAP_TYPE type, uint_fast64_t sizeByte, D3D12_RESOURCE_STATES initialState) noexcept
         : intermediate_{ std::make_unique<Intermediate>() }
     {
         intermediate_->type = type;
@@ -37,7 +37,7 @@ namespace Takoyaki
     {
         D3D12_HEAP_PROPERTIES prop;
 
-        prop.Type = bufferTypeToDX(intermediate_->type);
+        prop.Type = intermediate_->type;
 
         // let the driver about those properties
         prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
@@ -71,15 +71,4 @@ namespace Takoyaki
 
         intermediate_.reset();
     }
-
-    D3D12_HEAP_TYPE DX12Buffer::bufferTypeToDX(EBufferType type)
-    {
-        if (type == EBufferType::CPU_FAST_GPU_SLOW)
-            return D3D12_HEAP_TYPE_READBACK;
-        else if (type == EBufferType::CPU_SLOW_GPU_GOOD)
-            return D3D12_HEAP_TYPE_UPLOAD;
-
-        return D3D12_HEAP_TYPE_DEFAULT;
-    }
-
 } // namespace Takoyaki

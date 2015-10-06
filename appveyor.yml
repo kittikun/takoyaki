@@ -66,7 +66,7 @@ build_script:
     $buildArgs = @(
           "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",
           "/l:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll",
-          "/p:Configuration=Release",
+          "/p:Configuration=$Env:CONFIGURATION",
           "/p:Platform=$env:PLATFORM",
           "/verbosity:minimal")
 

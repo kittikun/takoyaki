@@ -36,6 +36,7 @@ namespace Takoyaki
         , intermediate_{ std::make_unique<Intermediate>() }
     {
         // we cannot guarantee that data will still be valid so make a copy of data
+        // TODO: UpdateSubresourcesHeapAlloc will also make a copy, so merge them 
         intermediate_->data.resize(sizeVecticesByte);
 
         memcpy_s(&intermediate_->data.front(), intermediate_->data.size(), vertices, sizeVecticesByte);
@@ -60,8 +61,8 @@ namespace Takoyaki
         auto res = static_cast<CopyWorker::Result*>(r);
         auto device = context->device.lock();
 
-        vertexBuffer_->Create(device);
-        uploadBuffer_->Create(device);
+        vertexBuffer_->create(device);
+        uploadBuffer_->create(device);
 
         // set a name for debug purposes
         auto fmt = boost::wformat{ L"Vertex Buffer %1%" } % intermediate_->id;

@@ -25,28 +25,39 @@
 #include <glm/glm.hpp>
 #include <boost/format.hpp>
 
+#include "dx12_buffer.h"
 #include "context.h"
+#include "device.h"
 #include "../utility/log.h"
 
 namespace Takoyaki
 {
-    DX12ConstantBuffer::DX12ConstantBuffer(std::weak_ptr<DX12Context> owner)
-        : owner_{ owner }
+    DX12ConstantBuffer::DX12ConstantBuffer(std::weak_ptr<DX12Context> context, uint_fast32_t size)
+        : owner_{ context }
+        , buffer_{ std::make_unique<DX12Buffer>(EBufferType::CPU_SLOW_GPU_GOOD, size, D3D12_RESOURCE_STATE_GENERIC_READ) }
+        , mappedAddr_ {nullptr}
+        , curOffset_{ 0 }
+        , size_{ size }
     {
-        rtv_ = owner_.lock()->getSRVDescHeapCollection().createOne();
+
     }
 
     DX12ConstantBuffer::DX12ConstantBuffer(DX12ConstantBuffer&& other) noexcept
         : owner_{ std::move(other.owner_) }
-        , rtv_{ std::move(other.rtv_) }
+        , buffer_{ std::move(other.buffer_) }
+        , offsetMap_{ std::move(other.offsetMap_) }
+        , rtvs_{ std::move(other.rtvs_) }
+        , mappedAddr_{ other.mappedAddr_ }
+        , curOffset_{ other.curOffset_ }
+        , size_{ other.size_ }
     {
 
     }
 
     DX12ConstantBuffer::~DX12ConstantBuffer()
     {
-        if ((rtv_.ptr != ULONG_PTR_MAX) && (!owner_.expired())) {
-            owner_.lock()->getRTVDescHeapCollection().releaseOne(rtv_);
+        if (!owner_.expired()) {
+            owner_.lock()->getRTVDescHeapCollection().releaseRange(rtvs_.begin(), rtvs_.end());
         }
     }
 
@@ -55,23 +66,59 @@ namespace Takoyaki
         CBVariable var;
 
         var.offset = offset;
-        var.size = size;
+        var.size = curOffset_;
 
         offsetMap_.insert({ name, std::move(var) });
-        buffer_.resize(buffer_.size() + size);
+        curOffset_ += size;
+    }
+
+    void DX12ConstantBuffer::create(const std::string& name, const std::shared_ptr<DX12Device>& device)
+    {
+        buffer_->create(device);
+
+        auto res = buffer_->getResource();
+        auto context = owner_.lock();
+        auto gpuAddress = res->GetGPUVirtualAddress();
+        auto fmt = boost::wformat{ L"Constant Buffer %1%" } % name.c_str();
+        auto bufCount = device->getBufferCount();
+
+        rtvs_.reserve(bufCount);
+        buffer_->getResource()->SetName(boost::str(fmt).c_str());
+
+        // create view
+        for (uint_fast32_t i = 0; i < bufCount; ++i) {
+            D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
+
+            desc.BufferLocation = gpuAddress;
+            desc.SizeInBytes = size_;
+            rtvs_.push_back(context->getSRVDescHeapCollection().createOne());
+
+            // TODO: creatOne will lock device too so it's will be double locked just for here
+            {
+                auto lock = device->getDeviceLock();
+
+                device->getDXDevice()->CreateConstantBufferView(&desc, rtvs_[i]);
+            }
+
+            gpuAddress += size_;
+        }
+
+        // We don't unmap this until the app closes. Keeping things mapped for the lifetime of the resource is okay.
+        DXCheckThrow(res->Map(0, nullptr, reinterpret_cast<void**>(&mappedAddr_)));
+        ZeroMemory(mappedAddr_, size_ * bufCount);
     }
 
     void DX12ConstantBuffer::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
     {
-        auto found = offsetMap_.find(name);
+        //auto found = offsetMap_.find(name);
 
-        if (found == offsetMap_.end()) {
-            auto fmt = boost::format{ "DX12ConstantBuffer, could not find constant %1%" } % name;
+        //if (found == offsetMap_.end()) {
+        //    auto fmt = boost::format{ "DX12ConstantBuffer, could not find constant %1%" } % name;
 
-            LOGW << boost::str(fmt);
-            //throw new std::runtime_error(boost::str(fmt));
-        } else {
-            memcpy(&buffer_[found->second.offset], &value, sizeof(glm::mat4x4));
-        }
+        //    LOGW << boost::str(fmt);
+        //    //throw new std::runtime_error(boost::str(fmt));
+        //} else {
+        //    memcpy(&buffer_[found->second.offset], &value, sizeof(glm::mat4x4));
+        //}
     }
 } // namespace Takoyaki

@@ -48,7 +48,7 @@ namespace Takoyaki
         threadPool_->submit(std::bind(&ShaderCompiler::compileShader, &io_, desc, context_));
     }
 
-    void FrameworkImpl::initialize(const FrameworkDesc& desc, const std::shared_ptr<Framework>& framework)
+    void FrameworkImpl::initialize(const FrameworkDesc& desc)
     {
         LOG_IDENTIFY_THREAD;
         LOGC_INDENT_START << "Initializing Takoyaki Framework..";

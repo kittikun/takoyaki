@@ -24,7 +24,6 @@
 #pragma warning(disable : 4251)
 
 #include <memory>
-#include <vector>
 #include <boost/any.hpp>
 
 #include "definitions.h"
@@ -34,7 +33,7 @@ namespace Takoyaki
     class FrameworkImpl;
     class Renderer;
 
-    class Framework : public std::enable_shared_from_this<Framework>
+    class Framework
     {
         Framework(const Framework&) = delete;
         Framework& operator=(const Framework&) = delete;

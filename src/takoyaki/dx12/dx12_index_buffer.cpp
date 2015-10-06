@@ -60,8 +60,8 @@ namespace Takoyaki
         auto res = static_cast<CopyWorker::Result*>(r);
         auto device = context->device.lock();
 
-        indexBuffer_->Create(device);
-        uploadBuffer_->Create(device);
+        indexBuffer_->create(device);
+        uploadBuffer_->create(device);
 
         // set a name for debug purposes
         auto fmt = boost::wformat{ L"Index Buffer %1%" } % intermediate_->id;

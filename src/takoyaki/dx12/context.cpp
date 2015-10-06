@@ -57,7 +57,7 @@ namespace Takoyaki
 
     void DX12Context::commit()
     {
-        auto lock = device_->getDeviceLock();
+        auto device = device_->getDeviceLock();
 
         // create all root signatures
         {
@@ -90,7 +90,7 @@ namespace Takoyaki
         pair.first.create(device_, shared_from_this());
     }
 
-    DX12ConstantBuffer& DX12Context::createConstanBuffer(const std::string& name)
+    DX12ConstantBuffer& DX12Context::createConstanBuffer(const std::string& name, uint_fast32_t size)
     {
         auto lock = constantBuffers_.getWriteLock();
         auto found = constantBuffers_.find(name);
@@ -98,7 +98,15 @@ namespace Takoyaki
         if (found != constantBuffers_.end())
             throw new std::runtime_error{"Constant buffers names must be unique"};
 
-        auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ shared_from_this() }));
+        // Constant buffers must be 256-byte aligned.
+        size = (size + 255) & ~255;
+
+        // we need a copy for each buffer in the swap chain
+        auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ shared_from_this(), size }));
+
+        lock.unlock();
+
+        res.first->second.create(name, device_);
 
         return res.first->second;
     }

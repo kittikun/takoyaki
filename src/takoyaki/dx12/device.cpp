@@ -261,8 +261,8 @@ namespace Takoyaki
         if (res == DXGI_ERROR_DEVICE_REMOVED || res == DXGI_ERROR_DEVICE_RESET) {
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
-            throw new std::runtime_error{ "Device removal not implemented" };
             D3DDevice_.Reset();
+            throw new std::runtime_error{ "Device removal not implemented" };
         } else {
             DXCheckThrow(res);
 
@@ -339,8 +339,8 @@ namespace Takoyaki
             
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
-            throw new std::runtime_error{ "Device removal not implemented" };
             D3DDevice_.Reset();
+            throw new std::runtime_error{ "Device removal not implemented" };
         }
     }
 

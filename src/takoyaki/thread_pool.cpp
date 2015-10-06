@@ -80,7 +80,8 @@ namespace Takoyaki
             // create generic workers
             for (unsigned i = 0; i < genericCount; ++i) {
                 auto thread = std::thread{ &ThreadPool::workerMain, this };
-                auto fmt = boost::format{ "Takoyaki Worker %1%" } % i;
+
+                fmt = boost::format{ "Takoyaki Worker %1%" } % i;
 
                 setThreadName(thread.native_handle(), boost::str(fmt));
                 threads.push_back(std::move(thread));

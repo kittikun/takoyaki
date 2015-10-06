@@ -43,6 +43,7 @@ namespace Takoyaki
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
+        inline uint_fast32_t getBufferCount() const { return bufferCount_; }
         inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
         inline const Microsoft::WRL::ComPtr<ID3D12CommandQueue>& getCommandQueue() { return commandQueue_; }
 

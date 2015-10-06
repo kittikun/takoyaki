@@ -22,7 +22,9 @@
 
 namespace Takoyaki
 {
+    class DX12Buffer;
     class DX12Context;
+    class DX12Device;
 
     class DX12ConstantBuffer
     {
@@ -31,7 +33,7 @@ namespace Takoyaki
         DX12ConstantBuffer& operator=(DX12ConstantBuffer&&) = delete;
 
     public:
-        explicit DX12ConstantBuffer(std::weak_ptr<DX12Context>);
+        explicit DX12ConstantBuffer(std::weak_ptr<DX12Context>, uint_fast32_t);
         DX12ConstantBuffer(DX12ConstantBuffer&&) noexcept;
         ~DX12ConstantBuffer();
 
@@ -39,8 +41,9 @@ namespace Takoyaki
         // Internal usage:
 
         void addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size);
+        void create(const std::string&, const std::shared_ptr<DX12Device>&);
 
-       inline const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView() { return rtv_; }
+        inline const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView(uint_fast32_t index) { return rtvs_[index]; }
 
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
@@ -55,8 +58,11 @@ namespace Takoyaki
         };
 
         std::weak_ptr<DX12Context> owner_;
-        std::vector<uint8_t> buffer_;
-        std::unordered_map<std::string, CBVariable> offsetMap_;     // TODO: thread unsafe
-        D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
+        std::unique_ptr<DX12Buffer> buffer_;
+        std::unordered_map<std::string, CBVariable> offsetMap_;     // TODO: thread unsafe but should be ok
+        std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs_;
+        uint8_t* mappedAddr_;
+        uint_fast32_t curOffset_;
+        uint_fast32_t size_;
     };
 } // namespace Takoyaki

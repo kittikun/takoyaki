@@ -54,7 +54,7 @@ namespace Takoyaki
         };
 
         using DescriptorHeapRTV = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
-        using DescriptorHeapSR = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
+        using DescriptorHeapSRV = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
         using InputLayoutReturn = std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>;
         using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
         using PipelineStateReturn = std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>;
@@ -70,7 +70,7 @@ namespace Takoyaki
 
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
-        DX12ConstantBuffer& createConstanBuffer(const std::string&);
+        DX12ConstantBuffer& createConstanBuffer(const std::string&, uint_fast32_t);
         DX12Texture& createTexture();
 
         // resource destruction
@@ -78,7 +78,7 @@ namespace Takoyaki
 
         // Get
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
-        inline DescriptorHeapSR& getSRVDescHeapCollection() { return descHeapSRV_; }
+        inline DescriptorHeapSRV& getSRVDescHeapCollection() { return descHeapSRV_; }
 
         // warning, will yield until shader is created
         inline D3D12_SHADER_BYTECODE getShader(EShaderType type, const std::string& name) { return getShaderImpl(shaders_[type], name); }
@@ -116,7 +116,7 @@ namespace Takoyaki
         std::shared_ptr<ThreadPool> threadPool_;
 
         DescriptorHeapRTV descHeapRTV_;
-        DescriptorHeapSR descHeapSRV_;
+        DescriptorHeapSRV descHeapSRV_;
 
         RWLockMap<std::string, DX12ConstantBuffer> constantBuffers_;
         RWLockMap<uint_fast32_t, DX12IndexBuffer> indexBuffers_;

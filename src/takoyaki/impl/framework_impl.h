@@ -43,7 +43,7 @@ namespace Takoyaki
         FrameworkImpl();
         ~FrameworkImpl() = default;
 
-        void initialize(const FrameworkDesc&, const std::shared_ptr<Framework>&);
+        void initialize(const FrameworkDesc&);
         void present();
         void setProperty(EPropertyID, const boost::any&);
         void terminate();

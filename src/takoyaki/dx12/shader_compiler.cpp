@@ -80,7 +80,7 @@ namespace Takoyaki
                 {
                     LOGS << "Constant buffer : " << cbDesc.Name;
 
-                    auto& cbuffer = context->createConstanBuffer(cbDesc.Name);
+                    auto& cbuffer = context->createConstanBuffer(cbDesc.Name, cbDesc.Size);
 
                     for (uint_fast32_t j = 0; j < cbDesc.Variables; ++j) {
                         auto var = cb->GetVariableByIndex(j);
@@ -88,7 +88,7 @@ namespace Takoyaki
                         D3D12_SHADER_VARIABLE_DESC vardesc;
 
                         var->GetDesc(&vardesc);
-                        auto fmt = boost::format{ "CB var : %1%, Offset: %2%, Size: %3%" } % vardesc.Name % vardesc.StartOffset % vardesc.Size;
+                        fmt = boost::format{ "CB var : %1%, Offset: %2%, Size: %3%" } % vardesc.Name % vardesc.StartOffset % vardesc.Size;
                         LOGS << boost::str(fmt);
 
                         cbuffer.addVariable(vardesc.Name, vardesc.StartOffset, vardesc.Size);
@@ -122,8 +122,9 @@ namespace Takoyaki
 
         // shader resources (textures and buffers) bound
         for (uint_fast32_t i = 0; i < progDesc.BoundResources; ++i) {
-            D3D12_SHADER_INPUT_BIND_DESC resdesc;
-            auto res = reflect->GetResourceBindingDesc(i, &resdesc);
+            D3D12_SHADER_INPUT_BIND_DESC resdesc{};
+
+            DXCheckThrow(reflect->GetResourceBindingDesc(i, &resdesc));
 
             switch (resdesc.Type) {
                 case D3D_SHADER_INPUT_TYPE::D3D_SIT_BYTEADDRESS:

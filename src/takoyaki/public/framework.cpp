@@ -45,7 +45,7 @@ namespace Takoyaki
 
     void Framework::initialize(const FrameworkDesc& desc)
     {
-        impl_->initialize(desc, shared_from_this());
+        impl_->initialize(desc);
     }
 
     void Framework::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)

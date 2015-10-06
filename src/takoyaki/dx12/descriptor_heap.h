@@ -101,6 +101,21 @@ namespace Takoyaki
             heaps_[container].freelist_.push_back((uint_fast32_t)(handle.ptr - heaps_[container].handle_.ptr) / descriptorSize_);
         }
 
+        template<typename Iter>
+        void releaseRange(Iter begin, Iter end)
+        {
+            std::lock_guard<std::mutex> lock{ mutex_ };
+
+            for (Iter i = begin; i != end; ++i) {
+                auto container = containerMap_[i->ptr];
+
+                if (containerMap_.erase(i->ptr) != 1)
+                    throw new std::runtime_error{ "DX12DescriptorHeapCollection::releaseRange, containerMap_ item not erased" };
+
+                heaps_[container].freelist_.push_back((uint_fast32_t)(i->ptr - heaps_[container].handle_.ptr) / descriptorSize_);
+            }
+        }
+
     private:
         void allocateHeap()
         {
@@ -142,4 +157,9 @@ namespace Takoyaki
         std::unordered_map<SIZE_T, size_t> containerMap_;
         uint_fast32_t descriptorSize_;
     };
+
+    extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
+    extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_DSV>;
+    extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER>;
+    extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
 } // namespace Takoyaki

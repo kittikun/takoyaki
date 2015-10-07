@@ -34,8 +34,9 @@ public:
     App() = default;
     ~App() = default;
 
-    void initialize(const std::shared_ptr<Takoyaki::Framework>& framework);
-    void render(Takoyaki::Renderer* renderer);
+    void initialize(Takoyaki::Framework*);
+    void render(Takoyaki::Renderer*);
+    void update(Takoyaki::Renderer*, Takoyaki::Framework*);
 
 private:
     std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;

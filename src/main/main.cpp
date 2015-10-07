@@ -37,8 +37,8 @@ IFrameworkView^ AppMainView::CreateView()
 namespace AppMain
 {
     Main::Main()
-        : app_(std::make_unique<App>())
-        , framework_{std::make_shared<Takoyaki::Framework >()}
+        : app_{ std::make_unique<App>() }
+        , framework_{ std::make_unique<Takoyaki::Framework >() }
         , mWindowClosed{ false }
         , mWindowVisible{ true }
     {
@@ -117,7 +117,7 @@ namespace AppMain
         framework_->initialize(desc);
 
         // initalize app
-        app_->initialize(framework_);
+        app_->initialize(framework_.get());
     }
 
     // This method is called after the window becomes active.
@@ -129,6 +129,7 @@ namespace AppMain
             if (mWindowVisible) {
                 CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
+                app_->update(renderer.get(), framework_.get());
                 app_->render(renderer.get());
                 framework_->present();
             } else {
@@ -185,7 +186,7 @@ namespace AppMain
     {
         glm::vec2 size(sender->Bounds.Width, sender->Bounds.Height);
 
-        framework_->setProperty(Takoyaki::EPropertyID::WINDOW_SIZE, size);
+        framework_->setWindowSize(size);
     }
 
     void Main::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
@@ -200,12 +201,12 @@ namespace AppMain
 
     void Main::OnDpiChanged(DisplayInformation^ sender, Object^ args)
     {
-        framework_->setProperty(Takoyaki::EPropertyID::WINDOW_DPI, sender->LogicalDpi);
+        framework_->setDisplayDpi(sender->LogicalDpi);
     }
 
     void Main::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
     {
-        framework_->setProperty(Takoyaki::EPropertyID::WINDOW_ORIENTATION, sender->CurrentOrientation);
+        framework_->setDisplayOrientation(DisplayOrientationsToTakoyaki(sender->CurrentOrientation));
     }
 
     void Main::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)

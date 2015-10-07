@@ -30,7 +30,7 @@
 
 namespace Takoyaki
 {
-    DX12VertexBuffer::DX12VertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast64_t sizeByte, uint_fast32_t id) noexcept
+    DX12VertexBuffer::DX12VertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast32_t sizeByte, uint_fast32_t id) noexcept
         : vertexBuffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_DEFAULT, sizeByte, D3D12_RESOURCE_STATE_COPY_DEST) }
         , uploadBuffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_UPLOAD, sizeByte, D3D12_RESOURCE_STATE_GENERIC_READ) }
         , intermediate_{ std::make_unique<Intermediate>() }

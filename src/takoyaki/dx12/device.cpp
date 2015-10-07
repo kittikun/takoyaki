@@ -120,8 +120,6 @@ namespace Takoyaki
         if (displayRotation == DXGI_MODE_ROTATION_ROTATE90 || displayRotation == DXGI_MODE_ROTATION_ROTATE270)
             std::swap(outSize.x, outSize.y);
 
-        viewport_ = { 0.0f, 0.0f, outSize.x, outSize.y, 0.0f, 1.0f };
-
         switch (displayRotation) {
             case DXGI_MODE_ROTATION_IDENTITY:
                 matDeviceRotation_ = glm::mat4(1.0f);
@@ -286,16 +284,17 @@ namespace Takoyaki
 
     void DX12Device::setProperty(EPropertyID id, const boost::any& value)
     {
+        // TODO: remove property system later
         switch (id) {
-            case Takoyaki::EPropertyID::WINDOW_SIZE:
+            case EPropertyID::WINDOW_SIZE:
                 windowSize_ = boost::any_cast<glm::vec2>(value);
                 break;
 
-            case Takoyaki::EPropertyID::WINDOW_ORIENTATION:
+            case EPropertyID::WINDOW_ORIENTATION:
                 currentOrientation_ = boost::any_cast<EDisplayOrientation>(value);
                 break;
 
-            case Takoyaki::EPropertyID::WINDOW_DPI:
+            case EPropertyID::WINDOW_DPI:
                 dpi_ = boost::any_cast<float>(value);
                 break;
 

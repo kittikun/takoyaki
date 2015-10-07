@@ -106,15 +106,15 @@ namespace Takoyaki
 
     void DX12ConstantBuffer::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
     {
-        //auto found = offsetMap_.find(name);
+        auto found = offsetMap_.find(name);
 
-        //if (found == offsetMap_.end()) {
-        //    auto fmt = boost::format{ "DX12ConstantBuffer, could not find constant %1%" } % name;
+        if (found == offsetMap_.end()) {
+            auto fmt = boost::format{ "DX12ConstantBuffer, could not find constant %1%" } % name;
 
-        //    LOGW << boost::str(fmt);
-        //    //throw new std::runtime_error(boost::str(fmt));
-        //} else {
-        //    memcpy(&buffer_[found->second.offset], &value, sizeof(glm::mat4x4));
-        //}
+            LOGW << boost::str(fmt);
+            //throw new std::runtime_error(boost::str(fmt));
+        } else {
+            //memcpy(&buffer_[found->second.offset], &value, sizeof(glm::mat4x4));
+        }
     }
 } // namespace Takoyaki

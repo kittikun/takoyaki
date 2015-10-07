@@ -21,6 +21,7 @@
 #pragma once
 
 #include "../io.h"
+#include "../dx12/device.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki
@@ -45,7 +46,6 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc&);
         void present();
-        void setProperty(EPropertyID, const boost::any&);
         void terminate();
         void validateDevice() const;
 
@@ -53,6 +53,11 @@ namespace Takoyaki
         inline std::shared_ptr<RendererImpl>& getRenderer() { return renderer_; }
 
         void compileShader(const ShaderDesc&);
+
+        inline const glm::vec2& getWindowSize() const { return device_->getWindowSize(); }
+
+        // TODO: remove properties later
+        void setProperty(EPropertyID, const boost::any&);
 
     private:
         IO io_;

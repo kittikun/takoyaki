@@ -26,7 +26,10 @@
 
 #include <d3d12.h>  // will be removed later once Vulkan abstraction has been added
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <takoyaki.h>
+
+#include <DirectXMath.h>
 
 struct Vertex
 {
@@ -34,7 +37,7 @@ struct Vertex
     glm::vec3 color;
 };
 
-void App::initialize(const std::shared_ptr<Takoyaki::Framework>& framework)
+void App::initialize(Takoyaki::Framework* framework)
 {
     auto renderer = framework->getRenderer();
 
@@ -124,7 +127,7 @@ void App::initialize(const std::shared_ptr<Takoyaki::Framework>& framework)
         1, 7, 5,
     };
 
-    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), sizeof(Vertex), cubeVertices.size() * sizeof(Vertex)));
+    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), sizeof(Vertex), static_cast<uint_fast32_t>(cubeVertices.size() * sizeof(Vertex))));
     indexBuffer_ = std::move(renderer->createIndexBuffer(reinterpret_cast<uint8_t*>(&cubeIndices.front()), Takoyaki::EFormat::R16_UINT, static_cast<uint_fast32_t>(cubeIndices.size() * sizeof(uint16_t))));
 }
 
@@ -136,4 +139,28 @@ void App::render(Takoyaki::Renderer* renderer)
     if (viewProj) {
         viewProj->setMatrix4x4("model", glm::mat4x4());
     }
+}
+
+void App::update(Takoyaki::Renderer* rendere, Takoyaki::Framework* framework)
+{
+    auto winSize = framework->getWindowSize();
+    float aspectRatio = winSize.x / winSize.y;
+    float fovAngleY = glm::radians(70.0f);
+
+    // This is a simple example of change that can be made when the app is in
+    // portrait or snapped view.
+    if (aspectRatio < 1.0f) {
+        fovAngleY *= 2.0f;
+    }
+
+    DirectX::XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovLH(
+        fovAngleY,
+        aspectRatio,
+        0.01f,
+        100.0f
+        );
+
+    auto test = glm::perspectiveFovLH(fovAngleY, winSize.x, winSize.y, 0.01f, 100.0f);
+
+    int i = 0;
 }

@@ -44,6 +44,8 @@ namespace Takoyaki
         void validate();
 
         inline uint_fast32_t getBufferCount() const { return bufferCount_; }
+        inline const glm::vec2& getWindowSize() const { return windowSize_; }
+
         inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
         inline const Microsoft::WRL::ComPtr<ID3D12CommandQueue>& getCommandQueue() { return commandQueue_; }
 
@@ -80,7 +82,6 @@ namespace Takoyaki
         EDisplayOrientation currentOrientation_;
         EDisplayOrientation nativeOrientation_;
         float dpi_;
-        D3D12_VIEWPORT viewport_;
 
         // swap chain
         Microsoft::WRL::ComPtr<IDXGISwapChain3> swapChain_;

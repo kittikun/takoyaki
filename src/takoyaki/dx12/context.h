@@ -73,9 +73,6 @@ namespace Takoyaki
         DX12ConstantBuffer& createConstanBuffer(const std::string&, uint_fast32_t);
         DX12Texture& createTexture();
 
-        // resource destruction
-        void destroyVertexBuffer(uint_fast32_t);
-
         // Get
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
         inline DescriptorHeapSRV& getSRVDescHeapCollection() { return descHeapSRV_; }
@@ -86,7 +83,7 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
 
-        void createBuffer(EResourceType, uint_fast32_t, uint8_t*, EFormat, uint_fast32_t, uint_fast64_t);
+        void createBuffer(EResourceType, uint_fast32_t, uint8_t*, EFormat, uint_fast32_t, uint_fast32_t);
         void createInputLayout(const std::string&);
         void createPipelineState(const std::string&, const PipelineStateDesc&);
         void createRootSignature(const std::string&);

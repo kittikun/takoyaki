@@ -21,7 +21,6 @@
 #include "pch.h"
 #include "framework_impl.h"
 
-#include "../dx12/device.h"
 #include "../dx12/context.h"
 #include "../dx12/shader_compiler.h"
 #include "../dx12/texture.h"
@@ -88,9 +87,9 @@ namespace Takoyaki
     void FrameworkImpl::setProperty(EPropertyID id, const boost::any& value)
     {
         switch (id) {
-            case Takoyaki::EPropertyID::WINDOW_SIZE:
-            case Takoyaki::EPropertyID::WINDOW_ORIENTATION:
-            case Takoyaki::EPropertyID::WINDOW_DPI:
+            case EPropertyID::WINDOW_SIZE:
+            case EPropertyID::WINDOW_ORIENTATION:
+            case EPropertyID::WINDOW_DPI:
                 device_->setProperty(id, value);
                 break;
 

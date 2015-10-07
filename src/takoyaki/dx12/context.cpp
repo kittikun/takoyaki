@@ -137,13 +137,13 @@ namespace Takoyaki
         return textures_.push(DX12Texture{ this });
     }
 
-    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast64_t sizeByte)
+    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast32_t sizeByte)
     {
         switch (type) {
             case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
             {
                 auto lock = indexBuffers_.getWriteLock();
-                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, static_cast<uint_fast32_t>(sizeByte), id }));
+                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, sizeByte, id }));
 
                 // then build a command to build underlaying resources
                 copyWorker_.submit(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));

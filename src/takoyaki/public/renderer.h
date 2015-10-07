@@ -49,7 +49,7 @@ namespace Takoyaki
         std::unique_ptr<IndexBuffer> createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte);
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
         std::unique_ptr<RootSignature> createRootSignature(const std::string& name);
-        std::unique_ptr<VertexBuffer> createVertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast64_t sizeByte);
+        std::unique_ptr<VertexBuffer> createVertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast32_t sizeByte);
 
         void createPipelineState(const std::string& name, const PipelineStateDesc&);
 

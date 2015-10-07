@@ -69,7 +69,7 @@ namespace Takoyaki
         return std::make_unique<RootSignature>(impl_->createRootSignature(name));
     }
 
-    std::unique_ptr<VertexBuffer> Renderer::createVertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast64_t sizeByte)
+    std::unique_ptr<VertexBuffer> Renderer::createVertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast32_t sizeByte)
     {
         return std::make_unique<VertexBuffer>(impl_->createVertexBuffer(vertices, stride, sizeByte));
     }

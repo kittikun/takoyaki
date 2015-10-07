@@ -74,7 +74,7 @@ namespace Takoyaki
         return std::make_unique<RootSignatureImpl>(pair.first, std::move(pair.second));
     }
 
-    std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* data, uint_fast32_t stride, uint_fast64_t sizeByte)
+    std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* data, uint_fast32_t stride, uint_fast32_t sizeByte)
     {
         auto id = uidGenerator_.fetch_add(1);
 

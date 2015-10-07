@@ -43,6 +43,11 @@ namespace Takoyaki
         return std::make_unique<Renderer>(impl_->getRenderer());
     }
 
+    const glm::vec2& Framework::getWindowSize() const
+    {
+        return impl_->getWindowSize();
+    }
+
     void Framework::initialize(const FrameworkDesc& desc)
     {
         impl_->initialize(desc);
@@ -58,9 +63,19 @@ namespace Takoyaki
         impl_->present();
     }
 
-    void Framework::setProperty(EPropertyID id, const boost::any& value)
+    void Framework::setDisplayDpi(float dpi)
     {
-        impl_->setProperty(id, value);
+        impl_->setProperty(EPropertyID::WINDOW_DPI, dpi);
+    }
+
+    void Framework::setDisplayOrientation(EDisplayOrientation orientation)
+    {
+        impl_->setProperty(EPropertyID::WINDOW_ORIENTATION, orientation);
+    }
+
+    void Framework::setWindowSize(const glm::vec2& size)
+    {
+        impl_->setProperty(EPropertyID::WINDOW_SIZE, size);
     }
 
     void Framework::terminate()

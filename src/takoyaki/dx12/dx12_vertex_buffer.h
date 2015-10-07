@@ -34,7 +34,7 @@ namespace Takoyaki
         DX12VertexBuffer& operator=(DX12VertexBuffer&&) = delete;
 
     public:
-        explicit DX12VertexBuffer(uint8_t*, uint_fast32_t, uint_fast64_t, uint_fast32_t) noexcept;
+        explicit DX12VertexBuffer(uint8_t*, uint_fast32_t, uint_fast32_t, uint_fast32_t) noexcept;
         DX12VertexBuffer(DX12VertexBuffer&&) noexcept;
         ~DX12VertexBuffer() = default;
 

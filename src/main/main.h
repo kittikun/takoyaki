@@ -46,7 +46,7 @@ namespace AppMain
 
 	private:
         std::unique_ptr<App> app_;
-        std::shared_ptr<Takoyaki::Framework> framework_;
+        std::unique_ptr<Takoyaki::Framework> framework_;
 		bool mWindowClosed;
 		bool mWindowVisible;
 	};

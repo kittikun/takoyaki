@@ -24,7 +24,6 @@
 #pragma warning(disable : 4251)
 
 #include <memory>
-#include <boost/any.hpp>
 
 #include "definitions.h"
 
@@ -44,23 +43,21 @@ namespace Takoyaki
         Framework() noexcept;
         ~Framework();
 
-        //////////////////////////////////////////////////////////////////////////
-        // To be used by main only
-
         void initialize(const FrameworkDesc& desc);
-        void setProperty(EPropertyID id, const boost::any& value);
         void present();
         void terminate();
         void validateDevice() const;
         void loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& result);
 
-        //////////////////////////////////////////////////////////////////////////
-        // App should use those
         void compileShader(const ShaderDesc& desc);
 
-        //////////////////////////////////////////////////////////////////////////
-        // Accessors
         std::unique_ptr<Renderer> getRenderer();
+
+        const glm::vec2& getWindowSize() const;
+
+        void setDisplayDpi(float dpi);
+        void setDisplayOrientation(EDisplayOrientation orientation);
+        void setWindowSize(const glm::vec2& size);
 
     private:
         std::unique_ptr<FrameworkImpl> impl_;

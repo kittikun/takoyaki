@@ -41,8 +41,8 @@ before_build:
         "--with-log")
         & $buildCmd $buildArgs
     } else {
-        "-d0",
         $buildArgs = @(
+        "-d0",
         "address-model=64",
         "toolset=msvc-14.0",
         "windows-api=desktop",

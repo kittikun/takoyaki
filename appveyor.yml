@@ -30,6 +30,7 @@ before_build:
     
     if ($type -eq "Debug") {
         $buildArgs = @(
+        "-d0",
         "address-model=64",
         "toolset=msvc-14.0",
         "windows-api=desktop",
@@ -40,6 +41,7 @@ before_build:
         "--with-log")
         & $buildCmd $buildArgs
     } else {
+        "-d0",
         $buildArgs = @(
         "address-model=64",
         "toolset=msvc-14.0",

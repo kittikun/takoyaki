@@ -26,20 +26,21 @@
 #include "input_layout_impl.h"
 #include "root_signature_impl.h"
 #include "vertex_buffer_impl.h"
-#include "../thread_pool.h"
 #include "../dx12/context.h"
+#include "../dx12/device.h"
 
 namespace Takoyaki
 {
-    RendererImpl::RendererImpl(const std::shared_ptr<DX12Context>& context) noexcept
+    RendererImpl::RendererImpl(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<DX12Context>& context) noexcept
         : context_{ context }
+        , device_{ device }
     {
 
     }
 
-    void RendererImpl::commit()
+    void RendererImpl::compilePipelineStateObjects()
     {
-        context_->commit();
+        context_->compilePipelineStateObjects();
     }
 
     std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, EFormat format, uint_fast32_t sizeByte)
@@ -90,7 +91,7 @@ namespace Takoyaki
         // is it possible that the constant haven't been added yet if the corresponding shader
         // hasn't been compiled yet
         if (pair)
-            return std::make_unique<ConstantTableImpl>(pair->first, std::move(pair->second));
+            return std::make_unique<ConstantTableImpl>(pair->first, std::move(pair->second), device_->getCurrentFrame());
         else
             return nullptr;
     }

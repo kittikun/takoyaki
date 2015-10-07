@@ -43,7 +43,8 @@ namespace Takoyaki
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
-        inline uint_fast32_t getBufferCount() const { return bufferCount_; }
+        inline uint_fast32_t getFrameCount() const { return bufferCount_; }
+        inline uint_fast32_t getCurrentFrame() const { return currentFrame_; }
         inline const glm::vec2& getWindowSize() const { return windowSize_; }
 
         inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }

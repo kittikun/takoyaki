@@ -44,9 +44,9 @@ namespace Takoyaki
 
     Renderer::~Renderer() noexcept = default;
 
-    void Renderer::commit()
+    void Renderer::compilePipelineStateObjects()
     {
-        impl_->commit();
+        impl_->compilePipelineStateObjects();
     }
 
     std::unique_ptr<IndexBuffer> Renderer::createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte)

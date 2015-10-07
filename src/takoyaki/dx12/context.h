@@ -101,12 +101,12 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
 
-        void commit();
+        void compilePipelineStateObjects();
         auto getConstantBuffer(const std::string&) -> ConstantBufferReturn;
 
     private:
         D3D12_SHADER_BYTECODE getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>&, const std::string&);
-        void commitMain(const std::string& name);
+        void compileMain(const std::string& name);
 
     private:
         std::shared_ptr<DX12Device> device_;

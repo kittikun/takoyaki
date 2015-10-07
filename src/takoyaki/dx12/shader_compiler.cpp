@@ -22,7 +22,6 @@
 #include "shader_compiler.h"
 
 #include <boost/format.hpp>
-#include <rapidjson/document.h>
 
 #include "dxutility.h"
 #include "context.h"
@@ -231,78 +230,5 @@ namespace Takoyaki
         context->addShader(desc.type, desc.name, std::move(bc));
 
         LOGS_INDENT_END << "Shader done.";
-    }
-
-    void parseShaderList(const std::string& data, std::vector<ShaderDesc>& shaderList)
-    {
-        rapidjson::Document doc;
-
-        LOGS << "Parsing shader list..";
-        doc.Parse(data.c_str());
-
-        for (auto iter = doc.MemberBegin(); iter != doc.MemberEnd(); ++iter) {
-            auto name = std::string{ iter->name.GetString() };
-            bool allDebug = false;
-
-            if (name == "global") {
-                if (name == "debug")
-                    allDebug = true;
-            } else {
-                ShaderDesc shader = {};
-
-                if (name == "vs")
-                    shader.type = EShaderType::VERTEX;
-                else if (name == "ps")
-                    shader.type = EShaderType::PIXEL;
-
-                if (iter->value.IsArray()) {
-                    for (auto item = iter->value.Begin(); item != iter->value.End(); ++item) {
-                        if (item->IsObject()) {
-
-                            for (auto member = item->MemberBegin(); member != item->MemberEnd(); ++member) {
-                                // Parse attribute, not order does not matter
-                                name = std::string{ member->name.GetString() };
-
-                                if (name == "name")
-                                    shader.name = member->value.GetString();
-                                else if (name == "path")
-                                    shader.path = member->value.GetString();
-                                else if (name == "entry")
-                                    shader.entry = member->value.GetString();
-                                else if (name == "flags") {
-                                    auto type = std::string{ member->value.GetString() };
-
-                                    if (type == "debug")
-                                        shader.debug = true;
-                                }
-                            }
-
-                            shader.debug |= allDebug;
-                            shaderList.push_back(std::move(shader));
-                        } else {
-                            throw new std::runtime_error{ "Shaderlist expected an object to describe shader" };
-                        }
-                    }
-                } else {
-                    throw new std::runtime_error{ "Shaderlist expected an array after type" };
-                }
-            }
-        }
-    }
-
-    void ShaderCompiler::main(IO* io, const std::shared_ptr<ThreadPool>& threadPool, const std::shared_ptr<DX12Context>& context)
-    {
-        LOGS_INDENT_START << "Starting shaders compilation..";
-
-        auto buffer = io->loadFile("data/shaderlist.json");
-        std::vector<ShaderDesc> shaderList;
-
-        parseShaderList(buffer, shaderList);
-
-        for (auto& shader : shaderList) {
-            threadPool->submit(std::bind(&ShaderCompiler::compileShader, io, shader, context));
-        }
-
-        LOGS_INDENT_END << "Shader compilation done.";
     }
 } // namespace Takoyaki

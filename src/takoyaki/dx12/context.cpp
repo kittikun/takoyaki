@@ -55,7 +55,7 @@ namespace Takoyaki
         map.insert(std::make_pair(name, std::move(bc)));
     }
 
-    void DX12Context::commit()
+    void DX12Context::compilePipelineStateObjects()
     {
         auto device = device_->getDeviceLock();
 
@@ -79,11 +79,11 @@ namespace Takoyaki
             auto lock = pipelineStates_.getReadLock();
 
             for (auto& state : pipelineStates_)
-                threadPool_->submit(std::bind(&DX12Context::commitMain, this, state.first));
+                threadPool_->submit(std::bind(&DX12Context::compileMain, this, state.first));
         }
     }
 
-    void DX12Context::commitMain(const std::string& name)
+    void DX12Context::compileMain(const std::string& name)
     {
         auto pair = getPipelineState(name);
 
@@ -102,7 +102,7 @@ namespace Takoyaki
         size = (size + 255) & ~255;
 
         // we need a copy for each buffer in the swap chain
-        auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ this, size }));
+        auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ this, size, device_->getFrameCount() }));
 
         lock.unlock();
 

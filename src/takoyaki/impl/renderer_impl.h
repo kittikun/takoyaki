@@ -30,8 +30,8 @@ namespace Takoyaki
     class IndexBufferImpl;
     class InputLayoutImpl;
     class DX12Context;
+    class DX12Device;
     class RootSignatureImpl;
-    class ThreadPool;
     class VertexBufferImpl;
     struct PipelineStateDesc;
 
@@ -43,7 +43,7 @@ namespace Takoyaki
         RendererImpl& operator=(RendererImpl&&) = delete;
 
     public:
-        explicit RendererImpl(const std::shared_ptr<DX12Context>&) noexcept;
+        explicit RendererImpl(const std::shared_ptr<DX12Device>&, const std::shared_ptr<DX12Context>&) noexcept;
         ~RendererImpl() = default;
 
         //////////////////////////////////////////////////////////////////////////
@@ -56,12 +56,13 @@ namespace Takoyaki
 
         void createPipelineState(const std::string&, const PipelineStateDesc&);
 
-        void commit();
+        void compilePipelineStateObjects();
 
         std::unique_ptr<ConstantTableImpl> getConstantBuffer(const std::string&);
 
     private:
         std::shared_ptr<DX12Context> context_;
+        std::shared_ptr<DX12Device> device_;
 
         // the "generator" is mostly for user resources that need to be
         // released upon destruction

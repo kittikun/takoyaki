@@ -32,12 +32,12 @@
 
 namespace Takoyaki
 {
-    DX12ConstantBuffer::DX12ConstantBuffer(DX12Context* context, uint_fast32_t size)
+    DX12ConstantBuffer::DX12ConstantBuffer(DX12Context* context, uint_fast32_t sizeByte, uint_fast32_t numFrames)
         : owner_{ context }
-        , buffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_UPLOAD, size, D3D12_RESOURCE_STATE_GENERIC_READ) }
-        , mappedAddr_ {nullptr}
+        , buffer_{ std::make_unique<DX12Buffer>(D3D12_HEAP_TYPE_UPLOAD, sizeByte * numFrames, D3D12_RESOURCE_STATE_GENERIC_READ) }
+        , mappedAddr_{ nullptr }
         , curOffset_{ 0 }
-        , size_{ size }
+        , size_{ sizeByte }
     {
 
     }
@@ -77,16 +77,16 @@ namespace Takoyaki
         auto res = buffer_->getResource();
         auto gpuAddress = res->GetGPUVirtualAddress();
         auto fmt = boost::wformat{ L"Constant Buffer %1%" } % name.c_str();
-        auto bufCount = device->getBufferCount();
+        auto bufCount = device->getFrameCount();
 
         rtvs_ = std::move(owner_->getSRVDescHeapCollection().createRange(bufCount));
         buffer_->getResource()->SetName(boost::str(fmt).c_str());
 
-        // create view
+        // create view, one per buffer in the swapchain
         for (uint_fast32_t i = 0; i < bufCount; ++i) {
             D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
 
-            desc.BufferLocation = gpuAddress;
+            desc.BufferLocation = gpuAddress + (i * size_);
             desc.SizeInBytes = size_;
 
             // TODO: creatOne will lock device too so it's will be double locked just for here
@@ -104,7 +104,7 @@ namespace Takoyaki
         ZeroMemory(mappedAddr_, size_ * bufCount);
     }
 
-    void DX12ConstantBuffer::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
+    void DX12ConstantBuffer::setMatrix4x4(const std::string& name, const glm::mat4x4& value, uint_fast32_t frame)
     {
         auto found = offsetMap_.find(name);
 
@@ -114,7 +114,9 @@ namespace Takoyaki
             LOGW << boost::str(fmt);
             //throw new std::runtime_error(boost::str(fmt));
         } else {
-            //memcpy(&buffer_[found->second.offset], &value, sizeof(glm::mat4x4));
+            // TODO: doing this for each upload is potentially slow, maybe write in a temporary buffer first?
+            uint8_t* dest = mappedAddr_ + (frame * size_) + found->second.offset;
+            memcpy(dest, &value, sizeof(glm::mat4x4));
         }
     }
 } // namespace Takoyaki

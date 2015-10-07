@@ -33,7 +33,6 @@ namespace Takoyaki
 
     struct ShaderCompiler
     {
-        static void main(IO*, const std::shared_ptr<ThreadPool>&, const std::shared_ptr<DX12Context>&);
         static void compileShader(IO*, const ShaderDesc&, const std::shared_ptr<DX12Context>&);
     };
 } // namespace Takoyaki

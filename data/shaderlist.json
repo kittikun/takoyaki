@@ -1,9 +1,0 @@
-{
-  "global": "debug",
-  "vs": [
-    { "name": "testVertex", "path": "data/testReflection.hlsl", "entry": "VS_Main", "flags":"debug" }
-  ],
-  "ps" : [
-    { "name": "testPixel", "path": "data/testReflection.hlsl", "entry": "PS_Main" }
-  ]
-}

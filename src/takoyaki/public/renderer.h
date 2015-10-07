@@ -56,7 +56,7 @@ namespace Takoyaki
         // Compile pipeline state objects
         // Called once the root signatures and pipeline state objects have been defined
         // commit should happen only once per application
-        void commit();
+        void compilePipelineStateObjects();
 
         std::unique_ptr<ConstantTable> getConstantBuffer(const std::string&);
 

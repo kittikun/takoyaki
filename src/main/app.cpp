@@ -90,7 +90,7 @@ void App::initialize(Takoyaki::Framework* framework)
     renderer->createPipelineState("SimpleState", psDesc);
 
     // compile PSO, this only needs to be called once for all your PSO
-    renderer->commit();
+    renderer->compilePipelineStateObjects();
 
     // cube vertices (pos, color)
     std::array<Vertex, 8> cubeVertices =
@@ -133,34 +133,30 @@ void App::initialize(Takoyaki::Framework* framework)
 
 void App::render(Takoyaki::Renderer* renderer)
 {
+
+}
+
+void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
+{
+    // perspective matrix
+    auto winSize = framework->getWindowSize();
+    float fov = glm::radians(70.0f);
+    auto perspective = glm::perspectiveFovLH(fov, winSize.x, winSize.y, 1.0f, 100.0f);
+
+    // lookat
+    auto eye = glm::vec3(0.0f, 0.7f, 1.5f);
+    auto at = glm::vec3(0.0f, -0.1f, 0.0f);
+    auto up = glm::vec3(0.0f, 1.0f, 0.0f);
+    auto lookAt = glm::lookAtLH(eye, at, up);
+    
+    // update constant buffer
     auto viewProj = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
 
     // cbuffer might by empty if shader hasn't been loaded yet
     if (viewProj) {
-        viewProj->setMatrix4x4("model", glm::mat4x4());
-    }
-}
-
-void App::update(Takoyaki::Renderer* rendere, Takoyaki::Framework* framework)
-{
-    auto winSize = framework->getWindowSize();
-    float aspectRatio = winSize.x / winSize.y;
-    float fovAngleY = glm::radians(70.0f);
-
-    // This is a simple example of change that can be made when the app is in
-    // portrait or snapped view.
-    if (aspectRatio < 1.0f) {
-        fovAngleY *= 2.0f;
+        viewProj->setMatrix4x4("model", glm::mat4(1.0f));
+        viewProj->setMatrix4x4("projection", perspective);
+        viewProj->setMatrix4x4("view", lookAt);
     }
 
-    DirectX::XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovLH(
-        fovAngleY,
-        aspectRatio,
-        0.01f,
-        100.0f
-        );
-
-    auto test = glm::perspectiveFovLH(fovAngleY, winSize.x, winSize.y, 0.01f, 100.0f);
-
-    int i = 0;
 }

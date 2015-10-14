@@ -1,4 +1,4 @@
-// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -62,8 +62,8 @@ namespace Takoyaki
     private:
         IO io_;
         std::shared_ptr<ThreadPool> threadPool_;
-        std::shared_ptr<DX12Device> device_;
         std::shared_ptr<DX12Context> context_;
+        std::shared_ptr<DX12Device> device_;
         std::shared_ptr<RendererImpl> renderer_;
     };
 

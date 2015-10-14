@@ -19,36 +19,19 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "thread_pool.h"
-
-#include "utility/win_utility.h"
-#include "utility/log.h"
+#include "worker.h"
 
 namespace Takoyaki
 {
-    ThreadPool::ThreadPool() noexcept
-        : done_{ false }
-        , joiner{ threads }
+    Worker::Worker(const WorkerDesc& desc)
+        : threadPool_{ desc.threadPool }
+        , context_(desc.context )
     {
+
     }
 
-    ThreadPool::~ThreadPool() noexcept
+    void Worker::main(class ThreadPool*)
     {
-        done_ = true;
+
     }
-
-    //void ThreadPool::workerMain()
-    //{
-    //    LOG_IDENTIFY_THREAD;
-
-    //    while (!done_) {
-    //        MoveOnlyFunc task;
-
-    //        if (workQueue_.tryPop(task)) {
-    //            task();
-    //        } else {
-    //            std::this_thread::yield();
-    //        }
-    //    }
-    //}
 } // namespace Takoyaki

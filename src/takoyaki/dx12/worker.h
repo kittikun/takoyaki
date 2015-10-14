@@ -18,37 +18,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "thread_pool.h"
+#pragma once
 
-#include "utility/win_utility.h"
-#include "utility/log.h"
+#include <memory>
+#include "../thread_pool.h"
 
 namespace Takoyaki
 {
-    ThreadPool::ThreadPool() noexcept
-        : done_{ false }
-        , joiner{ threads }
+    class DX12Context;
+
+    struct Command
     {
-    }
+        uint_fast32_t priority;
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commands;
+    };
 
-    ThreadPool::~ThreadPool() noexcept
+    struct WorkerDesc
     {
-        done_ = true;
-    }
+        std::weak_ptr<DX12Context> context;
+        ThreadPool* threadPool;
+    };
 
-    //void ThreadPool::workerMain()
-    //{
-    //    LOG_IDENTIFY_THREAD;
+    class Worker : public ThreadPool::IWorker
+    {
+        Worker(const Worker&) = delete;
+        Worker& operator=(const Worker&) = delete;
+        Worker(Worker&&) noexcept;
+        Worker& operator=(Worker&&) = delete;
 
-    //    while (!done_) {
-    //        MoveOnlyFunc task;
+    public:
+        explicit Worker(const WorkerDesc&);
 
-    //        if (workQueue_.tryPop(task)) {
-    //            task();
-    //        } else {
-    //            std::this_thread::yield();
-    //        }
-    //    }
-    //}
+        void main(class ThreadPool*) override;
+
+    private:
+        ThreadPool* threadPool_;
+        std::weak_ptr<DX12Context> context_;
+        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
+        std::vector<Command> commandList_;
+    };
 } // namespace Takoyaki

@@ -1,4 +1,4 @@
-// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -33,7 +33,7 @@ namespace Takoyaki
 {
     struct FrameworkDesc;
 
-    // Allows the threads to be properly joined even if an exception occured with the thread pool
+    // Allows the threads to be properly joined even if an exception occurred with the thread pool
     class JoinThreads
     {
         std::vector<std::thread>& threads;
@@ -60,48 +60,66 @@ namespace Takoyaki
         ThreadPool& operator=(ThreadPool&&) = delete;
 
     public:
-        struct SpecializedWorkerDesc
+        class IWorker
         {
-            std::function<void()> mainFunc;
-            std::function<void(MoveOnlyFuncParamTwo)> submitFunc;
-            std::string name;
-            uint_fast32_t id;
+        public:
+            virtual void main(ThreadPool*) = 0;
         };
 
         ThreadPool() noexcept;
         ~ThreadPool() noexcept;
 
-        void addSpecializedWorker(const SpecializedWorkerDesc&);
-        void initialize(uint_fast32_t);
+        using CreateWorkerFunc = std::function<std::unique_ptr<IWorker>()>;
 
-        template<typename Func>
-        void submit(Func f)
+        template<typename Desc>
+        void initialize(uint_fast32_t threadCount, CreateWorkerFunc func, const Desc& desc)
         {
-            // generic submit
-            workQueue_.push(std::move(f));
+            auto fmt = boost::format{ "Initializing thread pool with %1% threads" } % threadCount;
+            LOGC << boost::str(fmt);
+
+            workers_.reserve(threadCount);
+
+            try {
+                // create generic workers
+                for (unsigned i = 0; i < threadCount; ++i) {
+                    workers_.push_back(std::move(func(desc)));
+
+                    auto thread = std::thread{ &IWorker::main, workers_.back().get(), this };
+
+                    fmt = boost::format{ "Takoyaki Worker %1%" } % i;
+
+                    setThreadName(thread.native_handle(), boost::str(fmt));
+                    threads.push_back(std::move(thread));
+                }
+            } catch (...) {
+                done_ = true;
+                throw new std::runtime_error{ "Could not create ThreadPool" };
+            }
         }
 
         template<typename Func>
-        void submit(uint32_t specialId, Func f)
+        void submitGeneric(Func f)
+        {
+            genericWorkQueue_.push(std::move(f));
+        }
+
+        template<typename Func>
+        void submitGPU(Func f)
         {
             // specialized submit
-            specializedWorkers_[specialId](std::move(f));
+            gpuWorkQueue_.push(std::move(f));
         }
-
-        // for specialized workers
-        inline bool tryPopWork(MoveOnlyFunc& func) { return workQueue_.tryPop(func); }
 
     private:
         void workerMain();
 
     private:
         std::atomic<bool> done_;
-        ThreadSafeQueue<MoveOnlyFunc> workQueue_;
+        std::vector<std::unique_ptr<IWorker>> workers_;
+        ThreadSafeQueue<MoveOnlyFunc> genericWorkQueue_;
+        ThreadSafeQueue<MoveOnlyFuncParam> gpuWorkQueue_;
         std::vector<std::thread> threads;
         JoinThreads joiner;
-
-        // map to specialized worker submit function
-        std::unordered_map<uint_fast32_t, std::function<void(MoveOnlyFuncParamTwo)>> specializedWorkers_;
     };
 } // namespace Takoyaki
 

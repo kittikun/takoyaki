@@ -1,4 +1,4 @@
-// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -132,9 +132,9 @@ namespace Takoyaki
         rootSignatures_.insert(std::make_pair(name, DX12RootSignature{}));
     }
 
-    DX12Texture& DX12Context::createTexture()
+    Worker& DX12Context::createTexture()
     {
-        return textures_.push(DX12Texture{ this });
+        return textures_.push(Worker{ this });
     }
 
     void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast32_t sizeByte)

@@ -1,4 +1,4 @@
-// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -27,27 +27,27 @@
 
 namespace Takoyaki
 {
-    DX12Texture::DX12Texture(DX12Context* owner) noexcept
+    Worker::Worker(DX12Context* owner) noexcept
         : owner_{ owner }
     {
         rtv_.ptr = ULONG_PTR_MAX;
     }
 
-    DX12Texture::DX12Texture(DX12Texture&& other) noexcept
+    Worker::Worker(Worker&& other) noexcept
         : owner_{ other.owner_ }
         , rtv_{ std::move(other.rtv_) }
     {
 
     }
 
-    DX12Texture::~DX12Texture()
+    Worker::~Worker()
     {
         if (rtv_.ptr != ULONG_PTR_MAX) {
             owner_->getRTVDescHeapCollection().releaseOne(rtv_);
         }
     }
 
-    const D3D12_CPU_DESCRIPTOR_HANDLE& DX12Texture::getRenderTargetView()
+    const D3D12_CPU_DESCRIPTOR_HANDLE& Worker::getRenderTargetView()
     {
         if (rtv_.ptr == ULONG_PTR_MAX)
             rtv_ = owner_->getRTVDescHeapCollection().createOne();

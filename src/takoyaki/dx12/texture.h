@@ -1,4 +1,4 @@
-// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -24,16 +24,16 @@ namespace Takoyaki
 {
     class DX12Context;
 
-    class DX12Texture
+    class Worker
     {
-        DX12Texture(const DX12Texture&) = delete;
-        DX12Texture& operator=(const DX12Texture&) = delete;
-        DX12Texture& operator=(DX12Texture&&) = delete;
+        Worker(const Worker&) = delete;
+        Worker& operator=(const Worker&) = delete;
+        Worker& operator=(Worker&&) = delete;
 
     public:
-        explicit DX12Texture(DX12Context*) noexcept;
-        DX12Texture(DX12Texture&&) noexcept;
-        ~DX12Texture();
+        explicit Worker(DX12Context*) noexcept;
+        Worker(Worker&&) noexcept;
+        ~Worker();
 
         // For external initialization, swap buffer only ?
         inline Microsoft::WRL::ComPtr<ID3D12Resource>& getResource() { return resource_; }

@@ -1,4 +1,4 @@
-// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -53,6 +53,7 @@ namespace Takoyaki
             D3D12_COMMAND_QUEUE_DESC queueDesc = {};
             queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
             queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+            queueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
 
             DXCheckThrow(device->getDXDevice()->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
             DXCheckThrow(device->getDXDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_)));
@@ -113,7 +114,7 @@ namespace Takoyaki
                 DXCheckThrow(context.commandList->Close());
 
                 commandQueue_->ExecuteCommandLists(1, list);
-
+                
                 // Wait until the fence has been crossed.
                 WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
 

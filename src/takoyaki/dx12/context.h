@@ -1,4 +1,4 @@
-// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -71,7 +71,7 @@ namespace Takoyaki
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
         DX12ConstantBuffer& createConstanBuffer(const std::string&, uint_fast32_t);
-        DX12Texture& createTexture();
+        Worker& createTexture();
 
         // Get
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
@@ -126,7 +126,7 @@ namespace Takoyaki
         using ShaderMap = RWLockMap<std::string, D3D12_SHADER_BYTECODE>;
         std::unordered_map<EShaderType, ShaderMap> shaders_;
 
-        ThreadSafeStack<DX12Texture> textures_;
+        ThreadSafeStack<Worker> textures_;
 
         // resource destruction have to be handled by the context
         using DestroyQueueType = ThreadSafeQueue<std::pair<EResourceType, uint_fast32_t>>;
@@ -134,5 +134,8 @@ namespace Takoyaki
 
         // workers
         CopyWorker copyWorker_;
+
+        // new system
+        std::atomic<uint_fast32_t> 
     };
 } // namespace Takoyaki

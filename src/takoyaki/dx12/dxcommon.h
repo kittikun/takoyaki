@@ -18,37 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "thread_pool.h"
-
-#include "utility/win_utility.h"
-#include "utility/log.h"
+#pragma once
 
 namespace Takoyaki
 {
-    ThreadPool::ThreadPool() noexcept
-        : done_{ false }
-        , joiner{ threads }
+    class DX12Synchronisation
     {
+    public:
+        DX12Synchronisation()
+    private:
+        Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
+        HANDLE fenceEvent_;
+        uint64_t fenceValue_;
     }
 
-    ThreadPool::~ThreadPool() noexcept
-    {
-        done_ = true;
-    }
-
-    //void ThreadPool::workerMain()
-    //{
-    //    LOG_IDENTIFY_THREAD;
-
-    //    while (!done_) {
-    //        MoveOnlyFunc task;
-
-    //        if (workQueue_.tryPop(task)) {
-    //            task();
-    //        } else {
-    //            std::this_thread::yield();
-    //        }
-    //    }
-    //}
 } // namespace Takoyaki

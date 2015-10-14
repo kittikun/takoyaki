@@ -1,4 +1,4 @@
-// Copyright(c) 2015 kittikun
+// Copyright(c) 2015 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -115,6 +115,7 @@ namespace Takoyaki
             //throw new std::runtime_error(boost::str(fmt));
         } else {
             // TODO: doing this for each upload is potentially slow, maybe write in a temporary buffer first?
+            // https://developer.nvidia.com/content/constant-buffers-without-constant-pain-0
             uint8_t* dest = mappedAddr_ + (frame * size_) + found->second.offset;
             memcpy(dest, &value, sizeof(glm::mat4x4));
         }

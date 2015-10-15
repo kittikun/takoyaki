@@ -25,7 +25,7 @@
 
 namespace Takoyaki
 {
-    RootSignatureImpl::RootSignatureImpl(DX12RootSignature& rs, boost::shared_lock<boost::shared_mutex> lock) noexcept
+    RootSignatureImpl::RootSignatureImpl(DX12RootSignature& rs, std::shared_lock<std::shared_timed_mutex> lock) noexcept
         : rs_{ rs }
         , bufferLock_{ std::move(lock) }
     {

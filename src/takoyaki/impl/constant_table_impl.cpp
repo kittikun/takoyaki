@@ -25,7 +25,7 @@
 
 namespace Takoyaki
 {
-    ConstantTableImpl::ConstantTableImpl(DX12ConstantBuffer& cbuffer, boost::shared_lock<boost::shared_mutex> lock, uint_fast32_t frame) noexcept
+    ConstantTableImpl::ConstantTableImpl(DX12ConstantBuffer& cbuffer, std::shared_lock<std::shared_timed_mutex> lock, uint_fast32_t frame) noexcept
         : frame_{ frame }
         , cbuffer_(cbuffer)
         , bufferLock_(std::move(lock))

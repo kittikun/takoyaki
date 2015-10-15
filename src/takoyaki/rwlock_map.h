@@ -31,10 +31,10 @@ namespace Takoyaki
     class RWLockMap final : public std::unordered_map<Key, T, Hash, Pred, Alloc>
     {
     public:
-        std::unique_lock<boost::shared_mutex> getWriteLock() { return std::unique_lock<boost::shared_mutex>{rwMutex_}; }
-        boost::shared_lock<boost::shared_mutex> getReadLock() { return boost::shared_lock<boost::shared_mutex>{rwMutex_}; }
+        std::unique_lock<std::shared_timed_mutex> getWriteLock() { return std::unique_lock<std::shared_timed_mutex>{rwMutex_}; }
+        std::shared_lock<std::shared_timed_mutex> getReadLock() { return std::shared_lock<std::shared_timed_mutex>{rwMutex_}; }
 
     private:
-        mutable boost::shared_mutex rwMutex_;
+        mutable std::shared_timed_mutex rwMutex_;
     };
 } // namespace Takoyaki

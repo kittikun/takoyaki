@@ -34,14 +34,14 @@ namespace Takoyaki
         InputLayoutImpl& operator=(InputLayoutImpl&&) = delete;
 
     public:
-        InputLayoutImpl(DX12InputLayout&, boost::shared_lock<boost::shared_mutex>) noexcept;
+        InputLayoutImpl(DX12InputLayout&, std::shared_lock<std::shared_timed_mutex>) noexcept;
         ~InputLayoutImpl() = default;
 
         void addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep = 0);
 
     private:
         DX12InputLayout& layout_;
-        boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
+        std::shared_lock<std::shared_timed_mutex> bufferLock_;    // to avoid removal while user is still using it
     };
 }
 // namespace Takoyaki

@@ -222,7 +222,7 @@ namespace Takoyaki
         // Transfer the lock to the ConstantTableImpl to avoid removal while in use
         // it will be released once the user is done with it
         // somehow make_pair is not happy here..
-        return ConstantBufferReturn(std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock)));
+        return ConstantBufferReturn(std::pair<DX12ConstantBuffer&, std::shared_lock<std::shared_timed_mutex>>(found->second, std::move(lock)));
     }
 
     const DX12IndexBuffer& DX12Context::getIndexBuffer(uint_fast32_t id)
@@ -250,7 +250,7 @@ namespace Takoyaki
             throw new std::runtime_error{ boost::str(fmt) };
         }
 
-        return std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
+        return std::pair<DX12InputLayout&, std::shared_lock<std::shared_timed_mutex>>(found->second, std::move(lock));
     }
 
     auto DX12Context::getPipelineState(const std::string& name) -> PipelineStateReturn
@@ -264,7 +264,7 @@ namespace Takoyaki
             throw new std::runtime_error{ boost::str(fmt) };
         }
 
-        return std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
+        return std::pair<DX12PipelineState&, std::shared_lock<std::shared_timed_mutex>>(found->second, std::move(lock));
     }
 
     auto DX12Context::getRootSignature(const std::string& name) -> RootSignatureReturn
@@ -278,7 +278,7 @@ namespace Takoyaki
             throw new std::runtime_error{ boost::str(fmt) };
         }
 
-        return std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>(found->second, std::move(lock));
+        return std::pair<DX12RootSignature&, std::shared_lock<std::shared_timed_mutex>>(found->second, std::move(lock));
     }
 
     D3D12_SHADER_BYTECODE DX12Context::getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>& map, const std::string& name)

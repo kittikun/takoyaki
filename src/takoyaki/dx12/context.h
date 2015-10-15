@@ -55,10 +55,10 @@ namespace Takoyaki
 
         using DescriptorHeapRTV = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
         using DescriptorHeapSRV = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
-        using InputLayoutReturn = std::pair<DX12InputLayout&, boost::shared_lock<boost::shared_mutex>>;
-        using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, boost::shared_lock<boost::shared_mutex>>>;
-        using PipelineStateReturn = std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>;
-        using RootSignatureReturn = std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>;
+        using InputLayoutReturn = std::pair<DX12InputLayout&, std::shared_lock<std::shared_timed_mutex>>;
+        using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, std::shared_lock<std::shared_timed_mutex>>>;
+        using PipelineStateReturn = std::pair<DX12PipelineState&, std::shared_lock<std::shared_timed_mutex>>;
+        using RootSignatureReturn = std::pair<DX12RootSignature&, std::shared_lock<std::shared_timed_mutex>>;
 
         DX12Context(const std::shared_ptr<DX12Device>&, const std::shared_ptr<ThreadPool>&);
         ~DX12Context() = default;

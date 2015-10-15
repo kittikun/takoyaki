@@ -25,7 +25,7 @@
 
 namespace Takoyaki
 {
-    InputLayoutImpl::InputLayoutImpl(DX12InputLayout& layout, boost::shared_lock<boost::shared_mutex> lock) noexcept
+    InputLayoutImpl::InputLayoutImpl(DX12InputLayout& layout, std::shared_lock<std::shared_timed_mutex> lock) noexcept
         : layout_(layout)
         , bufferLock_(std::move(lock))
     {

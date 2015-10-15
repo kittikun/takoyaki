@@ -44,13 +44,13 @@
 #include <numeric>
 #include <thread>
 #include <queue>
+#include <shared_mutex>
 #include <unordered_map>
 #include <vector>
 
 // Boost
 #include <boost/any.hpp>
 #include <boost/format.hpp>
-#include <boost/thread.hpp>
 #include <boost/optional.hpp>
 
 #ifdef _DEBUG

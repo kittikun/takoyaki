@@ -23,7 +23,7 @@
 
 namespace Takoyaki
 {
-    PipelineStateImpl::PipelineStateImpl(DX12PipelineState& state, boost::shared_lock<boost::shared_mutex> lock) noexcept
+    PipelineStateImpl::PipelineStateImpl(DX12PipelineState& state, std::shared_lock<std::shared_timed_mutex> lock) noexcept
         : state_(state)
         , bufferLock_(std::move(lock))
     {

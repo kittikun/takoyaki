@@ -32,7 +32,7 @@ namespace Takoyaki
         RootSignatureImpl& operator=(RootSignatureImpl&&) = delete;
 
     public:
-        RootSignatureImpl(DX12RootSignature&, boost::shared_lock<boost::shared_mutex>) noexcept;
+        RootSignatureImpl(DX12RootSignature&, std::shared_lock<std::shared_timed_mutex>) noexcept;
         ~RootSignatureImpl() = default;
 
         void addConstant(uint_fast32_t, uint_fast32_t);
@@ -45,7 +45,7 @@ namespace Takoyaki
 
     private:
         DX12RootSignature& rs_;
-        boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
+        std::shared_lock<std::shared_timed_mutex> bufferLock_;    // to avoid removal while user is still using it
     };
 }
 // namespace Takoyaki

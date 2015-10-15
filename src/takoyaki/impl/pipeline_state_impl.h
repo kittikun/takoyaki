@@ -34,12 +34,12 @@ namespace Takoyaki
         PipelineStateImpl& operator=(PipelineStateImpl&&) = delete;
 
     public:
-        PipelineStateImpl(DX12PipelineState&, boost::shared_lock<boost::shared_mutex>) noexcept;
+        PipelineStateImpl(DX12PipelineState&, std::shared_lock<std::shared_timed_mutex>) noexcept;
         ~PipelineStateImpl() = default;
 
     private:
         DX12PipelineState& state_;
-        boost::shared_lock<boost::shared_mutex> bufferLock_;    // to avoid removal while user is still using it
+        std::shared_lock<std::shared_timed_mutex> bufferLock_;    // to avoid removal while user is still using it
     };
 }
 // namespace Takoyaki

@@ -70,7 +70,7 @@ namespace Takoyaki
         curOffset_ += size;
     }
 
-    void DX12ConstantBuffer::create(const std::string& name, const std::shared_ptr<DX12Device>& device)
+    void DX12ConstantBuffer::create(const std::string& name, DX12Device* device)
     {
         buffer_->create(device);
 

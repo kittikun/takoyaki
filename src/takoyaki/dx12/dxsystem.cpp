@@ -115,13 +115,12 @@ namespace Takoyaki
         UINT* numRows = reinterpret_cast<uint_fast32_t*>(rowSizesInBytes + params.numSubResource);
 
         D3D12_RESOURCE_DESC desc = params.destinationResource->GetDesc();
-        auto device = params.device.lock();
 
         // the following is not thread safe so lock
         {
-            auto lock = device->getDeviceLock();
+            auto lock = params.device->getDeviceLock();
 
-            device->getDXDevice()->GetCopyableFootprints(&desc, params.firstSubResource, params.numSubResource, params.intermediateOffset, layout, numRows, rowSizesInBytes, &requiredSize);
+            params.device->getDXDevice()->GetCopyableFootprints(&desc, params.firstSubResource, params.numSubResource, params.intermediateOffset, layout, numRows, rowSizesInBytes, &requiredSize);
         }
 
         return UpdateSubresources(params, requiredSize, layout, numRows, rowSizesInBytes);

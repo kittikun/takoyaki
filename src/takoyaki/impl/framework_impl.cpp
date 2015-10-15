@@ -24,6 +24,7 @@
 #include "../dx12/context.h"
 #include "../dx12/shader_compiler.h"
 #include "../dx12/texture.h"
+#include "../dx12/dx12_worker.h"
 #include "../impl/renderer_impl.h"
 #include "../public/framework.h"
 #include "../public/renderer.h"
@@ -44,7 +45,7 @@ namespace Takoyaki
     void FrameworkImpl::compileShader(const ShaderDesc& desc)
     {
         // system will use shaderlist, this is for app
-        threadPool_->submit(std::bind(&ShaderCompiler::compileShader, &io_, desc, context_));
+        threadPool_->submitGeneric(std::bind(&ShaderCompiler::compileShader, &io_, desc, context_));
     }
 
     void FrameworkImpl::initialize(const FrameworkDesc& desc)
@@ -55,11 +56,17 @@ namespace Takoyaki
         if (desc.type == EDeviceType::DX12) {
             device_.reset(new DX12Device());
             context_ = std::make_shared<DX12Context>(device_, threadPool_);
-        }
 
-        device_->create(desc, context_);
-        context_->initializeWorkers();
-        threadPool_->initialize(desc.numWorkerThreads);
+            device_->create(desc, context_);
+
+            DX12WorkerDesc workerDesc;
+
+            workerDesc.context = context_;
+            workerDesc.device = device_;
+            workerDesc.threadPool = threadPool_.get();
+
+            threadPool_->initialize<DX12Worker, DX12WorkerDesc>(desc.numWorkerThreads, workerDesc);
+        }
 
         if (!desc.loadAsyncFunc)
             throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };

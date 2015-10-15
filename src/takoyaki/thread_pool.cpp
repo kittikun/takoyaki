@@ -22,7 +22,6 @@
 #include "thread_pool.h"
 
 #include "utility/win_utility.h"
-#include "utility/log.h"
 
 namespace Takoyaki
 {

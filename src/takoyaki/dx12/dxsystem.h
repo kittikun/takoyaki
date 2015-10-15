@@ -33,7 +33,7 @@ namespace Takoyaki
         uint_fast32_t firstSubResource;
         uint_fast32_t numSubResource;
         D3D12_SUBRESOURCE_DATA* srcData;
-        std::weak_ptr<DX12Device> device;
+        DX12Device* device;
     };
 
     uint_fast64_t UpdateSubresourcesHeapAlloc(const UpdateSubresourceDesc& params);

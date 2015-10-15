@@ -21,7 +21,6 @@
 #pragma once
 
 #include "constant_buffer.h"
-#include "copy_worker.h"
 #include "device.h"
 #include "descriptor_heap.h"
 #include "dx12_buffer.h"
@@ -33,6 +32,7 @@
 #include "texture.h"
 #include "../rwlock_map.h"
 #include "../thread_safe_stack.h"
+#include "../thread_safe_queue.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki
@@ -60,18 +60,16 @@ namespace Takoyaki
         using PipelineStateReturn = std::pair<DX12PipelineState&, boost::shared_lock<boost::shared_mutex>>;
         using RootSignatureReturn = std::pair<DX12RootSignature&, boost::shared_lock<boost::shared_mutex>>;
 
-        explicit DX12Context(const std::shared_ptr<DX12Device>&, const std::shared_ptr<ThreadPool>&);
+        DX12Context(const std::shared_ptr<DX12Device>&, const std::shared_ptr<ThreadPool>&);
         ~DX12Context() = default;
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
 
-        void initializeWorkers();
-
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
         DX12ConstantBuffer& createConstanBuffer(const std::string&, uint_fast32_t);
-        Worker& createTexture();
+        DX12Texture& createTexture();
 
         // Get
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
@@ -89,7 +87,7 @@ namespace Takoyaki
         void createRootSignature(const std::string&);
 
         void destroyResource(EResourceType, uint_fast32_t);
-        void destroyMain(void*, void*);
+        void destroyMain(void*);
         void onDestroyDone();
 
         const DX12IndexBuffer& getIndexBuffer(uint_fast32_t);
@@ -126,16 +124,10 @@ namespace Takoyaki
         using ShaderMap = RWLockMap<std::string, D3D12_SHADER_BYTECODE>;
         std::unordered_map<EShaderType, ShaderMap> shaders_;
 
-        ThreadSafeStack<Worker> textures_;
+        ThreadSafeStack<DX12Texture> textures_;
 
         // resource destruction have to be handled by the context
         using DestroyQueueType = ThreadSafeQueue<std::pair<EResourceType, uint_fast32_t>>;
         DestroyQueueType destroyQueue_;
-
-        // workers
-        CopyWorker copyWorker_;
-
-        // new system
-        std::atomic<uint_fast32_t> 
     };
 } // namespace Takoyaki

@@ -34,7 +34,7 @@ namespace Takoyaki
         DX12PipelineState& operator=(DX12PipelineState&&) = delete;
 
     public:
-        explicit DX12PipelineState(const PipelineStateDesc&) noexcept;
+        DX12PipelineState(const PipelineStateDesc&) noexcept;
         DX12PipelineState(DX12PipelineState&&) noexcept;
         ~DX12PipelineState() = default;
 

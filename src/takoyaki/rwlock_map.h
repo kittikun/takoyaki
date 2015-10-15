@@ -23,11 +23,11 @@
 namespace Takoyaki
 {
     // Not thread-safe by itself, just provide a convenience RW mutex
-    template<   class Key,                                              // unordered_map::key_type
-                class T,                                                // unordered_map::mapped_type
-                class Hash = std::hash<Key>,                            // unordered_map::hasher
-                class Pred = std::equal_to<Key>,                        // unordered_map::key_equal
-                class Alloc = std::allocator<std::pair<const Key, T>>>  // unordered_map::allocator_type>
+    template<class Key,                                              // unordered_map::key_type
+             class T,                                                // unordered_map::mapped_type
+             class Hash = std::hash<Key>,                            // unordered_map::hasher
+             class Pred = std::equal_to<Key>,                        // unordered_map::key_equal
+             class Alloc = std::allocator<std::pair<const Key, T>>>  // unordered_map::allocator_type>
     class RWLockMap final : public std::unordered_map<Key, T, Hash, Pred, Alloc>
     {
     public:

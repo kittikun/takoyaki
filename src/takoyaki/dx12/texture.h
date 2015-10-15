@@ -24,16 +24,16 @@ namespace Takoyaki
 {
     class DX12Context;
 
-    class Worker
+    class DX12Texture
     {
-        Worker(const Worker&) = delete;
-        Worker& operator=(const Worker&) = delete;
-        Worker& operator=(Worker&&) = delete;
+        DX12Texture(const DX12Texture&) = delete;
+        DX12Texture& operator=(const DX12Texture&) = delete;
+        DX12Texture& operator=(DX12Texture&&) = delete;
 
     public:
-        explicit Worker(DX12Context*) noexcept;
-        Worker(Worker&&) noexcept;
-        ~Worker();
+        DX12Texture(DX12Context*) noexcept;
+        DX12Texture(DX12Texture&&) noexcept;
+        ~DX12Texture();
 
         // For external initialization, swap buffer only ?
         inline Microsoft::WRL::ComPtr<ID3D12Resource>& getResource() { return resource_; }

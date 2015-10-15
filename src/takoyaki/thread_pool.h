@@ -28,6 +28,7 @@
 
 #include "thread_safe_queue.h"
 #include "utility/MoveOnlyFunc.h"
+#include "utility/log.h"
 
 namespace Takoyaki
 {
@@ -71,8 +72,8 @@ namespace Takoyaki
 
         using CreateWorkerFunc = std::function<std::unique_ptr<IWorker>()>;
 
-        template<typename Desc>
-        void initialize(uint_fast32_t threadCount, CreateWorkerFunc func, const Desc& desc)
+        template<typename WorkerType, typename DescType>
+        void initialize(uint_fast32_t threadCount, const DescType& desc)
         {
             auto fmt = boost::format{ "Initializing thread pool with %1% threads" } % threadCount;
             LOGC << boost::str(fmt);
@@ -80,9 +81,8 @@ namespace Takoyaki
             workers_.reserve(threadCount);
 
             try {
-                // create generic workers
                 for (unsigned i = 0; i < threadCount; ++i) {
-                    workers_.push_back(std::move(func(desc)));
+                    workers_.push_back(std::make_unique<WorkerType>(desc));
 
                     auto thread = std::thread{ &IWorker::main, workers_.back().get(), this };
 
@@ -97,6 +97,8 @@ namespace Takoyaki
             }
         }
 
+        inline bool isDone() const { return done_.load(); }
+
         template<typename Func>
         void submitGeneric(Func f)
         {
@@ -109,6 +111,9 @@ namespace Takoyaki
             // specialized submit
             gpuWorkQueue_.push(std::move(f));
         }
+
+        inline bool tryPopGenericTask(MoveOnlyFunc& task) { return genericWorkQueue_.tryPop(task); }
+        inline bool tryPopGPUTask(MoveOnlyFuncParam& task) { return gpuWorkQueue_.tryPop(task); }
 
     private:
         void workerMain();

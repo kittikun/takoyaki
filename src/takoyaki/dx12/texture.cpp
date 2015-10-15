@@ -27,27 +27,27 @@
 
 namespace Takoyaki
 {
-    Worker::Worker(DX12Context* owner) noexcept
+    DX12Texture::DX12Texture(DX12Context* owner) noexcept
         : owner_{ owner }
     {
         rtv_.ptr = ULONG_PTR_MAX;
     }
 
-    Worker::Worker(Worker&& other) noexcept
+    DX12Texture::DX12Texture(DX12Texture&& other) noexcept
         : owner_{ other.owner_ }
         , rtv_{ std::move(other.rtv_) }
     {
 
     }
 
-    Worker::~Worker()
+    DX12Texture::~DX12Texture()
     {
         if (rtv_.ptr != ULONG_PTR_MAX) {
             owner_->getRTVDescHeapCollection().releaseOne(rtv_);
         }
     }
 
-    const D3D12_CPU_DESCRIPTOR_HANDLE& Worker::getRenderTargetView()
+    const D3D12_CPU_DESCRIPTOR_HANDLE& DX12Texture::getRenderTargetView()
     {
         if (rtv_.ptr == ULONG_PTR_MAX)
             rtv_ = owner_->getRTVDescHeapCollection().createOne();

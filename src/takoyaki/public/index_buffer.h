@@ -34,7 +34,7 @@ namespace Takoyaki
         IndexBuffer& operator=(IndexBuffer&&) = delete;
 
     public:
-        explicit IndexBuffer(std::unique_ptr<IndexBufferImpl>) noexcept;
+        IndexBuffer(std::unique_ptr<IndexBufferImpl>) noexcept;
         ~IndexBuffer() noexcept;
 
     private:

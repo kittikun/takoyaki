@@ -33,7 +33,7 @@ namespace Takoyaki
         intermediate_->initialState = initialState;
     }
 
-    void DX12Buffer::create(const std::shared_ptr<DX12Device>& device)
+    void DX12Buffer::create(DX12Device* device)
     {
         D3D12_HEAP_PROPERTIES prop;
 

@@ -41,7 +41,7 @@ namespace Takoyaki
         // Internal usage:
 
         void addVariable(const std::string&, uint_fast32_t, uint_fast32_t);
-        void create(const std::string&, const std::shared_ptr<DX12Device>&);
+        void create(const std::string&, DX12Device*);
 
         inline const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView(uint_fast32_t index) { return rtvs_[index]; }
 

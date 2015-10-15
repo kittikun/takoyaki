@@ -43,7 +43,7 @@ namespace Takoyaki
         Renderer& operator=(Renderer&&) = delete;
 
     public:
-        explicit Renderer(std::shared_ptr<RendererImpl>&) noexcept;
+        Renderer(std::shared_ptr<RendererImpl>&) noexcept;
         ~Renderer() noexcept;
 
         std::unique_ptr<IndexBuffer> createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte);

@@ -36,7 +36,7 @@ namespace Takoyaki
         InputLayout& operator=(InputLayout&&) = delete;
 
     public:
-        explicit InputLayout(std::unique_ptr<InputLayoutImpl>) noexcept;
+        InputLayout(std::unique_ptr<InputLayoutImpl>) noexcept;
         ~InputLayout() noexcept;
 
         // Add order is important

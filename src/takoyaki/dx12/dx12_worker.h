@@ -26,34 +26,39 @@
 namespace Takoyaki
 {
     class DX12Context;
+    class DX12Device;
+    class ThreadPool;
 
     struct Command
     {
+        DX12Device* device;
         uint_fast32_t priority;
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commands;
     };
 
-    struct WorkerDesc
+    struct DX12WorkerDesc
     {
-        std::weak_ptr<DX12Context> context;
+        std::shared_ptr<DX12Context> context;
+        std::shared_ptr<DX12Device> device;
         ThreadPool* threadPool;
     };
 
-    class Worker : public ThreadPool::IWorker
+    class DX12Worker : public ThreadPool::IWorker
     {
-        Worker(const Worker&) = delete;
-        Worker& operator=(const Worker&) = delete;
-        Worker(Worker&&) noexcept;
-        Worker& operator=(Worker&&) = delete;
+        DX12Worker(const DX12Worker&) = delete;
+        DX12Worker& operator=(const DX12Worker&) = delete;
+        DX12Worker(DX12Worker&&) noexcept;
+        DX12Worker& operator=(DX12Worker&&) = delete;
 
     public:
-        explicit Worker(const WorkerDesc&);
+        DX12Worker(const DX12WorkerDesc&);
 
         void main(class ThreadPool*) override;
 
     private:
         ThreadPool* threadPool_;
-        std::weak_ptr<DX12Context> context_;
+        std::shared_ptr<DX12Context> context_;
+        std::shared_ptr<DX12Device> device_;
         Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
         std::vector<Command> commandList_;
     };

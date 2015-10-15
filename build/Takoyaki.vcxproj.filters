@@ -114,9 +114,6 @@
     <ClCompile Include="..\src\takoyaki\dx12\dxsystem.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\copy_worker.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\takoyaki\public\vertex_buffer.cpp">
       <Filter>Source Files\public</Filter>
     </ClCompile>
@@ -132,7 +129,7 @@
     <ClCompile Include="..\src\takoyaki\dx12\dx12_index_buffer.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\worker.cpp">
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_worker.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
   </ItemGroup>
@@ -242,9 +239,6 @@
     <ClInclude Include="..\src\takoyaki\dx12\dxsystem.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\copy_worker.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\takoyaki\public\vertex_buffer.h">
       <Filter>Source Files\public</Filter>
     </ClInclude>
@@ -272,7 +266,7 @@
     <ClInclude Include="..\src\takoyaki\dx12\dxcommon.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\worker.h">
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_worker.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>

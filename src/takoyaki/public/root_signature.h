@@ -36,7 +36,7 @@ namespace Takoyaki
         RootSignature& operator=(RootSignature&&) = delete;
 
     public:
-        explicit RootSignature(std::unique_ptr<RootSignatureImpl>) noexcept;
+        RootSignature(std::unique_ptr<RootSignatureImpl>) noexcept;
         ~RootSignature() noexcept;
 
         void addConstant(uint_fast32_t numValues, uint_fast32_t shaderRegister);

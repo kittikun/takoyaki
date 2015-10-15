@@ -36,7 +36,7 @@ namespace Takoyaki
         ConstantTable& operator=(ConstantTable&&) = delete;
 
     public:
-        explicit ConstantTable(std::unique_ptr<ConstantTableImpl>) noexcept;
+        ConstantTable(std::unique_ptr<ConstantTableImpl>) noexcept;
         ~ConstantTable() noexcept;
 
         void setMatrix4x4(const std::string& name, const glm::mat4x4& value);

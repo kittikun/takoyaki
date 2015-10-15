@@ -21,9 +21,9 @@
 #include "pch.h"
 #include "dx12_vertex_buffer.h"
 
-#include "copy_worker.h"
 #include "device.h"
 #include "dx12_buffer.h"
+#include "dx12_worker.h"
 #include "dxsystem.h"
 #include "dxutility.h"
 #include "../thread_pool.h"
@@ -58,14 +58,13 @@ namespace Takoyaki
 
     }
 
-    void DX12VertexBuffer::create(void* p, void* r)
+    void DX12VertexBuffer::create(void* command)
     {
-        auto context = static_cast<CopyWorker::Context*>(p);
-        auto res = static_cast<CopyWorker::Result*>(r);
-        auto device = context->device.lock();
+        auto cmd = static_cast<Command*>(command);
+        //auto res = static_cast<CopyWorker::Result*>(r);
 
-        vertexBuffer_->create(device);
-        uploadBuffer_->create(device);
+        vertexBuffer_->create(cmd->device);
+        uploadBuffer_->create(cmd->device);
 
         // finish the view
         view_.BufferLocation = vertexBuffer_->getResource()->GetGPUVirtualAddress();
@@ -80,8 +79,8 @@ namespace Takoyaki
         // upload data to the gpu
         UpdateSubresourceDesc desc;
 
-        desc.device = context->device;
-        desc.cmdList = context->commandList.Get();
+        desc.device = cmd->device;
+        desc.cmdList = cmd->commands.Get();
         desc.destinationResource = vertexBuffer_->getResource();
         desc.intermediate = uploadBuffer_->getResource();
         desc.intermediateOffset = 0;
@@ -101,30 +100,30 @@ namespace Takoyaki
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-        context->commandList->ResourceBarrier(1, &barrier);
-
-        res->type = CopyWorker::ReturnType::TASK;
-        res->funcTask = std::bind(&DX12VertexBuffer::createCleanup, this, std::placeholders::_1, std::placeholders::_2);
+        cmd->commands->ResourceBarrier(1, &barrier);
+        cmd->commands->Close();
+        //res->type = CopyWorker::ReturnType::TASK;
+        //res->funcTask = std::bind(&DX12VertexBuffer::createCleanup, this, std::placeholders::_1, std::placeholders::_2);
     }
 
-    void DX12VertexBuffer::createCleanup(void* p, void* r)
-    {
-        auto context = static_cast<CopyWorker::Context*>(p);
-        auto res = static_cast<CopyWorker::Result*>(r);
+    //void DX12VertexBuffer::createCleanup(void* p, void* r)
+    //{
+    //    auto context = static_cast<CopyWorker::Context*>(p);
+    //    auto res = static_cast<CopyWorker::Result*>(r);
 
-        context->commandList->DiscardResource(uploadBuffer_->getResource(), nullptr);
+    //    context->commandList->DiscardResource(uploadBuffer_->getResource(), nullptr);
 
-        res->type = CopyWorker::ReturnType::NOTIFY;
-        res->funcNotify = std::bind(&DX12VertexBuffer::onCreateDone, this);
-    }
+    //    res->type = CopyWorker::ReturnType::NOTIFY;
+    //    res->funcNotify = std::bind(&DX12VertexBuffer::onCreateDone, this);
+    //}
 
-    void DX12VertexBuffer::onCreateDone()
-    {
-        intermediate_.reset();
-    }
+    //void DX12VertexBuffer::onCreateDone()
+    //{
+    //    intermediate_.reset();
+    //}
 
-    void DX12VertexBuffer::destroy(ID3D12GraphicsCommandList* commandList)
-    {
-        commandList->DiscardResource(vertexBuffer_->getResource(), nullptr);
-    }
+    //void DX12VertexBuffer::destroy(ID3D12GraphicsCommandList* commandList)
+    //{
+    //    commandList->DiscardResource(vertexBuffer_->getResource(), nullptr);
+    //}
 } // namespace Takoyaki

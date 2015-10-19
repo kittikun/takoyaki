@@ -36,30 +36,36 @@ namespace Takoyaki
         DXCheckThrow(desc.device->getDXDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_)));
     }
 
-    void DX12Worker::main(class ThreadPool*)
+    void DX12Worker::main()
     {
-        MoveOnlyFunc generic;
-        MoveOnlyFuncParam gpu;
+        LOG_IDENTIFY_THREAD;
+
+        MoveOnlyFunc genericCmd;
+        MoveOnlyFuncParamTwo gpuCmd;
 
         while (!threadPool_->isDone()) {
-            if (threadPool_->tryPopGPUTask(gpu)) {
+            if (threadPool_->tryPopGPUTask(gpuCmd)) {
                 Command cmd;
 
-                cmd.device = device_.get();
                 cmd.priority = 0;
                 {
                     auto lock = device_->getDeviceLock();
 
                     DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&cmd.commands)));
                 }
-                gpu(&cmd);
+                gpuCmd(&cmd, device_.get());
 
                 commandList_.push_back(std::move(cmd));
-            } else if (threadPool_->tryPopGenericTask(generic)) {
-                generic();
+            } else if (threadPool_->tryPopGenericTask(genericCmd)) {
+                genericCmd();
             } else {
                 std::this_thread::yield();
             }
         }
+    }
+
+    void DX12Worker::submitCommandList()
+    {
+        auto pair = device_->getCommandList();
     }
 } // namespace Takoyaki

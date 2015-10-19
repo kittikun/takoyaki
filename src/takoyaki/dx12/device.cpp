@@ -86,12 +86,6 @@ namespace Takoyaki
 
         DXCheckThrow(D3DDevice_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
 
-        commandAllocators_.resize(bufferCount);
-
-        for (size_t i = 0; i < bufferCount; ++i) {
-            DXCheckThrow(D3DDevice_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
-        }
-
         // Create synchronization objects.
         fenceValues_.resize(bufferCount);
         std::fill(fenceValues_.begin(), fenceValues_.end(), 0);
@@ -189,6 +183,23 @@ namespace Takoyaki
 
             res->SetName(boost::str(fmt).c_str());
         }
+    }
+
+    void DX12Device::executeCommandList()
+    {
+        // TODO: parallelize ?
+        std::sort(commandList_.begin(), commandList_.end(), [](const Command& lhs, const Command& rhs)
+        {
+            return lhs.priority < rhs.priority;
+        });
+
+        // can probably do better
+        for (auto& cmd : commandList_)
+            dxCommands_.push_back(cmd.commands.Get());
+
+        commandQueue_->ExecuteCommandLists(static_cast<uint_fast32_t>(commandList_.size()), &dxCommands_.front());
+
+        waitForGpu();
     }
 
     DXGI_MODE_ROTATION DX12Device::getDXGIOrientation() const
@@ -350,6 +361,10 @@ namespace Takoyaki
 
         // Wait until the fence has been crossed.
         DXCheckThrow(fence_->SetEventOnCompletion(fenceValues_[currentFrame_], fenceEvent_));
+
+        commandList_.clear();
+        dxCommands_.clear();
+
         WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
 
         // Increment the fence value for the current frame.

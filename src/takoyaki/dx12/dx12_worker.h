@@ -21,6 +21,8 @@
 #pragma once
 
 #include <memory>
+
+#include "dxcommon.h"
 #include "../thread_pool.h"
 
 namespace Takoyaki
@@ -28,13 +30,6 @@ namespace Takoyaki
     class DX12Context;
     class DX12Device;
     class ThreadPool;
-
-    struct Command
-    {
-        DX12Device* device;
-        uint_fast32_t priority;
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commands;
-    };
 
     struct DX12WorkerDesc
     {
@@ -53,7 +48,8 @@ namespace Takoyaki
     public:
         DX12Worker(const DX12WorkerDesc&);
 
-        void main(class ThreadPool*) override;
+        void main() override;
+        void submitCommandList() override;
 
     private:
         ThreadPool* threadPool_;

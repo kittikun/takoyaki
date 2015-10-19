@@ -58,13 +58,14 @@ namespace Takoyaki
 
     }
 
-    void DX12VertexBuffer::create(void* command)
+    void DX12VertexBuffer::create(void* command, void* dev)
     {
+        auto device = static_cast<DX12Device*>(dev);
         auto cmd = static_cast<Command*>(command);
         //auto res = static_cast<CopyWorker::Result*>(r);
 
-        vertexBuffer_->create(cmd->device);
-        uploadBuffer_->create(cmd->device);
+        vertexBuffer_->create(device);
+        uploadBuffer_->create(device);
 
         // finish the view
         view_.BufferLocation = vertexBuffer_->getResource()->GetGPUVirtualAddress();
@@ -79,7 +80,7 @@ namespace Takoyaki
         // upload data to the gpu
         UpdateSubresourceDesc desc;
 
-        desc.device = cmd->device;
+        desc.device = device;
         desc.cmdList = cmd->commands.Get();
         desc.destinationResource = vertexBuffer_->getResource();
         desc.intermediate = uploadBuffer_->getResource();

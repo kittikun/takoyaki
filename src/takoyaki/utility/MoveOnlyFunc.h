@@ -111,7 +111,6 @@ namespace Takoyaki
         }
 
         inline void operator()(void* var) { impl->call(var); }
-        //std::function<void()> operator()(void* var);
 
         inline MoveOnlyFuncParam& operator=(MoveOnlyFuncParam&& other)
         {
@@ -163,7 +162,6 @@ namespace Takoyaki
         }
 
         inline void operator()(void* one, void* two) { impl->call(one, two); }
-        //std::function<void()> operator()(void* var);
 
         inline MoveOnlyFuncParamTwo& operator=(MoveOnlyFuncParamTwo&& other)
         {

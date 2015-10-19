@@ -84,6 +84,7 @@ namespace Takoyaki
 
     void FrameworkImpl::present()
     {
+        threadPool_->submitGPUCommandLists();
         device_->present();
     }
 

@@ -20,10 +20,13 @@
 
 #pragma once
 
+#include "dxcommon.h"
+#include "../thread_safe_stack.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki
 {
+    struct Command;
     struct FrameworkDesc;
     class DX12Context;
 
@@ -38,19 +41,22 @@ namespace Takoyaki
         DX12Device() noexcept;
         ~DX12Device() = default;
 
+        using CommandListReturn = std::pair<std::vector<Command>&, std::unique_lock<std::mutex>>;
+
         void create(const FrameworkDesc& desc, std::weak_ptr<DX12Context>);
         void present();
         void setProperty(EPropertyID, const boost::any&);
         void validate();
 
+        void executeCommandList();
+
         inline uint_fast32_t getFrameCount() const { return bufferCount_; }
         inline uint_fast32_t getCurrentFrame() const { return currentFrame_; }
         inline const glm::vec2& getWindowSize() const { return windowSize_; }
 
-        inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
-        inline const Microsoft::WRL::ComPtr<ID3D12CommandQueue>& getCommandQueue() { return commandQueue_; }
-
+        inline CommandListReturn getCommandList() { return CommandListReturn(commandList_, std::unique_lock<std::mutex>(deviceMutex_)); }
         inline std::unique_lock<std::mutex> getDeviceLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
+        inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
 
     private:
         void createDevice(uint_fast32_t);
@@ -67,10 +73,12 @@ namespace Takoyaki
 
         // main command queue
         Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
-        std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
+        std::vector<Command> commandList_;
+        std::vector<ID3D12CommandList*> dxCommands_;
 
         // cpu synchronization
         std::mutex deviceMutex_;
+        std::mutex commandListMutex_;
 
         // gpu synchronization
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;

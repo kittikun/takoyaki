@@ -64,7 +64,8 @@ namespace Takoyaki
         class IWorker
         {
         public:
-            virtual void main(ThreadPool*) = 0;
+            virtual void main() = 0;
+            virtual void submitCommandList() = 0;
         };
 
         ThreadPool() noexcept;
@@ -84,7 +85,7 @@ namespace Takoyaki
                 for (unsigned i = 0; i < threadCount; ++i) {
                     workers_.push_back(std::make_unique<WorkerType>(desc));
 
-                    auto thread = std::thread{ &IWorker::main, workers_.back().get(), this };
+                    auto thread = std::thread{ &IWorker::main, workers_.back().get() };
 
                     fmt = boost::format{ "Takoyaki Worker %1%" } % i;
 
@@ -112,8 +113,10 @@ namespace Takoyaki
             gpuWorkQueue_.push(std::move(f));
         }
 
+        void submitGPUCommandLists();
+
         inline bool tryPopGenericTask(MoveOnlyFunc& task) { return genericWorkQueue_.tryPop(task); }
-        inline bool tryPopGPUTask(MoveOnlyFuncParam& task) { return gpuWorkQueue_.tryPop(task); }
+        inline bool tryPopGPUTask(MoveOnlyFuncParamTwo& task) { return gpuWorkQueue_.tryPop(task); }
 
     private:
         void workerMain();
@@ -122,7 +125,7 @@ namespace Takoyaki
         std::atomic<bool> done_;
         std::vector<std::unique_ptr<IWorker>> workers_;
         ThreadSafeQueue<MoveOnlyFunc> genericWorkQueue_;
-        ThreadSafeQueue<MoveOnlyFuncParam> gpuWorkQueue_;
+        ThreadSafeQueue<MoveOnlyFuncParamTwo> gpuWorkQueue_;
         std::vector<std::thread> threads;
         JoinThreads joiner;
     };

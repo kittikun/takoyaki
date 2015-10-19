@@ -22,14 +22,20 @@
 
 namespace Takoyaki
 {
+    struct Command
+    {
+        uint_fast32_t priority;
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commands;
+    };
+
     class DX12Synchronisation
     {
     public:
-        DX12Synchronisation()
+        DX12Synchronisation();
     private:
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
         HANDLE fenceEvent_;
         uint64_t fenceValue_;
-    }
+    };
 
 } // namespace Takoyaki

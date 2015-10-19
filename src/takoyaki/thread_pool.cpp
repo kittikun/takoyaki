@@ -36,18 +36,9 @@ namespace Takoyaki
         done_ = true;
     }
 
-    //void ThreadPool::workerMain()
-    //{
-    //    LOG_IDENTIFY_THREAD;
-
-    //    while (!done_) {
-    //        MoveOnlyFunc task;
-
-    //        if (workQueue_.tryPop(task)) {
-    //            task();
-    //        } else {
-    //            std::this_thread::yield();
-    //        }
-    //    }
-    //}
+    void ThreadPool::submitGPUCommandLists()
+    {
+        for (auto& worker : workers_)
+            worker->submitCommandList();
+    }
 } // namespace Takoyaki

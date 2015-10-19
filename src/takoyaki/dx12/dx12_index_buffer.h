@@ -44,7 +44,7 @@ namespace Takoyaki
         // Internal usage:
 
         // tasks
-        void create(void*);
+        void create(void*, void*);
         //void createCleanup(void*, void*);
         //void destroy(ID3D12GraphicsCommandList*);
         //void onCreateDone();

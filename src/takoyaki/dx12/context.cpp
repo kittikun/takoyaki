@@ -147,7 +147,7 @@ namespace Takoyaki
                 auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, sizeByte, id }));
 
                 // then build a command to build underlaying resources
-                threadPool_->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1));
+                threadPool_->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
             }
             break;
 
@@ -157,7 +157,7 @@ namespace Takoyaki
                 auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, stride, sizeByte, id }));
 
                 // then build a command to build underlaying resources
-                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1));
+                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
             }
             break;
         }
@@ -250,7 +250,7 @@ namespace Takoyaki
             throw new std::runtime_error{ boost::str(fmt) };
         }
 
-        return std::pair<DX12InputLayout&, std::shared_lock<std::shared_timed_mutex>>(found->second, std::move(lock));
+        return InputLayoutReturn(found->second, std::move(lock));
     }
 
     auto DX12Context::getPipelineState(const std::string& name) -> PipelineStateReturn
@@ -264,7 +264,7 @@ namespace Takoyaki
             throw new std::runtime_error{ boost::str(fmt) };
         }
 
-        return std::pair<DX12PipelineState&, std::shared_lock<std::shared_timed_mutex>>(found->second, std::move(lock));
+        return PipelineStateReturn(found->second, std::move(lock));
     }
 
     auto DX12Context::getRootSignature(const std::string& name) -> RootSignatureReturn
@@ -278,7 +278,7 @@ namespace Takoyaki
             throw new std::runtime_error{ boost::str(fmt) };
         }
 
-        return std::pair<DX12RootSignature&, std::shared_lock<std::shared_timed_mutex>>(found->second, std::move(lock));
+        return RootSignatureReturn(found->second, std::move(lock));
     }
 
     D3D12_SHADER_BYTECODE DX12Context::getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>& map, const std::string& name)

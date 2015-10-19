@@ -54,7 +54,7 @@ namespace Takoyaki
         inline uint_fast32_t getCurrentFrame() const { return currentFrame_; }
         inline const glm::vec2& getWindowSize() const { return windowSize_; }
 
-        inline CommandListReturn getCommandList() { return CommandListReturn(commandList_, std::unique_lock<std::mutex>(deviceMutex_)); }
+        inline CommandListReturn getCommandList() { return CommandListReturn(commandLists_[currentFrame_], std::unique_lock<std::mutex>(commandListMutexes_[currentFrame_])); }
         inline std::unique_lock<std::mutex> getDeviceLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
         inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
 
@@ -73,12 +73,12 @@ namespace Takoyaki
 
         // main command queue
         Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
-        std::vector<Command> commandList_;
-        std::vector<ID3D12CommandList*> dxCommands_;
+        std::vector<std::vector<Command>> commandLists_;
+        std::vector<std::vector<ID3D12CommandList*>> dxCommandLists_;
 
         // cpu synchronization
         std::mutex deviceMutex_;
-        std::mutex commandListMutex_;
+        std::deque<std::mutex> commandListMutexes_;
 
         // gpu synchronization
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;

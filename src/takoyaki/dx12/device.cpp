@@ -86,6 +86,11 @@ namespace Takoyaki
 
         DXCheckThrow(D3DDevice_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
 
+        // Create command lists
+        commandLists_.resize(bufferCount);
+        dxCommandLists_.resize(bufferCount);
+        commandListMutexes_.resize(bufferCount);
+
         // Create synchronization objects.
         fenceValues_.resize(bufferCount);
         std::fill(fenceValues_.begin(), fenceValues_.end(), 0);
@@ -187,19 +192,24 @@ namespace Takoyaki
 
     void DX12Device::executeCommandList()
     {
-        // TODO: parallelize ?
-        std::sort(commandList_.begin(), commandList_.end(), [](const Command& lhs, const Command& rhs)
-        {
-            return lhs.priority < rhs.priority;
-        });
+        auto& cmdList = commandLists_[currentFrame_];
+        auto& dxList = dxCommandLists_[currentFrame_];
 
-        // can probably do better
-        for (auto& cmd : commandList_)
-            dxCommands_.push_back(cmd.commands.Get());
+        if (!cmdList.empty()) {
+            // TODO: parallelize ?
+            std::sort(cmdList.begin(), cmdList.end(), [](const Command& lhs, const Command& rhs)
+            {
+                return lhs.priority < rhs.priority;
+            });
 
-        commandQueue_->ExecuteCommandLists(static_cast<uint_fast32_t>(commandList_.size()), &dxCommands_.front());
+            // can probably do better
+            for (auto& cmd : cmdList)
+                dxList.push_back(cmd.commands.Get());
 
-        waitForGpu();
+            commandQueue_->ExecuteCommandLists(static_cast<uint_fast32_t>(cmdList.size()), &dxList.front());
+
+            waitForGpu();
+        }
     }
 
     DXGI_MODE_ROTATION DX12Device::getDXGIOrientation() const
@@ -362,10 +372,10 @@ namespace Takoyaki
         // Wait until the fence has been crossed.
         DXCheckThrow(fence_->SetEventOnCompletion(fenceValues_[currentFrame_], fenceEvent_));
 
-        commandList_.clear();
-        dxCommands_.clear();
-
         WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
+
+        commandLists_[currentFrame_].clear();
+        dxCommandLists_[currentFrame_].clear();
 
         // Increment the fence value for the current frame.
         fenceValues_[currentFrame_]++;

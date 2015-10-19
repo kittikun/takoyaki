@@ -66,6 +66,13 @@ namespace Takoyaki
 
     void DX12Worker::submitCommandList()
     {
-        auto pair = device_->getCommandList();
+        if (commandList_.size() > 0) {
+            auto pair = device_->getCommandList();
+
+            for (auto& cmd : commandList_)
+                pair.first.push_back(std::move(cmd));
+
+            commandList_.clear();
+        }
     }
 } // namespace Takoyaki

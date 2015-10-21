@@ -176,7 +176,7 @@ namespace Takoyaki
 
     void DX12Context::destroyMain(void* cmd, void* dev)
     {
-        auto command = static_cast<Command*>(cmd);
+        auto command = static_cast<TaskCommand*>(cmd);
         DestroyQueueType::ValueType pair;
 
         destroyQueue_.front(pair);

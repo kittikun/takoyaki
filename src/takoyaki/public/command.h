@@ -20,24 +20,28 @@
 
 #pragma once
 
+#include <memory>
+
 namespace Takoyaki
 {
-    class DX12Device;
+    class CommandImpl;
 
-    struct TaskCommand
+    class Command
     {
-        uint_fast32_t priority;
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commands;
-    };
+        Command(const Command&) = delete;
+        Command& operator=(const Command&) = delete;
+        Command(Command&&) = delete;
+        Command& operator=(Command&&) = delete;
 
-    class DX12Synchronisation
-    {
     public:
-        DX12Synchronisation(DX12Device*);
-    private:
-        Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-        HANDLE fenceEvent_;
-        uint64_t fenceValue_;
-    };
+        Command(std::unique_ptr<CommandImpl>) noexcept;
+        ~Command() noexcept;
 
-} // namespace Takoyaki
+        void setConstantBuffer(const std::string& name);
+        void setPipelineState(const std::string& name);
+
+    private:
+        std::unique_ptr<CommandImpl> impl_;
+    };
+}
+// namespace Takoyaki

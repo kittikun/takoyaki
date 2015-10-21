@@ -21,12 +21,14 @@
 #include "pch.h"
 #include "renderer.h"
 
+#include "command.h"
 #include "constant_table.h"
 #include "index_buffer.h"
 #include "input_layout.h"
 #include "root_signature.h"
 #include "vertex_buffer.h"
 
+#include "../impl/command_impl.h"
 #include "../impl/constant_table_impl.h"
 #include "../impl/index_buffer_impl.h"
 #include "../impl/input_layout_impl.h"
@@ -47,6 +49,11 @@ namespace Takoyaki
     void Renderer::compilePipelineStateObjects()
     {
         impl_->compilePipelineStateObjects();
+    }
+
+    std::unique_ptr<Command> Renderer::createCommand()
+    {
+        return std::make_unique<Command>(impl_->createCommand());
     }
 
     std::unique_ptr<IndexBuffer> Renderer::createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte)

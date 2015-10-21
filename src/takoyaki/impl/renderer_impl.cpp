@@ -21,6 +21,7 @@
 #include "pch.h"
 #include "renderer_impl.h"
 
+#include "command_impl.h"
 #include "constant_table_impl.h"
 #include "index_buffer_impl.h"
 #include "input_layout_impl.h"
@@ -43,6 +44,11 @@ namespace Takoyaki
         std::shared_lock<std::shared_timed_mutex> readLock{ rwMutex_ };
 
         context_->compilePipelineStateObjects();
+    }
+
+    std::unique_ptr<CommandImpl> RendererImpl::createCommand()
+    {
+        return std::make_unique<CommandImpl>();
     }
 
     std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, EFormat format, uint_fast32_t sizeByte)

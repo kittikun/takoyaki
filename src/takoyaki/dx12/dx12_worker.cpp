@@ -46,7 +46,7 @@ namespace Takoyaki
 
         while (!threadPool_->isDone()) {
             if (threadPool_->tryPopGPUTask(gpuCmd)) {
-                Command cmd;
+                TaskCommand cmd;
 
                 cmd.priority = 0;
                 {

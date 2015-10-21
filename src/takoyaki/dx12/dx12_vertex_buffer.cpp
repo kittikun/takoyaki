@@ -61,7 +61,7 @@ namespace Takoyaki
     void DX12VertexBuffer::create(void* command, void* dev)
     {
         auto device = static_cast<DX12Device*>(dev);
-        auto cmd = static_cast<Command*>(command);
+        auto cmd = static_cast<TaskCommand*>(command);
         //auto res = static_cast<CopyWorker::Result*>(r);
 
         vertexBuffer_->create(device);
@@ -109,7 +109,7 @@ namespace Takoyaki
 
     void DX12VertexBuffer::cleanupCreate(void* command, void*)
     {
-        auto cmd = static_cast<Command*>(command);
+        auto cmd = static_cast<TaskCommand*>(command);
 
         cmd->commands->DiscardResource(uploadBuffer_->getResource(), nullptr);
         cmd->commands->Close();
@@ -124,7 +124,7 @@ namespace Takoyaki
 
     void DX12VertexBuffer::destroy(void* command, void*)
     {
-        auto cmd = static_cast<Command*>(command);
+        auto cmd = static_cast<TaskCommand*>(command);
 
         cmd->commands->DiscardResource(vertexBuffer_->getResource(), nullptr);
         cmd->commands->Close();

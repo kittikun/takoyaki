@@ -152,11 +152,13 @@ void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
     // update constant buffer
     auto viewProj = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
 
-    // cbuffer might by empty if shader hasn't been loaded yet
+    // constant buffer might by empty if shader hasn't been loaded yet
     if (viewProj) {
         viewProj->setMatrix4x4("model", glm::mat4(1.0f));
         viewProj->setMatrix4x4("projection", perspective);
         viewProj->setMatrix4x4("view", lookAt);
     }
 
+    // Work sent to GPU actually happens here
+    auto cmd = renderer->createCommand();
 }

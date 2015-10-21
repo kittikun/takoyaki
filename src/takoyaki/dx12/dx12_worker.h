@@ -56,7 +56,7 @@ namespace Takoyaki
         std::shared_ptr<DX12Context> context_;
         std::shared_ptr<DX12Device> device_;
         Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
-        std::vector<Command> commandList_;
+        std::vector<TaskCommand> commandList_;
         DX12Synchronisation sync_;
     };
 } // namespace Takoyaki

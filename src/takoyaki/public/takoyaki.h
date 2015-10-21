@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <command.h>
 #include <constant_table.h>
 #include <framework.h>
 #include <index_buffer.h>

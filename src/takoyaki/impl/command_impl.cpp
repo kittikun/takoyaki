@@ -18,26 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "command_impl.h"
 
 namespace Takoyaki
 {
-    class DX12Device;
-
-    struct TaskCommand
+    CommandImpl::CommandImpl() noexcept
     {
-        uint_fast32_t priority;
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commands;
-    };
 
-    class DX12Synchronisation
+    }
+
+    CommandImpl::~CommandImpl() noexcept
     {
-    public:
-        DX12Synchronisation(DX12Device*);
-    private:
-        Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-        HANDLE fenceEvent_;
-        uint64_t fenceValue_;
-    };
-
-} // namespace Takoyaki
+    }
+}
+// namespace Takoyaki

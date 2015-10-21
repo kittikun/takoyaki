@@ -140,6 +140,8 @@ namespace Takoyaki
                 throw std::runtime_error{ "DX12Device::createSwapChain, displayRotation" };
         }
 
+        viewport_ = { 0.f, 0.f, outSize.x, outSize.y, 0.f, 1.f };
+
         if (swapChain_ != nullptr) {
             // TODO: Do proper handling or DXGI_ERROR_DEVICE_REMOVED and DXGI_ERROR_DEVICE_RESET
             DXCheckThrow(swapChain_->ResizeBuffers(bufferCount_, lround(outSize.x), lround(outSize.y), DXGI_FORMAT_B8G8R8A8_UNORM, 0));
@@ -197,7 +199,7 @@ namespace Takoyaki
 
         if (!cmdList.empty()) {
             // TODO: parallelize ?
-            std::sort(cmdList.begin(), cmdList.end(), [](const Command& lhs, const Command& rhs)
+            std::sort(cmdList.begin(), cmdList.end(), [](const TaskCommand& lhs, const TaskCommand& rhs)
             {
                 return lhs.priority < rhs.priority;
             });

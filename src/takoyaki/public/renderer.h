@@ -27,6 +27,7 @@
 
 namespace Takoyaki
 {
+    class Command;
     class ConstantTable;
     class IndexBuffer;
     class InputLayout;
@@ -46,6 +47,7 @@ namespace Takoyaki
         Renderer(std::shared_ptr<RendererImpl>&) noexcept;
         ~Renderer() noexcept;
 
+        std::unique_ptr<Command> createCommand();
         std::unique_ptr<IndexBuffer> createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte);
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
         std::unique_ptr<RootSignature> createRootSignature(const std::string& name);

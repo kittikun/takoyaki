@@ -26,7 +26,7 @@
 
 namespace Takoyaki
 {
-    struct Command;
+    struct TaskCommand;
     struct FrameworkDesc;
     class DX12Context;
 
@@ -41,7 +41,7 @@ namespace Takoyaki
         DX12Device() noexcept;
         ~DX12Device() = default;
 
-        using CommandListReturn = std::pair<std::vector<Command>&, std::unique_lock<std::mutex>>;
+        using CommandListReturn = std::pair<std::vector<TaskCommand>&, std::unique_lock<std::mutex>>;
 
         void create(const FrameworkDesc& desc, std::weak_ptr<DX12Context>);
         void present();
@@ -73,7 +73,7 @@ namespace Takoyaki
 
         // main command queue
         Microsoft::WRL::ComPtr<ID3D12CommandQueue>  commandQueue_;
-        std::vector<std::vector<Command>> commandLists_;
+        std::vector<std::vector<TaskCommand>> commandLists_;
         std::vector<std::vector<ID3D12CommandList*>> dxCommandLists_;
 
         // cpu synchronization
@@ -88,6 +88,7 @@ namespace Takoyaki
         // windows related
         IUnknown* window_;
         glm::vec2 windowSize_;
+        D3D12_VIEWPORT viewport_;
         EDisplayOrientation currentOrientation_;
         EDisplayOrientation nativeOrientation_;
         float dpi_;

@@ -24,6 +24,7 @@
 #pragma warning(disable : 4521)
 
 #include <atomic>
+#include <future>
 #include <boost/any.hpp>
 
 #include "thread_safe_queue.h"
@@ -101,31 +102,44 @@ namespace Takoyaki
         inline bool isDone() const { return done_.load(); }
 
         template<typename Func>
-        void submitGeneric(Func f)
+        void submitGeneric(Func f, uint_fast32_t target)
         {
-            genericWorkQueue_.push(std::move(f));
+            genericWorkQueues_[target].push(std::move(f));
         }
 
         template<typename Func>
-        void submitGPU(Func f)
+        void submitGPU(Func f, uint_fast32_t target)
         {
             // specialized submit
-            gpuWorkQueue_.push(std::move(f));
+            gpuWorkQueues_[target].push(std::move(f));
         }
 
-        void submitGPUCommandLists();
+        //template<typename Func>
+        //std::future<std::result_of_t<Func()>> submitGPUWithResult(Func f)
+        //{
+        //    std::packaged_task<std::result_of_t<Func()>> task(std::move(f));
+        //    std::future<std::result_of_t<Func()>> res(task.get_future());
 
-        inline bool tryPopGenericTask(MoveOnlyFunc& task) { return genericWorkQueue_.tryPop(task); }
-        inline bool tryPopGPUTask(MoveOnlyFuncParamTwo& task) { return gpuWorkQueue_.tryPop(task); }
+        //    gpuWorkQueue_.push(std::move(task));
+        //    return res;
+        //}
+
+        void submitGPUCommandLists();
+        void swapQueues();
+
+        inline bool tryPopGenericTask(MoveOnlyFunc& task) { return genericWorkQueues_[0].tryPop(task); }
+        inline bool tryPopGPUTask(MoveOnlyFuncParamTwo& task) { return gpuWorkQueues_[0].tryPop(task); }
 
     private:
         void workerMain();
 
     private:
         std::atomic<bool> done_;
+        std::mutex swapMutex_;
+        std::condition_variable swapCond_;
         std::vector<std::unique_ptr<IWorker>> workers_;
-        ThreadSafeQueue<MoveOnlyFunc> genericWorkQueue_;
-        ThreadSafeQueue<MoveOnlyFuncParamTwo> gpuWorkQueue_;
+        std::array<ThreadSafeQueue<MoveOnlyFunc>, 3> genericWorkQueues_;
+        std::array<ThreadSafeQueue<MoveOnlyFuncParamTwo>, 3> gpuWorkQueues_;
         std::vector<std::thread> threads;
         JoinThreads joiner;
     };

@@ -102,29 +102,26 @@ namespace Takoyaki
 
         cmd->commands->ResourceBarrier(1, &barrier);
         cmd->commands->Close();
-
-        //res->type = CopyWorker::ReturnType::TASK;
-        //res->funcTask = std::bind(&DX12IndexBuffer::createCleanup, this, std::placeholders::_1, std::placeholders::_2);
     }
 
-    //void DX12IndexBuffer::createCleanup(void* p, void* r)
-    //{
-    //    auto context = static_cast<CopyWorker::Context*>(p);
-    //    auto res = static_cast<CopyWorker::Result*>(r);
+    void DX12IndexBuffer::cleanupCreate(void* command, void*)
+    {
+        auto cmd = static_cast<Command*>(command);
 
-    //    context->commandList->DiscardResource(uploadBuffer_->getResource(), nullptr);
+        cmd->commands->DiscardResource(uploadBuffer_->getResource(), nullptr);
+        cmd->commands->Close();
+    }
 
-    //    res->type = CopyWorker::ReturnType::NOTIFY;
-    //    res->funcNotify = std::bind(&DX12IndexBuffer::onCreateDone, this);
-    //}
+    void DX12IndexBuffer::cleanupIntermediate()
+    {
+        intermediate_.reset();
+    }
 
-    //void DX12IndexBuffer::onCreateDone()
-    //{
-    //    intermediate_.reset();
-    //}
+    void DX12IndexBuffer::destroy(void* command, void*)
+    {
+        auto cmd = static_cast<Command*>(command);
 
-    //void DX12IndexBuffer::destroy(ID3D12GraphicsCommandList* commandList)
-    //{
-    //    commandList->DiscardResource(indexBuffer_->getResource(), nullptr);
-    //}
+        cmd->commands->DiscardResource(indexBuffer_->getResource(), nullptr);
+        cmd->commands->Close();
+    }
 } // namespace Takoyaki

@@ -18,45 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
-
-#include <memory>
-
+#include "pch.h"
 #include "dxcommon.h"
-#include "../thread_pool.h"
+
+#include "device.h"
 
 namespace Takoyaki
 {
-    class DX12Context;
-    class DX12Device;
-    class ThreadPool;
-
-    struct DX12WorkerDesc
+    DX12Synchronisation::DX12Synchronisation(DX12Device* device)
+        : fenceValue_{ 0 }
     {
-        std::shared_ptr<DX12Context> context;
-        std::shared_ptr<DX12Device> device;
-        ThreadPool* threadPool;
-    };
+        auto lock = device->getDeviceLock();
 
-    class DX12Worker : public ThreadPool::IWorker
-    {
-        DX12Worker(const DX12Worker&) = delete;
-        DX12Worker& operator=(const DX12Worker&) = delete;
-        DX12Worker(DX12Worker&&) noexcept;
-        DX12Worker& operator=(DX12Worker&&) = delete;
-
-    public:
-        DX12Worker(const DX12WorkerDesc&);
-
-        void main() override;
-        void submitCommandList() override;
-
-    private:
-        ThreadPool* threadPool_;
-        std::shared_ptr<DX12Context> context_;
-        std::shared_ptr<DX12Device> device_;
-        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
-        std::vector<Command> commandList_;
-        DX12Synchronisation sync_;
-    };
+        device->getDXDevice()->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
+    }
 } // namespace Takoyaki

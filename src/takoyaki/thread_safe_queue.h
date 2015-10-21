@@ -62,6 +62,12 @@ namespace Takoyaki
             cond_.notify_one();
         }
 
+        // not thread-safe
+        void swap(ThreadSafeQueue<T>& other)
+        {
+            queue_.swap(other.queue_);
+        }
+
         bool tryPop(T& value)
         {
             std::lock_guard<std::mutex> lock{ mutex_ };

@@ -107,24 +107,26 @@ namespace Takoyaki
         //res->funcTask = std::bind(&DX12VertexBuffer::createCleanup, this, std::placeholders::_1, std::placeholders::_2);
     }
 
-    //void DX12VertexBuffer::createCleanup(void* p, void* r)
-    //{
-    //    auto context = static_cast<CopyWorker::Context*>(p);
-    //    auto res = static_cast<CopyWorker::Result*>(r);
+    void DX12VertexBuffer::cleanupCreate(void* command, void*)
+    {
+        auto cmd = static_cast<Command*>(command);
 
-    //    context->commandList->DiscardResource(uploadBuffer_->getResource(), nullptr);
+        cmd->commands->DiscardResource(uploadBuffer_->getResource(), nullptr);
+        cmd->commands->Close();
+        //res->type = CopyWorker::ReturnType::NOTIFY;
+        //res->funcNotify = std::bind(&DX12VertexBuffer::onCreateDone, this);
+    }
 
-    //    res->type = CopyWorker::ReturnType::NOTIFY;
-    //    res->funcNotify = std::bind(&DX12VertexBuffer::onCreateDone, this);
-    //}
+    void DX12VertexBuffer::cleanupIntermediate()
+    {
+        intermediate_.reset();
+    }
 
-    //void DX12VertexBuffer::onCreateDone()
-    //{
-    //    intermediate_.reset();
-    //}
+    void DX12VertexBuffer::destroy(void* command, void*)
+    {
+        auto cmd = static_cast<Command*>(command);
 
-    //void DX12VertexBuffer::destroy(ID3D12GraphicsCommandList* commandList)
-    //{
-    //    commandList->DiscardResource(vertexBuffer_->getResource(), nullptr);
-    //}
+        cmd->commands->DiscardResource(vertexBuffer_->getResource(), nullptr);
+        cmd->commands->Close();
+    }
 } // namespace Takoyaki

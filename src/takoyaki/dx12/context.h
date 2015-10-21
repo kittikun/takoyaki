@@ -87,7 +87,7 @@ namespace Takoyaki
         void createRootSignature(const std::string&);
 
         void destroyResource(EResourceType, uint_fast32_t);
-        void destroyMain(void*);
+        void destroyMain(void*, void*);
         void onDestroyDone();
 
         const DX12IndexBuffer& getIndexBuffer(uint_fast32_t);

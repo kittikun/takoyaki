@@ -30,6 +30,7 @@ namespace Takoyaki
         : context_(std::move(desc.context))
         , device_(std::move(desc.device))
         , threadPool_{ desc.threadPool }
+        , sync_{ device_.get() }
     {
         auto lock = desc.device->getDeviceLock();
 

@@ -47,6 +47,10 @@ namespace Takoyaki
         ~RendererImpl() = default;
 
         //////////////////////////////////////////////////////////////////////////
+        // Internal usage: 
+        inline std::unique_lock<std::shared_timed_mutex> getLock() { return std::unique_lock<std::shared_timed_mutex>{rwMutex_}; }
+
+        //////////////////////////////////////////////////////////////////////////
         // External usage: 
 
         std::unique_ptr<IndexBufferImpl> createIndexBuffer(uint8_t*, EFormat, uint_fast32_t);
@@ -67,6 +71,9 @@ namespace Takoyaki
         // the "generator" is mostly for user resources that need to be
         // released upon destruction
         std::atomic<uint_fast32_t> uidGenerator_;
+
+        // this shared mutex is required to prevent commands from being created while swapping thread pool "frames"
+        mutable std::shared_timed_mutex rwMutex_;
     };
 }
 // namespace Takoyaki

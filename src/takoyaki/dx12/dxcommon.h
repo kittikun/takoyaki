@@ -22,6 +22,8 @@
 
 namespace Takoyaki
 {
+    class DX12Device;
+
     struct Command
     {
         uint_fast32_t priority;
@@ -31,7 +33,7 @@ namespace Takoyaki
     class DX12Synchronisation
     {
     public:
-        DX12Synchronisation();
+        DX12Synchronisation(DX12Device*);
     private:
         Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
         HANDLE fenceEvent_;

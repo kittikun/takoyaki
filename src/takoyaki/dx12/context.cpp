@@ -80,7 +80,7 @@ namespace Takoyaki
             auto lock = pipelineStates_.getReadLock();
 
             for (auto& state : pipelineStates_)
-                threadPool_->submitGeneric(std::bind(&DX12Context::compileMain, this, state.first));
+                threadPool_->submitGeneric(std::bind(&DX12Context::compileMain, this, state.first), 0);
         }
     }
 
@@ -147,7 +147,7 @@ namespace Takoyaki
                 auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, sizeByte, id }));
 
                 // then build a command to build underlaying resources
-                threadPool_->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
+                threadPool_->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), 0);
             }
             break;
 
@@ -157,7 +157,9 @@ namespace Takoyaki
                 auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, stride, sizeByte, id }));
 
                 // then build a command to build underlaying resources
-                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2));
+                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), 0);
+                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), 1);
+                threadPool_->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
             }
             break;
         }
@@ -168,13 +170,13 @@ namespace Takoyaki
         // destruction is deferred so add to destroy queue and submit a job request
 
         destroyQueue_.push(std::make_pair(type, id));
-        threadPool_->submitGPU(std::bind(&DX12Context::destroyMain, this, std::placeholders::_1));
+        threadPool_->submitGPU(std::bind(&DX12Context::destroyMain, this, std::placeholders::_1, std::placeholders::_2), 0);
+        threadPool_->submitGeneric(std::bind(&DX12Context::onDestroyDone, this), 1);
     }
 
-    void DX12Context::destroyMain(void* command)
+    void DX12Context::destroyMain(void* cmd, void* dev)
     {
-        auto cmd = static_cast<Command*>(command);
-        //auto res = static_cast<CopyWorker::Result*>(r);
+        auto command = static_cast<Command*>(cmd);
         DestroyQueueType::ValueType pair;
 
         destroyQueue_.front(pair);
@@ -186,7 +188,7 @@ namespace Takoyaki
                 auto found = indexBuffers_.find(pair.second);
 
                 if (found != indexBuffers_.end()) {
-                    //found->second.destroy(cmd->commands.Get());
+                    found->second.destroy(cmd, dev);
                 }
             }
             break;
@@ -197,14 +199,11 @@ namespace Takoyaki
                 auto found = vertexBuffers_.find(pair.second);
 
                 if (found != vertexBuffers_.end()) {
-                    //found->second.destroy(cmd->commands.Get());
+                    found->second.destroy(cmd, dev);
                 }
             }
             break;
         }
-
-        //res->type = CopyWorker::ReturnType::NOTIFY;
-        //res->funcNotify = std::bind(&DX12Context::onDestroyDone, this);
     }
 
     auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn

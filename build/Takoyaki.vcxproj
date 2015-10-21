@@ -37,6 +37,7 @@
     <ClCompile Include="..\src\takoyaki\dx12\dx12_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_root_signature.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_vertex_buffer.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dxcommon.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dxsystem.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dxutility.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_input_layout.cpp" />

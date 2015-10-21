@@ -45,7 +45,7 @@ namespace Takoyaki
     void FrameworkImpl::compileShader(const ShaderDesc& desc)
     {
         // system will use shaderlist, this is for app
-        threadPool_->submitGeneric(std::bind(&ShaderCompiler::compileShader, &io_, desc, context_));
+        threadPool_->submitGeneric(std::bind(&ShaderCompiler::compileShader, &io_, desc, context_), 0);
     }
 
     void FrameworkImpl::initialize(const FrameworkDesc& desc)
@@ -84,6 +84,13 @@ namespace Takoyaki
 
     void FrameworkImpl::present()
     {
+        // prevent new tasks from being created while swapping queues
+        {
+            auto rendererLock = renderer_->getLock();
+
+            threadPool_->swapQueues();
+        }
+
         threadPool_->submitGPUCommandLists();
         device_->executeCommandList();
         device_->present();

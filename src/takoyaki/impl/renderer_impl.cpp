@@ -40,12 +40,15 @@ namespace Takoyaki
 
     void RendererImpl::compilePipelineStateObjects()
     {
+        std::shared_lock<std::shared_timed_mutex> readLock{ rwMutex_ };
+
         context_->compilePipelineStateObjects();
     }
 
     std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, EFormat format, uint_fast32_t sizeByte)
     {
         auto id = uidGenerator_.fetch_add(1);
+        std::shared_lock<std::shared_timed_mutex> readLock{rwMutex_};
 
         context_->createBuffer(DX12Context::EResourceType::INDEX_BUFFER, id, data, format, 0, sizeByte);
 
@@ -78,6 +81,7 @@ namespace Takoyaki
     std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* data, uint_fast32_t stride, uint_fast32_t sizeByte)
     {
         auto id = uidGenerator_.fetch_add(1);
+        std::shared_lock<std::shared_timed_mutex> readLock{ rwMutex_ };
 
         context_->createBuffer(DX12Context::EResourceType::VERTEX_BUFFER, id, data, EFormat::UNKNOWN, stride, sizeByte);
 

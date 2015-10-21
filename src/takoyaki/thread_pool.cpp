@@ -41,4 +41,18 @@ namespace Takoyaki
         for (auto& worker : workers_)
             worker->submitCommandList();
     }
+
+    void ThreadPool::swapQueues()
+    {
+        // wait to all jobs for this frame to be processed
+        std::unique_lock<std::mutex> lock{ swapMutex_ };
+
+        swapCond_.wait(lock, [this] { return genericWorkQueues_[0].empty() && gpuWorkQueues_[0].empty(); });
+
+        // no thread-safe but has caller ensured it is safe here
+        genericWorkQueues_[0].swap(genericWorkQueues_[1]);
+        genericWorkQueues_[1].swap(genericWorkQueues_[2]);
+        gpuWorkQueues_[0].swap(gpuWorkQueues_[1]);
+        gpuWorkQueues_[1].swap(gpuWorkQueues_[2]);
+    }
 } // namespace Takoyaki

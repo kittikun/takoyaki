@@ -31,5 +31,20 @@ namespace Takoyaki
     }
 
     Command::~Command() = default;
+
+    void Command::drawIndexedInstanced()
+    {
+        impl_->drawIndexedInstanced();
+    }
+
+    void Command::setPriority(uint_fast32_t priority)
+    {
+        impl_->setPriority(priority);
+    }
+
+    void  Command::setRootSignature(const std::string& name)
+    {
+        impl_->setRootSignature(name);
+    }
 }
 // namespace Takoyaki

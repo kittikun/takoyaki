@@ -21,15 +21,31 @@
 #include "pch.h"
 #include "command_impl.h"
 
+#include "renderer_impl.h"
+
 namespace Takoyaki
 {
-    CommandImpl::CommandImpl() noexcept
+    CommandDesc::CommandDesc()
+        : priority{ 0 }
+    {
+
+    }
+
+    CommandImpl::CommandImpl(const std::shared_ptr<RendererImpl>& renderer) noexcept
+        : renderer_{ renderer }
     {
 
     }
 
     CommandImpl::~CommandImpl() noexcept
     {
+    }
+
+    void CommandImpl::drawIndexedInstanced()
+    {
+        auto renderer = renderer_.lock();
+
+        renderer->executeCommand(desc_);
     }
 }
 // namespace Takoyaki

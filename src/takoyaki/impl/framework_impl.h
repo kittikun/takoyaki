@@ -61,10 +61,10 @@ namespace Takoyaki
 
     private:
         IO io_;
-        std::shared_ptr<ThreadPool> threadPool_;
-        std::shared_ptr<DX12Context> context_;
         std::shared_ptr<DX12Device> device_;
+        std::shared_ptr<DX12Context> context_;
         std::shared_ptr<RendererImpl> renderer_;
+        std::shared_ptr<ThreadPool> threadPool_;
     };
 
 } // namespace Takoyaki

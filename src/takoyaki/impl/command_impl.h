@@ -20,12 +20,27 @@
 
 #pragma once
 
+#include <memory>
+
 #include "../dx12/dxcommon.h"
 
 namespace Takoyaki
 {
     class DX12Context;
     class DX12VertexBuffer;
+    class RendererImpl;
+
+    enum class ECommandType
+    {
+        ROOT_SIGNATURE
+    };
+
+    struct CommandDesc
+    {
+        CommandDesc();
+        uint_fast32_t priority;
+        std::vector<std::pair<ECommandType, std::string>> commands;
+    };
 
     class CommandImpl
     {
@@ -35,11 +50,17 @@ namespace Takoyaki
         CommandImpl& operator=(CommandImpl&&) = delete;
 
     public:
-        CommandImpl() noexcept;
+        CommandImpl(const std::shared_ptr<RendererImpl>&) noexcept;
         ~CommandImpl() noexcept;
 
+        void drawIndexedInstanced();
+
+        inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }
+        inline void setRootSignature(const std::string& name) { desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE, name)); };
+
     private:
-        TaskCommand command_;
+        std::weak_ptr<RendererImpl> renderer_;
+        CommandDesc desc_;
     };
 }
 // namespace Takoyaki

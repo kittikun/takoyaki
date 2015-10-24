@@ -72,7 +72,7 @@ namespace Takoyaki
             throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
 
         io_.initialize(desc.loadAsyncFunc);
-        renderer_.reset(new RendererImpl{ device_, context_ });
+        renderer_.reset(new RendererImpl{ device_, context_, threadPool_ });
 
         LOGC_INDENT_END << "Initialization complete.";
     }

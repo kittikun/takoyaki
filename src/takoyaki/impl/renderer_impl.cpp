@@ -21,22 +21,48 @@
 #include "pch.h"
 #include "renderer_impl.h"
 
-#include "command_impl.h"
 #include "constant_table_impl.h"
 #include "index_buffer_impl.h"
 #include "input_layout_impl.h"
 #include "root_signature_impl.h"
 #include "vertex_buffer_impl.h"
+#include "../thread_pool.h"
 #include "../dx12/context.h"
 #include "../dx12/device.h"
 
 namespace Takoyaki
 {
-    RendererImpl::RendererImpl(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<DX12Context>& context) noexcept
+    RendererImpl::RendererImpl(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<DX12Context>& context, const std::shared_ptr<ThreadPool>& threadPool) noexcept
         : context_{ context }
         , device_{ device }
+        , threadPool_{ threadPool }
     {
 
+    }
+
+    void RendererImpl::buildCommandMain(void* cmd, void* dev)
+    {
+        auto taskCmd = static_cast<TaskCommand*>(cmd);
+        CommandDesc desc;
+
+        if (!commands_.tryPop(desc)) {
+            throw new std::runtime_error{ "RendererImpl::buildCommandMain, could not pop command" };
+        }
+
+        for (auto pair : desc.commands) {
+            switch (pair.first) {
+                case ECommandType::ROOT_SIGNATURE:
+                {
+                    auto res = context_->getRootSignature(pair.second);
+                    taskCmd->commands->SetGraphicsRootSignature(res.first.getRootSignature());
+                }
+                break;
+            }
+        }
+
+
+        taskCmd->priority = desc.priority;
+        taskCmd->commands->Close();
     }
 
     void RendererImpl::compilePipelineStateObjects()
@@ -48,7 +74,7 @@ namespace Takoyaki
 
     std::unique_ptr<CommandImpl> RendererImpl::createCommand()
     {
-        return std::make_unique<CommandImpl>();
+        return std::make_unique<CommandImpl>(shared_from_this());
     }
 
     std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, EFormat format, uint_fast32_t sizeByte)
@@ -92,6 +118,13 @@ namespace Takoyaki
         context_->createBuffer(DX12Context::EResourceType::VERTEX_BUFFER, id, data, EFormat::UNKNOWN, stride, sizeByte);
 
         return std::make_unique<VertexBufferImpl>(context_, context_->getVertexBuffer(id), id);
+    }
+
+    void RendererImpl::executeCommand(const CommandDesc& desc)
+    {
+        commands_.push(desc);
+
+        threadPool_->submitGPU(std::bind(&RendererImpl::buildCommandMain, this, std::placeholders::_1, std::placeholders::_2), 0);
     }
 
     std::unique_ptr<ConstantTableImpl> RendererImpl::getConstantBuffer(const std::string& name)

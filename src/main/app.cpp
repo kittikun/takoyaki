@@ -133,7 +133,10 @@ void App::initialize(Takoyaki::Framework* framework)
 
 void App::render(Takoyaki::Renderer* renderer)
 {
+    // Work sent to GPU actually happens here
+    auto cmd = renderer->createCommand();
 
+    cmd->setRootSignature("SimpleSignature");
 }
 
 void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
@@ -158,7 +161,4 @@ void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
         viewProj->setMatrix4x4("projection", perspective);
         viewProj->setMatrix4x4("view", lookAt);
     }
-
-    // Work sent to GPU actually happens here
-    auto cmd = renderer->createCommand();
 }

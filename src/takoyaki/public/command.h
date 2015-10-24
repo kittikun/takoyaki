@@ -37,8 +37,11 @@ namespace Takoyaki
         Command(std::unique_ptr<CommandImpl>) noexcept;
         ~Command() noexcept;
 
+        void drawIndexedInstanced();
         void setConstantBuffer(const std::string& name);
         void setPipelineState(const std::string& name);
+        void setRootSignature(const std::string& name);
+        void setPriority(uint_fast32_t priority);
 
     private:
         std::unique_ptr<CommandImpl> impl_;

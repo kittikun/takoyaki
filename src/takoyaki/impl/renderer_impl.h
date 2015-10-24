@@ -22,6 +22,8 @@
 
 #include <atomic>
 
+#include "command_impl.h"
+#include "../thread_safe_queue.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki
@@ -33,10 +35,11 @@ namespace Takoyaki
     class DX12Context;
     class DX12Device;
     class RootSignatureImpl;
+    class ThreadPool;
     class VertexBufferImpl;
     struct PipelineStateDesc;
 
-    class RendererImpl
+    class RendererImpl : public std::enable_shared_from_this<RendererImpl>
     {
         RendererImpl(const RendererImpl&) = delete;
         RendererImpl& operator=(const RendererImpl&) = delete;
@@ -44,12 +47,14 @@ namespace Takoyaki
         RendererImpl& operator=(RendererImpl&&) = delete;
 
     public:
-        RendererImpl(const std::shared_ptr<DX12Device>&, const std::shared_ptr<DX12Context>&) noexcept;
+        RendererImpl(const std::shared_ptr<DX12Device>&, const std::shared_ptr<DX12Context>&, const std::shared_ptr<ThreadPool>&) noexcept;
         ~RendererImpl() = default;
 
         //////////////////////////////////////////////////////////////////////////
         // Internal usage: 
         inline std::unique_lock<std::shared_timed_mutex> getLock() { return std::unique_lock<std::shared_timed_mutex>{rwMutex_}; }
+        void executeCommand(const CommandDesc&);
+        void buildCommandMain(void*, void*);
 
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
@@ -68,6 +73,10 @@ namespace Takoyaki
     private:
         std::shared_ptr<DX12Context> context_;
         std::shared_ptr<DX12Device> device_;
+        std::shared_ptr<ThreadPool> threadPool_;
+
+        // keep command copy for worker to build the actual command
+        ThreadSafeQueue<CommandDesc> commands_;
 
         // the "generator" is mostly for user resources that need to be
         // released upon destruction

@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "renderer_impl.h"
 
-#include "constant_table_impl.h"
+#include "constant_buffer_impl.h"
 #include "index_buffer_impl.h"
 #include "input_layout_impl.h"
 #include "root_signature_impl.h"
@@ -40,29 +40,17 @@ namespace Takoyaki
 
     }
 
-    void RendererImpl::buildCommandMain(void* cmd, void* dev)
+    void RendererImpl::buildCommand(const CommandDesc& desc) const
     {
-        auto taskCmd = static_cast<TaskCommand*>(cmd);
-        CommandDesc desc;
+        // capture by value is important here
+        auto lamda = [this, desc](void* cmd, void* dev)
+        {
+            auto taskCmd = static_cast<TaskCommand*>(cmd);
 
-        if (!commands_.tryPop(desc)) {
-            throw new std::runtime_error{ "RendererImpl::buildCommandMain, could not pop command" };
-        }
+            context_->buildCommand(desc, taskCmd);
+        };
 
-        for (auto pair : desc.commands) {
-            switch (pair.first) {
-                case ECommandType::ROOT_SIGNATURE:
-                {
-                    auto res = context_->getRootSignature(pair.second);
-                    taskCmd->commands->SetGraphicsRootSignature(res.first.getRootSignature());
-                }
-                break;
-            }
-        }
-
-
-        taskCmd->priority = desc.priority;
-        taskCmd->commands->Close();
+        threadPool_->submitGPU(std::bind(lamda, std::placeholders::_1, std::placeholders::_2), 0);
     }
 
     void RendererImpl::compilePipelineStateObjects()
@@ -120,21 +108,14 @@ namespace Takoyaki
         return std::make_unique<VertexBufferImpl>(context_, context_->getVertexBuffer(id), id);
     }
 
-    void RendererImpl::executeCommand(const CommandDesc& desc)
-    {
-        commands_.push(desc);
-
-        threadPool_->submitGPU(std::bind(&RendererImpl::buildCommandMain, this, std::placeholders::_1, std::placeholders::_2), 0);
-    }
-
-    std::unique_ptr<ConstantTableImpl> RendererImpl::getConstantBuffer(const std::string& name)
+    std::unique_ptr<ConstantBufferImpl> RendererImpl::getConstantBuffer(const std::string& name)
     {
         auto pair = context_->getConstantBuffer(name);
 
         // is it possible that the constant haven't been added yet if the corresponding shader
         // hasn't been compiled yet
         if (pair)
-            return std::make_unique<ConstantTableImpl>(pair->first, std::move(pair->second), device_->getCurrentFrame());
+            return std::make_unique<ConstantBufferImpl>(pair->first, std::move(pair->second), device_->getCurrentFrame());
         else
             return nullptr;
     }

@@ -305,27 +305,21 @@ namespace Takoyaki
         }
     }
 
-    void DX12Device::setProperty(EPropertyID id, const boost::any& value)
+    void DX12Device::setWindowSize(const glm::vec2& value)
     {
-        // TODO: remove property system later
-        switch (id) {
-            case EPropertyID::WINDOW_SIZE:
-                windowSize_ = boost::any_cast<glm::vec2>(value);
-                break;
+        windowSize_ = value;
+        createSwapChain();
+    }
 
-            case EPropertyID::WINDOW_ORIENTATION:
-                currentOrientation_ = boost::any_cast<EDisplayOrientation>(value);
-                break;
+    void DX12Device::setWindowOrientation(EDisplayOrientation value)
+    {
+        currentOrientation_ = value;
+        createSwapChain();
+    }
 
-            case EPropertyID::WINDOW_DPI:
-                dpi_ = boost::any_cast<float>(value);
-                break;
-
-            default:
-                throw new std::runtime_error{ "DX12Device::setProperty, id" };
-                break;
-        }
-
+    void DX12Device::setWindowDpi(float value)
+    {
+        dpi_ = value;
         createSwapChain();
     }
 

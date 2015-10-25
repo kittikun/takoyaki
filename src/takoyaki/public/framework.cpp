@@ -65,17 +65,17 @@ namespace Takoyaki
 
     void Framework::setDisplayDpi(float dpi)
     {
-        impl_->setProperty(EPropertyID::WINDOW_DPI, dpi);
+        impl_->setWindowDpi(dpi);
     }
 
     void Framework::setDisplayOrientation(EDisplayOrientation orientation)
     {
-        impl_->setProperty(EPropertyID::WINDOW_ORIENTATION, orientation);
+        impl_->setWindowOrientation(orientation);
     }
 
     void Framework::setWindowSize(const glm::vec2& size)
     {
-        impl_->setProperty(EPropertyID::WINDOW_SIZE, size);
+        impl_->setWindowSize(size);
     }
 
     void Framework::terminate()

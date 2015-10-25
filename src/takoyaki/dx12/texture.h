@@ -42,6 +42,6 @@ namespace Takoyaki
     private:
         DX12Context* owner_;
         Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
-        D3D12_CPU_DESCRIPTOR_HANDLE rtv_;
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle_;
     };
 } // namespace Takoyaki

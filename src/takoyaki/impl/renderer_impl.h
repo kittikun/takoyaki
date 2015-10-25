@@ -29,7 +29,7 @@
 namespace Takoyaki
 {
     class CommandImpl;
-    class ConstantTableImpl;
+    class ConstantBufferImpl;
     class IndexBufferImpl;
     class InputLayoutImpl;
     class DX12Context;
@@ -53,8 +53,7 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // Internal usage: 
         inline std::unique_lock<std::shared_timed_mutex> getLock() { return std::unique_lock<std::shared_timed_mutex>{rwMutex_}; }
-        void executeCommand(const CommandDesc&);
-        void buildCommandMain(void*, void*);
+        void buildCommand(const CommandDesc&) const;
 
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
@@ -68,15 +67,12 @@ namespace Takoyaki
 
         void compilePipelineStateObjects();
 
-        std::unique_ptr<ConstantTableImpl> getConstantBuffer(const std::string&);
+        std::unique_ptr<ConstantBufferImpl> getConstantBuffer(const std::string&);
 
     private:
         std::shared_ptr<DX12Context> context_;
         std::shared_ptr<DX12Device> device_;
         std::shared_ptr<ThreadPool> threadPool_;
-
-        // keep command copy for worker to build the actual command
-        ThreadSafeQueue<CommandDesc> commands_;
 
         // the "generator" is mostly for user resources that need to be
         // released upon destruction

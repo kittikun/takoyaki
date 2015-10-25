@@ -28,7 +28,7 @@ namespace Takoyaki
     CommandDesc::CommandDesc()
         : priority{ 0 }
     {
-
+        commands.reserve(16);
     }
 
     CommandImpl::CommandImpl(const std::shared_ptr<RendererImpl>& renderer) noexcept
@@ -45,7 +45,12 @@ namespace Takoyaki
     {
         auto renderer = renderer_.lock();
 
-        renderer->executeCommand(desc_);
+        renderer->buildCommand(desc_);
+    }
+
+    void CommandImpl::setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name)
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE_CONSTANT_BUFFER, std::make_pair(index, name)));
     }
 }
 // namespace Takoyaki

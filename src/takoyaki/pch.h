@@ -49,7 +49,6 @@
 #include <vector>
 
 // Boost
-#include <boost/any.hpp>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
 

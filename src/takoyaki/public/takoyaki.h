@@ -20,7 +20,7 @@
 #pragma once
 
 #include <command.h>
-#include <constant_table.h>
+#include <constant_buffer.h>
 #include <framework.h>
 #include <index_buffer.h>
 #include <input_layout.h>

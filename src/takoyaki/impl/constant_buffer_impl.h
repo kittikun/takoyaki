@@ -18,26 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "constant_table.h"
-
-#include <glm/glm.hpp>
-
-#include "../impl/constant_table_impl.h"
+#pragma once
 
 namespace Takoyaki
 {
-    ConstantTable::ConstantTable(std::unique_ptr<ConstantTableImpl> impl) noexcept
-        : impl_{ std::move(impl) }
-    {
-    }
+    class DX12ConstantBuffer;
 
-    ConstantTable::~ConstantTable() = default;
-
-    void ConstantTable::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
+    class ConstantBufferImpl
     {
-        if (impl_)
-            impl_->setMatrix4x4(name, value);
-    }
+        ConstantBufferImpl(const ConstantBufferImpl&) = delete;
+        ConstantBufferImpl& operator=(const ConstantBufferImpl&) = delete;
+        ConstantBufferImpl(ConstantBufferImpl&&) = delete;
+        ConstantBufferImpl& operator=(ConstantBufferImpl&&) = delete;
+
+    public:
+        explicit ConstantBufferImpl(DX12ConstantBuffer&, std::shared_lock<std::shared_timed_mutex>, uint_fast32_t) noexcept;
+        ~ConstantBufferImpl() = default;
+
+        void setMatrix4x4(const std::string&, const glm::mat4x4&);
+
+    private:
+        uint_fast32_t frame_;
+        DX12ConstantBuffer& cbuffer_;
+        std::shared_lock<std::shared_timed_mutex> bufferLock_;    // to avoid removal while user is still using it
+    };
 }
 // namespace Takoyaki

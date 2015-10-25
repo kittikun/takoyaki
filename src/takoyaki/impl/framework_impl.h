@@ -56,8 +56,9 @@ namespace Takoyaki
 
         inline const glm::vec2& getWindowSize() const { return device_->getWindowSize(); }
 
-        // TODO: remove properties later
-        void setProperty(EPropertyID, const boost::any&);
+        inline void setWindowSize(const glm::vec2& size) { device_->setWindowSize(size); }
+        inline void setWindowOrientation(EDisplayOrientation value) { device_->setWindowOrientation(value); }
+        inline void setWindowDpi(float value) { device_->setWindowDpi(value); }
 
     private:
         IO io_;

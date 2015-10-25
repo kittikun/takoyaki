@@ -19,23 +19,25 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "constant_table_impl.h"
+#include "constant_buffer.h"
 
-#include "../dx12/context.h"
+#include <glm/glm.hpp>
+
+#include "../impl/constant_buffer_impl.h"
 
 namespace Takoyaki
 {
-    ConstantTableImpl::ConstantTableImpl(DX12ConstantBuffer& cbuffer, std::shared_lock<std::shared_timed_mutex> lock, uint_fast32_t frame) noexcept
-        : frame_{ frame }
-        , cbuffer_(cbuffer)
-        , bufferLock_(std::move(lock))
+    ConstantBuffer::ConstantBuffer(std::unique_ptr<ConstantBufferImpl> impl) noexcept
+        : impl_{ std::move(impl) }
     {
-
     }
 
-    void ConstantTableImpl::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
+    ConstantBuffer::~ConstantBuffer() = default;
+
+    void ConstantBuffer::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
     {
-        cbuffer_.setMatrix4x4(name, value, frame_);
+        if (impl_)
+            impl_->setMatrix4x4(name, value);
     }
 }
 // namespace Takoyaki

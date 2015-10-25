@@ -28,7 +28,7 @@
 namespace Takoyaki
 {
     class Command;
-    class ConstantTable;
+    class ConstantBuffer;
     class IndexBuffer;
     class InputLayout;
     class RendererImpl;
@@ -60,7 +60,7 @@ namespace Takoyaki
         // commit should happen only once per application
         void compilePipelineStateObjects();
 
-        std::unique_ptr<ConstantTable> getConstantBuffer(const std::string&);
+        std::unique_ptr<ConstantBuffer> getConstantBuffer(const std::string&);
 
     private:
         std::shared_ptr<RendererImpl> impl_;

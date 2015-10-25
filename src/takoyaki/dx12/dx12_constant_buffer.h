@@ -43,8 +43,8 @@ namespace Takoyaki
         void addVariable(const std::string&, uint_fast32_t, uint_fast32_t);
         void create(const std::string&, DX12Device*);
 
-        inline const D3D12_CPU_DESCRIPTOR_HANDLE& getConstantBufferView(uint_fast32_t index) { return rtvs_[index]; }
-
+        inline const D3D12_CPU_DESCRIPTOR_HANDLE& getCPUView(uint_fast32_t frame) { return cpuHandles_[frame]; }
+        inline const D3D12_GPU_DESCRIPTOR_HANDLE& getGPUView(uint_fast32_t frame) { return gpuHandles_[frame]; }
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
 
@@ -60,7 +60,8 @@ namespace Takoyaki
         DX12Context* owner_;
         std::unique_ptr<DX12Buffer> buffer_;
         std::unordered_map<std::string, CBVariable> offsetMap_;     // TODO: thread unsafe but should be ok
-        std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs_;
+        std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> cpuHandles_;
+        std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> gpuHandles_;
         uint8_t* mappedAddr_;
         uint_fast32_t curOffset_;
         uint_fast32_t size_;

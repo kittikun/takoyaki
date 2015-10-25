@@ -72,8 +72,8 @@ void App::initialize(Takoyaki::Framework* framework)
         D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
         D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
 
-    auto index = rs->addDescriptorTable();
-    rs->addDescriptorRange(index, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+    rsCBIndex_ = rs->addDescriptorTable();
+    rs->addDescriptorRange(rsCBIndex_, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
     rs->setFlags(rsFlags);
 
     // one pipeline state object using the previously created data
@@ -137,6 +137,9 @@ void App::render(Takoyaki::Renderer* renderer)
     auto cmd = renderer->createCommand();
 
     cmd->setRootSignature("SimpleSignature");
+    cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
+
+    cmd->drawIndexedInstanced();
 }
 
 void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
@@ -153,12 +156,12 @@ void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
     auto lookAt = glm::lookAtLH(eye, at, up);
     
     // update constant buffer
-    auto viewProj = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
+    auto mvp = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
 
     // constant buffer might by empty if shader hasn't been loaded yet
-    if (viewProj) {
-        viewProj->setMatrix4x4("model", glm::mat4(1.0f));
-        viewProj->setMatrix4x4("projection", perspective);
-        viewProj->setMatrix4x4("view", lookAt);
+    if (mvp) {
+        mvp->setMatrix4x4("model", glm::mat4(1.0f));
+        mvp->setMatrix4x4("projection", perspective);
+        mvp->setMatrix4x4("view", lookAt);
     }
 }

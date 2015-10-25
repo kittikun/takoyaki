@@ -41,4 +41,5 @@ public:
 private:
     std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
     std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
+    uint_fast32_t rsCBIndex_;
 };

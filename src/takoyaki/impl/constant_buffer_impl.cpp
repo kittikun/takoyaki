@@ -18,29 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "constant_buffer_impl.h"
+
+#include "../dx12/context.h"
 
 namespace Takoyaki
 {
-    class DX12ConstantBuffer;
-
-    class ConstantTableImpl
+    ConstantBufferImpl::ConstantBufferImpl(DX12ConstantBuffer& cbuffer, std::shared_lock<std::shared_timed_mutex> lock, uint_fast32_t frame) noexcept
+        : frame_{ frame }
+        , cbuffer_(cbuffer)
+        , bufferLock_(std::move(lock))
     {
-        ConstantTableImpl(const ConstantTableImpl&) = delete;
-        ConstantTableImpl& operator=(const ConstantTableImpl&) = delete;
-        ConstantTableImpl(ConstantTableImpl&&) = delete;
-        ConstantTableImpl& operator=(ConstantTableImpl&&) = delete;
 
-    public:
-        explicit ConstantTableImpl(DX12ConstantBuffer&, std::shared_lock<std::shared_timed_mutex>, uint_fast32_t) noexcept;
-        ~ConstantTableImpl() = default;
+    }
 
-        void setMatrix4x4(const std::string&, const glm::mat4x4&);
-
-    private:
-        uint_fast32_t frame_;
-        DX12ConstantBuffer& cbuffer_;
-        std::shared_lock<std::shared_timed_mutex> bufferLock_;    // to avoid removal while user is still using it
-    };
+    void ConstantBufferImpl::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
+    {
+        cbuffer_.setMatrix4x4(name, value, frame_);
+    }
 }
 // namespace Takoyaki

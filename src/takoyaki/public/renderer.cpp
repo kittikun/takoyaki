@@ -22,14 +22,14 @@
 #include "renderer.h"
 
 #include "command.h"
-#include "constant_table.h"
+#include "constant_buffer.h"
 #include "index_buffer.h"
 #include "input_layout.h"
 #include "root_signature.h"
 #include "vertex_buffer.h"
 
 #include "../impl/command_impl.h"
-#include "../impl/constant_table_impl.h"
+#include "../impl/constant_buffer_impl.h"
 #include "../impl/index_buffer_impl.h"
 #include "../impl/input_layout_impl.h"
 #include "../impl/pipeline_state_impl.h"
@@ -81,9 +81,9 @@ namespace Takoyaki
         return std::make_unique<VertexBuffer>(impl_->createVertexBuffer(vertices, stride, sizeByte));
     }
 
-    std::unique_ptr<ConstantTable> Renderer::getConstantBuffer(const std::string& name)
+    std::unique_ptr<ConstantBuffer> Renderer::getConstantBuffer(const std::string& name)
     {
-        return std::make_unique<ConstantTable>(std::move(impl_->getConstantBuffer(name)));
+        return std::make_unique<ConstantBuffer>(std::move(impl_->getConstantBuffer(name)));
     }
 }
 // namespace Takoyaki

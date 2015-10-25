@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "constant_buffer.h"
+#include "dx12_constant_buffer.h"
 
 #include <intsafe.h>
 #include <glm/glm.hpp>
@@ -46,7 +46,7 @@ namespace Takoyaki
         : owner_{ other.owner_ }
         , buffer_{ std::move(other.buffer_) }
         , offsetMap_{ std::move(other.offsetMap_) }
-        , rtvs_{ std::move(other.rtvs_) }
+        , cpuHandles_{ std::move(other.cpuHandles_) }
         , mappedAddr_{ other.mappedAddr_ }
         , curOffset_{ other.curOffset_ }
         , size_{ other.size_ }
@@ -56,7 +56,8 @@ namespace Takoyaki
 
     DX12ConstantBuffer::~DX12ConstantBuffer()
     {
-        owner_->getRTVDescHeapCollection().releaseRange(rtvs_.begin(), rtvs_.end());
+        // only cpu handles are used to track descriptor heap usage
+        owner_->getRTVDescHeapCollection().releaseRange(cpuHandles_.begin(), cpuHandles_.end());
     }
 
     void DX12ConstantBuffer::addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size)
@@ -79,27 +80,34 @@ namespace Takoyaki
         auto fmt = boost::wformat{ L"Constant Buffer %1%" } % name.c_str();
         auto bufCount = device->getFrameCount();
 
-        rtvs_ = std::move(owner_->getSRVDescHeapCollection().createRange(bufCount));
+        auto handles = owner_->getSRVDescHeapCollection().createRange(bufCount);
+
+        for (auto& pair : handles) {
+            cpuHandles_.push_back(pair.first);
+            gpuHandles_.push_back(pair.second);
+        }
+
         buffer_->getResource()->SetName(boost::str(fmt).c_str());
 
-        // create view, one per buffer in the swapchain
+        // create view, one per buffer in the swap-chain
         for (uint_fast32_t i = 0; i < bufCount; ++i) {
             D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
 
             desc.BufferLocation = gpuAddress + (i * size_);
             desc.SizeInBytes = size_;
 
-            // TODO: creatOne will lock device too so it's will be double locked just for here
+            // TODO: createRange/creatOne will lock device too so it will be double locked just for here
             {
                 auto lock = device->getDeviceLock();
 
-                device->getDXDevice()->CreateConstantBufferView(&desc, rtvs_[i]);
+                // create constant buffer views to access the upload buffer
+                device->getDXDevice()->CreateConstantBufferView(&desc, cpuHandles_[i]);
             }
 
             gpuAddress += size_;
         }
 
-        // We don't unmap this until the app closes. Keeping things mapped for the lifetime of the resource is okay.
+        // we don't unmap this until the app closes. Keeping things mapped for the lifetime of the resource is okay.
         DXCheckThrow(res->Map(0, nullptr, reinterpret_cast<void**>(&mappedAddr_)));
         ZeroMemory(mappedAddr_, size_ * bufCount);
     }

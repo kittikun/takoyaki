@@ -31,9 +31,10 @@ namespace Takoyaki
 
     struct DX12DescriptorHeap
     {
-        Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_;
-        D3D12_CPU_DESCRIPTOR_HANDLE handle_;
-        std::vector<uint_fast32_t> freelist_;
+        Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor;
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
+        D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
+        std::vector<uint_fast32_t> freelist;
     };
 
     // Heap descriptor with a pool of MAX_DESCRIPTORS
@@ -50,6 +51,9 @@ namespace Takoyaki
         DX12DescriptorHeapCollection& operator=(DX12DescriptorHeapCollection&&) = delete;
 
     public:
+        // cpu then gpu
+        using HandlePair = std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE>;
+
         DX12DescriptorHeapCollection(std::weak_ptr<DX12Device> device) noexcept
             : device_{ device }
             , descriptorSize_{ UINT_FAST32_MAX }
@@ -58,10 +62,10 @@ namespace Takoyaki
 
         ~DX12DescriptorHeapCollection() = default;
 
-        std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> createRange(uint_fast32_t count)
+        std::vector<HandlePair> createRange(uint_fast32_t count)
         {
             std::lock_guard<std::mutex> lock{ mutex_ };
-            std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> res;
+            std::vector<HandlePair> res;
 
             res.reserve(3);
 
@@ -69,10 +73,10 @@ namespace Takoyaki
             for (uint_fast32_t i = 0; i < count; ++i)
                 res.push_back(createOneInternal());
 
-            return std::move(res);
+            return res;
         }
 
-        D3D12_CPU_DESCRIPTOR_HANDLE createOne()
+        HandlePair createOne()
         {
             std::lock_guard<std::mutex> lock{ mutex_ };
 
@@ -87,7 +91,7 @@ namespace Takoyaki
             if (containerMap_.erase(handle.ptr) != 1)
                 throw new std::runtime_error{ "DX12DescriptorHeapCollection::releaseOne, containerMap_ nothing erased" };
 
-            heaps_[container].freelist_.push_back((uint_fast32_t)(handle.ptr - heaps_[container].handle_.ptr) / descriptorSize_);
+            heaps_[container].freelist.push_back((uint_fast32_t)(handle.ptr - heaps_[container].cpuHandle.ptr) / descriptorSize_);
         }
 
         template<typename Iter>
@@ -101,14 +105,15 @@ namespace Takoyaki
                 if (containerMap_.erase(i->ptr) != 1)
                     throw new std::runtime_error{ "DX12DescriptorHeapCollection::releaseRange, containerMap_ item not erased" };
 
-                heaps_[container].freelist_.push_back((uint_fast32_t)(i->ptr - heaps_[container].handle_.ptr) / descriptorSize_);
+                heaps_[container].freelist.push_back((uint_fast32_t)(i->ptr - heaps_[container].cpuHandle.ptr) / descriptorSize_);
             }
         }
 
     private:
-        D3D12_CPU_DESCRIPTOR_HANDLE createOneInternal()
+        HandlePair createOneInternal()
         {
-            D3D12_CPU_DESCRIPTOR_HANDLE res;
+            D3D12_CPU_DESCRIPTOR_HANDLE cpu;
+            D3D12_GPU_DESCRIPTOR_HANDLE gpu;
             bool found = false;
             size_t i = 0;
 
@@ -116,12 +121,13 @@ namespace Takoyaki
                 for (i; i < heaps_.size(); ++i) {
                     auto& heap = heaps_[i];
 
-                    if (heap.freelist_.size() > 0) {
+                    if (heap.freelist.size() > 0) {
 
-                        auto offset = heap.freelist_.back();
+                        auto offset = heap.freelist.back();
 
-                        heap.freelist_.pop_back();
-                        res.ptr = heap.handle_.ptr + offset * descriptorSize_;
+                        heap.freelist.pop_back();
+                        cpu.ptr = heap.cpuHandle.ptr + offset * descriptorSize_;
+                        gpu.ptr = heap.gpuHandle.ptr + offset * descriptorSize_;
                         found = true;
                         break;
                     }
@@ -131,10 +137,11 @@ namespace Takoyaki
                     allocateHeap();
             }
 
-            // we need to store which container it belonged to for later release
-            containerMap_.insert({ res.ptr, i });
+            // we need to store which container it belonged to for later release.
+            // using cpu for that should be ok since gpu is mirroring it
+            containerMap_.insert({ cpu.ptr, i });
 
-            return std::move(res);
+            return std::make_pair(cpu, gpu);
         }
 
         void allocateHeap()
@@ -157,14 +164,15 @@ namespace Takoyaki
                 if (descriptorSize_ == UINT_FAST32_MAX)
                     descriptorSize_ = device->getDXDevice()->GetDescriptorHandleIncrementSize(T);
 
-                DXCheckThrow(device->getDXDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap.descriptor_)));
+                DXCheckThrow(device->getDXDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap.descriptor)));
             }
 
             // Make a suitable name
-            heap.descriptor_->SetName(boost::str(getFormatString() % heaps_.size()).c_str());
-            heap.handle_ = heap.descriptor_->GetCPUDescriptorHandleForHeapStart();
-            heap.freelist_.resize(MAX_DESCRIPTOR_HEAP_SIZE);
-            std::iota(heap.freelist_.begin(), heap.freelist_.end(), 0);
+            heap.descriptor->SetName(boost::str(getFormatString() % heaps_.size()).c_str());
+            heap.cpuHandle = heap.descriptor->GetCPUDescriptorHandleForHeapStart();
+            heap.gpuHandle = heap.descriptor->GetGPUDescriptorHandleForHeapStart();
+            heap.freelist.resize(MAX_DESCRIPTOR_HEAP_SIZE);
+            std::iota(heap.freelist.begin(), heap.freelist.end(), 0);
         }
 
         boost::wformat getFormatString();

@@ -96,21 +96,6 @@ namespace Takoyaki
         device_->present();
     }
 
-    void FrameworkImpl::setProperty(EPropertyID id, const boost::any& value)
-    {
-        switch (id) {
-            case EPropertyID::WINDOW_SIZE:
-            case EPropertyID::WINDOW_ORIENTATION:
-            case EPropertyID::WINDOW_DPI:
-                device_->setProperty(id, value);
-                break;
-
-            default:
-                throw new std::runtime_error{ "FrameworkImpl::setProperty, id" };
-                break;
-        }
-    }
-
     void FrameworkImpl::terminate()
     {
 

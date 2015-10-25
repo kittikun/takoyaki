@@ -20,10 +20,10 @@
 
 #pragma once
 
-#include "constant_buffer.h"
 #include "device.h"
 #include "descriptor_heap.h"
 #include "dx12_buffer.h"
+#include "dx12_constant_buffer.h"
 #include "dx12_index_buffer.h"
 #include "dx12_input_layout.h"
 #include "dx12_pipeline_state.h"
@@ -38,6 +38,7 @@
 namespace Takoyaki
 {
     class ThreadPool;
+    struct CommandDesc;
 
     class DX12Context
     {
@@ -66,6 +67,9 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
 
+        // command creation
+        void buildCommand(const CommandDesc&, TaskCommand*);
+
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
         DX12ConstantBuffer& createConstanBuffer(const std::string&, uint_fast32_t);
@@ -75,7 +79,7 @@ namespace Takoyaki
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
         inline DescriptorHeapSRV& getSRVDescHeapCollection() { return descHeapSRV_; }
 
-        // warning, will yield until shader is created
+        // WARNING: will yield until shader is created
         inline D3D12_SHADER_BYTECODE getShader(EShaderType type, const std::string& name) { return getShaderImpl(shaders_[type], name); }
 
         //////////////////////////////////////////////////////////////////////////
@@ -86,9 +90,9 @@ namespace Takoyaki
         void createPipelineState(const std::string&, const PipelineStateDesc&);
         void createRootSignature(const std::string&);
 
-        void destroyResource(EResourceType, uint_fast32_t);
+        void destroyDone();
         void destroyMain(void*, void*);
-        void onDestroyDone();
+        void destroyResource(EResourceType, uint_fast32_t);
 
         const DX12IndexBuffer& getIndexBuffer(uint_fast32_t);
         auto getInputLayout(const std::string&) -> InputLayoutReturn;

@@ -38,9 +38,8 @@ namespace Takoyaki
         ~Command() noexcept;
 
         void drawIndexedInstanced();
-        void setConstantBuffer(const std::string& name);
-        void setPipelineState(const std::string& name);
         void setRootSignature(const std::string& name);
+        void setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name);
         void setPriority(uint_fast32_t priority);
 
     private:

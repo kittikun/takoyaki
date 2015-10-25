@@ -21,6 +21,7 @@
 #pragma once
 
 #include <memory>
+#include <boost/any.hpp>
 
 #include "../dx12/dxcommon.h"
 
@@ -32,14 +33,17 @@ namespace Takoyaki
 
     enum class ECommandType
     {
-        ROOT_SIGNATURE
+        ROOT_SIGNATURE,
+        ROOT_SIGNATURE_CONSTANT_BUFFER
     };
 
     struct CommandDesc
     {
+        using RSCBuffer = std::pair<uint_fast32_t, std::string>;
+
         CommandDesc();
         uint_fast32_t priority;
-        std::vector<std::pair<ECommandType, std::string>> commands;
+        std::vector<std::pair<ECommandType, boost::any>> commands;
     };
 
     class CommandImpl
@@ -57,6 +61,7 @@ namespace Takoyaki
 
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }
         inline void setRootSignature(const std::string& name) { desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE, name)); };
+        void setRootSignatureConstantBuffer(uint_fast32_t, const std::string&);
 
     private:
         std::weak_ptr<RendererImpl> renderer_;

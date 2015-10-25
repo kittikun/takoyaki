@@ -45,18 +45,23 @@ namespace Takoyaki
 
         void create(const FrameworkDesc& desc, std::weak_ptr<DX12Context>);
         void present();
-        void setProperty(EPropertyID, const boost::any&);
         void validate();
 
         void executeCommandList();
 
         inline uint_fast32_t getFrameCount() const { return bufferCount_; }
         inline uint_fast32_t getCurrentFrame() const { return currentFrame_; }
-        inline const glm::vec2& getWindowSize() const { return windowSize_; }
 
         inline CommandListReturn getCommandList() { return CommandListReturn(commandLists_[currentFrame_], std::unique_lock<std::mutex>(commandListMutexes_[currentFrame_])); }
         inline std::unique_lock<std::mutex> getDeviceLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
         inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
+
+        // properties
+        inline const glm::vec2& getWindowSize() const { return windowSize_; }
+
+        void setWindowSize(const glm::vec2&);
+        void setWindowOrientation(EDisplayOrientation);
+        void setWindowDpi(float);
 
     private:
         void createDevice(uint_fast32_t);

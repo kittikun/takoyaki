@@ -24,6 +24,7 @@
 #include <boost/format.hpp>
 
 #include "dx12_worker.h"
+#include "../impl/command_impl.h"
 #include "../thread_pool.h"
 #include "../utility/log.h"
 
@@ -54,6 +55,51 @@ namespace Takoyaki
         auto lock = map.getWriteLock();
 
         map.insert(std::make_pair(name, std::move(bc)));
+    }
+
+    void DX12Context::buildCommand(const CommandDesc& desc, TaskCommand* cmd)
+    {
+        // at this stage shouldn't need to lock to access resources anymore
+
+        auto frame = device_->getCurrentFrame();
+
+        for (auto descCmd : desc.commands) {
+            switch (descCmd.first) {
+                case ECommandType::ROOT_SIGNATURE:
+                {
+                    auto name = boost::any_cast<std::string>(descCmd.second);                    
+                    auto found = rootSignatures_.find(name);
+
+                    if (found == rootSignatures_.end()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find key \"%1%\"" } % name;
+
+                        throw new std::runtime_error{ boost::str(fmt) };
+                    }
+
+                    cmd->commands->SetGraphicsRootSignature(found->second.getRootSignature());
+                }
+                break;
+
+                case ECommandType::ROOT_SIGNATURE_CONSTANT_BUFFER:
+                {
+                    auto pair = boost::any_cast<CommandDesc::RSCBuffer>(descCmd.second);
+                    auto found = constantBuffers_.find(pair.second);
+
+                    if (found == constantBuffers_.end()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::getConstantBuffer, cannot find key \"%1%\"" } % pair.second;
+
+                        throw new std::runtime_error{ boost::str(fmt) };
+                    }
+
+                    cmd->commands->SetGraphicsRootDescriptorTable(pair.first, found->second.getGPUView(frame));
+                }
+                break;
+            }
+        }
+
+
+        cmd->priority = desc.priority;
+        cmd->commands->Close();
     }
 
     void DX12Context::compilePipelineStateObjects()
@@ -165,13 +211,31 @@ namespace Takoyaki
         }
     }
 
-    void DX12Context::destroyResource(EResourceType type, uint_fast32_t id)
+    void DX12Context::destroyDone()
     {
-        // destruction is deferred so add to destroy queue and submit a job request
+        DestroyQueueType::ValueType pair;
 
-        destroyQueue_.push(std::make_pair(type, id));
-        threadPool_->submitGPU(std::bind(&DX12Context::destroyMain, this, std::placeholders::_1, std::placeholders::_2), 0);
-        threadPool_->submitGeneric(std::bind(&DX12Context::onDestroyDone, this), 1);
+        if (destroyQueue_.tryPop(pair)) {
+            switch (pair.first) {
+                case EResourceType::INDEX_BUFFER:
+                {
+                    auto lock = indexBuffers_.getWriteLock();
+
+                    indexBuffers_.erase(pair.second);
+                }
+                break;
+
+                case EResourceType::VERTEX_BUFFER:
+                {
+                    auto lock = vertexBuffers_.getWriteLock();
+
+                    vertexBuffers_.erase(pair.second);
+                }
+                break;
+            }
+        } else {
+            throw new std::runtime_error{ "DX12Context::onDestroyDone called but queue empty" };
+        }
     }
 
     void DX12Context::destroyMain(void* cmd, void* dev)
@@ -204,6 +268,15 @@ namespace Takoyaki
             }
             break;
         }
+    }
+
+    void DX12Context::destroyResource(EResourceType type, uint_fast32_t id)
+    {
+        // destruction is deferred so add to destroy queue and submit a job request
+
+        destroyQueue_.push(std::make_pair(type, id));
+        threadPool_->submitGPU(std::bind(&DX12Context::destroyMain, this, std::placeholders::_1, std::placeholders::_2), 0);
+        threadPool_->submitGeneric(std::bind(&DX12Context::destroyDone, this), 1);
     }
 
     auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn
@@ -308,32 +381,5 @@ namespace Takoyaki
         }
         
         return found->second;
-    }
-
-    void DX12Context::onDestroyDone()
-    {
-        DestroyQueueType::ValueType pair;
-
-        if (destroyQueue_.tryPop(pair)) {
-            switch (pair.first) {
-                case EResourceType::INDEX_BUFFER:
-                {
-                    auto lock = indexBuffers_.getWriteLock();
-
-                    indexBuffers_.erase(pair.second);
-                }
-                break;
-
-                case EResourceType::VERTEX_BUFFER:
-                {
-                    auto lock = vertexBuffers_.getWriteLock();
-
-                    vertexBuffers_.erase(pair.second);
-                }
-                break;
-            }
-        } else {
-            throw new std::runtime_error{ "DX12Context::onDestroyDone called but queue empty" };
-        }
     }
 } // namespace Takoyaki

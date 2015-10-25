@@ -26,23 +26,23 @@
 
 namespace Takoyaki
 {
-    class ConstantTableImpl;
+    class ConstantBufferImpl;
 
-    class ConstantTable
+    class ConstantBuffer
     {
-        ConstantTable(const ConstantTable&) = delete;
-        ConstantTable& operator=(const ConstantTable&) = delete;
-        ConstantTable(ConstantTable&&) = delete;
-        ConstantTable& operator=(ConstantTable&&) = delete;
+        ConstantBuffer(const ConstantBuffer&) = delete;
+        ConstantBuffer& operator=(const ConstantBuffer&) = delete;
+        ConstantBuffer(ConstantBuffer&&) = delete;
+        ConstantBuffer& operator=(ConstantBuffer&&) = delete;
 
     public:
-        ConstantTable(std::unique_ptr<ConstantTableImpl>) noexcept;
-        ~ConstantTable() noexcept;
+        ConstantBuffer(std::unique_ptr<ConstantBufferImpl>) noexcept;
+        ~ConstantBuffer() noexcept;
 
         void setMatrix4x4(const std::string& name, const glm::mat4x4& value);
 
     private:
-        std::unique_ptr<ConstantTableImpl> impl_;
+        std::unique_ptr<ConstantBufferImpl> impl_;
     };
 }
 // namespace Takoyaki

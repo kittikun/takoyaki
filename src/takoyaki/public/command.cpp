@@ -42,9 +42,14 @@ namespace Takoyaki
         impl_->setPriority(priority);
     }
 
-    void  Command::setRootSignature(const std::string& name)
+    void Command::setRootSignature(const std::string& name)
     {
         impl_->setRootSignature(name);
+    }
+
+    void Command::setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name)
+    {
+        impl_->setRootSignatureConstantBuffer(index, name);
     }
 }
 // namespace Takoyaki

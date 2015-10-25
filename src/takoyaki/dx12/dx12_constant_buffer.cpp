@@ -80,11 +80,16 @@ namespace Takoyaki
         auto fmt = boost::wformat{ L"Constant Buffer %1%" } % name.c_str();
         auto bufCount = device->getFrameCount();
 
+        cpuHandles_.reserve(bufCount);
+        cpuHandles_.reserve(bufCount);
+        heaps_.reserve(bufCount);
+
         auto handles = owner_->getSRVDescHeapCollection().createRange(bufCount);
 
-        for (auto& pair : handles) {
-            cpuHandles_.push_back(pair.first);
-            gpuHandles_.push_back(pair.second);
+        for (auto& tuple : handles) {
+            cpuHandles_.push_back(std::get<0>(tuple));
+            gpuHandles_.push_back(std::get<1>(tuple));
+            heaps_.push_back(std::get<2>(tuple));
         }
 
         buffer_->getResource()->SetName(boost::str(fmt).c_str());

@@ -173,18 +173,16 @@ namespace Takoyaki
         std::unique_ptr<ImplBase> impl;
     };
 
-    // Version with void* param and return value for specialized workers
-    using VoidReturnFunc = std::function<void()>;
-
-    class MoveOnlyFuncParamReturn
+    // Version with two void* parameter and bool return for failure
+    class MoveOnlyFuncParamTwoReturn
     {
-        MoveOnlyFuncParamReturn(const MoveOnlyFuncParamReturn&) = delete;
-        MoveOnlyFuncParamReturn(MoveOnlyFuncParamReturn&) = delete;
-        MoveOnlyFuncParamReturn& operator=(const MoveOnlyFuncParamReturn&) = delete;
+        MoveOnlyFuncParamTwoReturn(const MoveOnlyFuncParamTwoReturn&) = delete;
+        MoveOnlyFuncParamTwoReturn(MoveOnlyFuncParamTwoReturn&) = delete;
+        MoveOnlyFuncParamTwoReturn& operator=(const MoveOnlyFuncParamTwoReturn&) = delete;
 
         struct ImplBase
         {
-            virtual VoidReturnFunc call(void *) = 0;
+            virtual bool call(void*, void*) = 0;
             virtual ~ImplBase() {}
         };
 
@@ -197,26 +195,26 @@ namespace Takoyaki
             {
             }
 
-            VoidReturnFunc call(void* param) { return f(param); }
+            bool call(void* one, void* two) { return f(one, two); }
         };
 
     public:
-        MoveOnlyFuncParamReturn() = default;
+        MoveOnlyFuncParamTwoReturn() = default;
 
-        MoveOnlyFuncParamReturn(MoveOnlyFuncParamReturn&& other) :
+        MoveOnlyFuncParamTwoReturn(MoveOnlyFuncParamTwoReturn&& other) :
             impl(std::move(other.impl))
         {
         }
 
         template<typename F>
-        MoveOnlyFuncParamReturn(F&& f)
+        MoveOnlyFuncParamTwoReturn(F&& f)
             : impl(new Impl<F>(std::move(f)))
         {
         }
 
-        inline VoidReturnFunc operator()(void* var) { return impl->call(var); }
+        inline bool operator()(void* one, void* two) { return impl->call(one, two); }
 
-        inline MoveOnlyFuncParamReturn& operator=(MoveOnlyFuncParamReturn&& other)
+        inline MoveOnlyFuncParamTwoReturn& operator=(MoveOnlyFuncParamTwoReturn&& other)
         {
             impl = std::move(other.impl);
             return *this;
@@ -225,97 +223,4 @@ namespace Takoyaki
     private:
         std::unique_ptr<ImplBase> impl;
     };
-
-    //template<typename ReturnType, typename ParamType>
-    //class MoveOnlyFuncImpl
-    //{
-    //    MoveOnlyFuncImpl(const MoveOnlyFuncImpl&) = delete;
-    //    MoveOnlyFuncImpl(MoveOnlyFuncImpl&) = delete;
-    //    MoveOnlyFuncImpl& operator=(const MoveOnlyFuncImpl&) = delete;
-
-    //    struct ImplBase
-    //    {
-    //        virtual ReturnType call(ParamType) = 0;
-    //        virtual ~ImplBase() {}
-    //    };
-
-    //    template<typename F>
-    //    struct Impl : ImplBase
-    //    {
-    //        F f;
-    //        Impl(F&& f_) noexcept
-    //            : f(std::move(f_))
-    //        {
-    //        }
-
-    //        ReturnType call(ParamType);
-    //    };
-
-
-    //public:
-    //    MoveOnlyFuncImpl() = default;
-
-    //    MoveOnlyFuncImpl(MoveOnlyFuncImpl&& other) noexcept
-    //        : impl(std::move(other.impl))
-    //    {
-    //    }
-
-    //    template<typename F>
-    //    MoveOnlyFuncImpl(F&& f) noexcept
-    //        : impl(new Impl<F>(std::move(f)))
-    //    {
-    //    }
-
-    //    ReturnType operator()(ParamType);
-
-    //    inline MoveOnlyFuncImpl<ReturnType, ParamType>& operator=(MoveOnlyFuncImpl<ReturnType, ParamType>&& other) noexcept
-    //    {
-    //        impl = std::move(other.impl);
-    //        return *this;
-    //    }
-
-    //private:
-    //    std::unique_ptr<ImplBase> impl;
-    //};
-
-    //// MoveOnlyFunc specialization
-    //template <>
-    //template<typename F>
-    //struct MoveOnlyFuncImpl<void, void>::Impl
-    //{
-    //    void call() { f(); }
-    //};
-
-    //template <>
-    //inline void MoveOnlyFuncImpl<void, void>::operator()() { impl->call(); }
-
-    //// MoveOnlyFuncParam specialization
-    //template <>
-    //template<typename F>
-    //struct MoveOnlyFuncImpl<void, void*>::Impl
-    //{
-    //    void call(void* p) { f(p); }
-    //};
-
-    //template <>
-    //inline void MoveOnlyFuncImpl<void, void*>::operator()(void* p) { impl->call(p); }
-
-    //// MoveOnlyFuncParamReturn specialization
-    //using VoidReturnFunc = std::function<void()>;
-
-    //template <>
-    //template<typename F>
-    //struct MoveOnlyFuncImpl<VoidReturnFunc, void*>::Impl
-    //{
-    //    VoidReturnFunc call(void* p) { return f(p); }
-    //};
-
-    //template <>
-    //inline VoidReturnFunc MoveOnlyFuncImpl<VoidReturnFunc, void*>::operator()(void* p) { return impl->call(p); }
-
-
-    //// aliases
-    //using MoveOnlyFunc = MoveOnlyFuncImpl<void, void>;
-    //using MoveOnlyFuncParam = MoveOnlyFuncImpl<void, void*>;
-    //using MoveOnlyFuncParamReturn = MoveOnlyFuncImpl<VoidReturnFunc, void*>;
 } // namespace Takoyaki

@@ -47,7 +47,7 @@ namespace Takoyaki
         {
             auto taskCmd = static_cast<TaskCommand*>(cmd);
 
-            context_->buildCommand(desc, taskCmd);
+            return context_->buildCommand(desc, taskCmd);
         };
 
         threadPool_->submitGPU(std::bind(lamda, std::placeholders::_1, std::placeholders::_2), 0);

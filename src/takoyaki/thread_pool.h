@@ -128,7 +128,7 @@ namespace Takoyaki
         void swapQueues();
 
         inline bool tryPopGenericTask(MoveOnlyFunc& task) { return genericWorkQueues_[0].tryPop(task); }
-        inline bool tryPopGPUTask(MoveOnlyFuncParamTwo& task) { return gpuWorkQueues_[0].tryPop(task); }
+        inline bool tryPopGPUTask(MoveOnlyFuncParamTwoReturn& task) { return gpuWorkQueues_[0].tryPop(task); }
 
     private:
         void workerMain();
@@ -139,7 +139,7 @@ namespace Takoyaki
         std::condition_variable swapCond_;
         std::vector<std::unique_ptr<IWorker>> workers_;
         std::array<ThreadSafeQueue<MoveOnlyFunc>, 3> genericWorkQueues_;
-        std::array<ThreadSafeQueue<MoveOnlyFuncParamTwo>, 3> gpuWorkQueues_;
+        std::array<ThreadSafeQueue<MoveOnlyFuncParamTwoReturn>, 3> gpuWorkQueues_;
         std::vector<std::thread> threads;
         JoinThreads joiner;
     };

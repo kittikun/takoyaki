@@ -57,7 +57,7 @@ namespace Takoyaki
         map.insert(std::make_pair(name, std::move(bc)));
     }
 
-    void DX12Context::buildCommand(const CommandDesc& desc, TaskCommand* cmd)
+    bool DX12Context::buildCommand(const CommandDesc& desc, TaskCommand* cmd)
     {
         // at this stage shouldn't need to lock to access resources anymore
 
@@ -86,11 +86,15 @@ namespace Takoyaki
                     auto found = constantBuffers_.find(pair.second);
 
                     if (found == constantBuffers_.end()) {
-                        auto fmt = boost::format{ "DX12DeviceContext::getConstantBuffer, cannot find key \"%1%\"" } % pair.second;
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find constant buffer \"%1%\"" } % pair.second;
 
-                        throw new std::runtime_error{ boost::str(fmt) };
+                        LOGW << boost::str(fmt);
+                        return false;
                     }
 
+                    ID3D12DescriptorHeap* temp[] = { found->second.getHeap(frame)->descriptor.Get() };
+
+                    cmd->commands->SetDescriptorHeaps(1, temp);
                     cmd->commands->SetGraphicsRootDescriptorTable(pair.first, found->second.getGPUView(frame));
                 }
                 break;
@@ -100,6 +104,8 @@ namespace Takoyaki
 
         cmd->priority = desc.priority;
         cmd->commands->Close();
+
+        return true;
     }
 
     void DX12Context::compilePipelineStateObjects()
@@ -238,7 +244,7 @@ namespace Takoyaki
         }
     }
 
-    void DX12Context::destroyMain(void* cmd, void* dev)
+    bool DX12Context::destroyMain(void* cmd, void* dev)
     {
         auto command = static_cast<TaskCommand*>(cmd);
         DestroyQueueType::ValueType pair;
@@ -268,6 +274,8 @@ namespace Takoyaki
             }
             break;
         }
+
+        return true;
     }
 
     void DX12Context::destroyResource(EResourceType type, uint_fast32_t id)

@@ -51,8 +51,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection& operator=(DX12DescriptorHeapCollection&&) = delete;
 
     public:
-        // cpu then gpu
-        using HandlePair = std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE>;
+        using HandlePair = std::tuple<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE, DX12DescriptorHeap*>;
 
         DX12DescriptorHeapCollection(std::weak_ptr<DX12Device> device) noexcept
             : device_{ device }
@@ -141,7 +140,7 @@ namespace Takoyaki
             // using cpu for that should be ok since gpu is mirroring it
             containerMap_.insert({ cpu.ptr, i });
 
-            return std::make_pair(cpu, gpu);
+            return std::make_tuple(cpu, gpu, &heaps_[i]);
         }
 
         void allocateHeap()

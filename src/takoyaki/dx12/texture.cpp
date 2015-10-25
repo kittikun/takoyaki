@@ -49,8 +49,11 @@ namespace Takoyaki
 
     const D3D12_CPU_DESCRIPTOR_HANDLE& DX12Texture::getRenderTargetView()
     {
-        if (cpuHandle_.ptr == ULONG_PTR_MAX)
-            cpuHandle_ = owner_->getRTVDescHeapCollection().createOne().first;
+        if (cpuHandle_.ptr == ULONG_PTR_MAX) {
+            auto tuple = owner_->getRTVDescHeapCollection().createOne();
+
+            cpuHandle_ = std::get<0>(tuple);
+        }
 
         return cpuHandle_;
     }

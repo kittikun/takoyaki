@@ -68,7 +68,7 @@ namespace Takoyaki
         // Internal usage:
 
         // command creation
-        void buildCommand(const CommandDesc&, TaskCommand*);
+        bool buildCommand(const CommandDesc&, TaskCommand*);
 
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
@@ -91,7 +91,7 @@ namespace Takoyaki
         void createRootSignature(const std::string&);
 
         void destroyDone();
-        void destroyMain(void*, void*);
+        bool destroyMain(void*, void*);
         void destroyResource(EResourceType, uint_fast32_t);
 
         const DX12IndexBuffer& getIndexBuffer(uint_fast32_t);

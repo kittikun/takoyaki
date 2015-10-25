@@ -137,9 +137,13 @@ void App::render(Takoyaki::Renderer* renderer)
     auto cmd = renderer->createCommand();
 
     cmd->setRootSignature("SimpleSignature");
-    cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
 
-    cmd->drawIndexedInstanced();
+    auto mvp = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
+    if (mvp) {
+        cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
+
+        cmd->drawIndexedInstanced();
+    }
 }
 
 void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)

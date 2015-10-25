@@ -57,7 +57,7 @@ namespace Takoyaki
 
     }
 
-    void DX12IndexBuffer::create(void* command, void* dev)
+    bool DX12IndexBuffer::create(void* command, void* dev)
     {
         auto device = static_cast<DX12Device*>(dev);
         auto cmd = static_cast<TaskCommand*>(command);
@@ -102,14 +102,18 @@ namespace Takoyaki
 
         cmd->commands->ResourceBarrier(1, &barrier);
         cmd->commands->Close();
+
+        return true;
     }
 
-    void DX12IndexBuffer::cleanupCreate(void* command, void*)
+    bool DX12IndexBuffer::cleanupCreate(void* command, void*)
     {
         auto cmd = static_cast<TaskCommand*>(command);
 
         cmd->commands->DiscardResource(uploadBuffer_->getResource(), nullptr);
         cmd->commands->Close();
+
+        return true;
     }
 
     void DX12IndexBuffer::cleanupIntermediate()
@@ -117,11 +121,13 @@ namespace Takoyaki
         intermediate_.reset();
     }
 
-    void DX12IndexBuffer::destroy(void* command, void*)
+    bool DX12IndexBuffer::destroy(void* command, void*)
     {
         auto cmd = static_cast<TaskCommand*>(command);
 
         cmd->commands->DiscardResource(indexBuffer_->getResource(), nullptr);
         cmd->commands->Close();
+
+        return true;
     }
 } // namespace Takoyaki

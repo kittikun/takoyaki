@@ -42,10 +42,10 @@ namespace Takoyaki
         // Internal usage:
 
         // tasks
-        void create(void*, void*);
-        void cleanupCreate(void*, void*);
+        bool create(void*, void*);
+        bool cleanupCreate(void*, void*);
         void cleanupIntermediate();
-        void destroy(void*, void*);
+        bool destroy(void*, void*);
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External

@@ -58,7 +58,7 @@ namespace Takoyaki
 
     }
 
-    void DX12VertexBuffer::create(void* command, void* dev)
+    bool DX12VertexBuffer::create(void* command, void* dev)
     {
         auto device = static_cast<DX12Device*>(dev);
         auto cmd = static_cast<TaskCommand*>(command);
@@ -103,18 +103,19 @@ namespace Takoyaki
 
         cmd->commands->ResourceBarrier(1, &barrier);
         cmd->commands->Close();
-        //res->type = CopyWorker::ReturnType::TASK;
-        //res->funcTask = std::bind(&DX12VertexBuffer::createCleanup, this, std::placeholders::_1, std::placeholders::_2);
+        
+
+        return true;
     }
 
-    void DX12VertexBuffer::cleanupCreate(void* command, void*)
+    bool DX12VertexBuffer::cleanupCreate(void* command, void*)
     {
         auto cmd = static_cast<TaskCommand*>(command);
 
         cmd->commands->DiscardResource(uploadBuffer_->getResource(), nullptr);
         cmd->commands->Close();
-        //res->type = CopyWorker::ReturnType::NOTIFY;
-        //res->funcNotify = std::bind(&DX12VertexBuffer::onCreateDone, this);
+
+        return true;
     }
 
     void DX12VertexBuffer::cleanupIntermediate()
@@ -122,11 +123,13 @@ namespace Takoyaki
         intermediate_.reset();
     }
 
-    void DX12VertexBuffer::destroy(void* command, void*)
+    bool DX12VertexBuffer::destroy(void* command, void*)
     {
         auto cmd = static_cast<TaskCommand*>(command);
 
         cmd->commands->DiscardResource(vertexBuffer_->getResource(), nullptr);
         cmd->commands->Close();
+
+        return true;
     }
 } // namespace Takoyaki

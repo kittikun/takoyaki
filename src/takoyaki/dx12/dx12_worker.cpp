@@ -42,7 +42,7 @@ namespace Takoyaki
         LOG_IDENTIFY_THREAD;
 
         MoveOnlyFunc genericCmd;
-        MoveOnlyFuncParamTwo gpuCmd;
+        MoveOnlyFuncParamTwoReturn gpuCmd;
 
         while (!threadPool_->isDone()) {
             if (threadPool_->tryPopGPUTask(gpuCmd)) {
@@ -54,9 +54,9 @@ namespace Takoyaki
 
                     DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&cmd.commands)));
                 }
-                gpuCmd(&cmd, device_.get());
 
-                commandList_.push_back(std::move(cmd));
+                if (gpuCmd(&cmd, device_.get()))
+                    commandList_.push_back(std::move(cmd));
             } else if (threadPool_->tryPopGenericTask(genericCmd)) {
                 genericCmd();
             } else {

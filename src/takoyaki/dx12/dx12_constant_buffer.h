@@ -25,6 +25,7 @@ namespace Takoyaki
     class DX12Buffer;
     class DX12Context;
     class DX12Device;
+    struct DX12DescriptorHeap;
 
     class DX12ConstantBuffer
     {
@@ -45,6 +46,8 @@ namespace Takoyaki
 
         inline const D3D12_CPU_DESCRIPTOR_HANDLE& getCPUView(uint_fast32_t frame) { return cpuHandles_[frame]; }
         inline const D3D12_GPU_DESCRIPTOR_HANDLE& getGPUView(uint_fast32_t frame) { return gpuHandles_[frame]; }
+        inline DX12DescriptorHeap* getHeap(uint_fast32_t frame) { return heaps_[frame]; }
+
         //////////////////////////////////////////////////////////////////////////
         // External usage: 
 
@@ -62,6 +65,7 @@ namespace Takoyaki
         std::unordered_map<std::string, CBVariable> offsetMap_;     // TODO: thread unsafe but should be ok
         std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> cpuHandles_;
         std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> gpuHandles_;
+        std::vector<DX12DescriptorHeap*> heaps_;
         uint8_t* mappedAddr_;
         uint_fast32_t curOffset_;
         uint_fast32_t size_;

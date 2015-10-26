@@ -44,6 +44,8 @@ namespace Takoyaki
         void addVariable(const std::string&, uint_fast32_t, uint_fast32_t);
         void create(const std::string&, DX12Device*);
 
+        bool isReady() const { return ready_.load(); }
+
         inline const D3D12_CPU_DESCRIPTOR_HANDLE& getCPUView(uint_fast32_t frame) { return cpuHandles_[frame]; }
         inline const D3D12_GPU_DESCRIPTOR_HANDLE& getGPUView(uint_fast32_t frame) { return gpuHandles_[frame]; }
         inline DX12DescriptorHeap* getHeap(uint_fast32_t frame) { return heaps_[frame]; }
@@ -69,5 +71,6 @@ namespace Takoyaki
         uint8_t* mappedAddr_;
         uint_fast32_t curOffset_;
         uint_fast32_t size_;
+        std::atomic<bool> ready_;
     };
 } // namespace Takoyaki

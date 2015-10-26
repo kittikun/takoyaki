@@ -33,13 +33,17 @@ namespace Takoyaki
 
     enum class ECommandType
     {
+        CLEAR_COLOR,
+        RENDERTARGET_DEFAULT,
         ROOT_SIGNATURE,
-        ROOT_SIGNATURE_CONSTANT_BUFFER
+        ROOT_SIGNATURE_CONSTANT_BUFFER,
+        SCISSOR,
+        VIEWPORT
     };
 
     struct CommandDesc
     {
-        using RSCBuffer = std::pair<uint_fast32_t, std::string>;
+        using RSCBPair = std::pair<uint_fast32_t, std::string>;
 
         CommandDesc();
         uint_fast32_t priority;
@@ -55,14 +59,16 @@ namespace Takoyaki
 
     public:
         CommandImpl(const std::shared_ptr<RendererImpl>&) noexcept;
-        ~CommandImpl() noexcept;
+        ~CommandImpl() = default;
 
+        void clearRenderTarget(const glm::vec4&);
         void drawIndexedInstanced();
-
+        void setDefaultRenderTarget();
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }
-        inline void setRootSignature(const std::string& name) { desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE, name)); };
+        void setRootSignature(const std::string&);
         void setRootSignatureConstantBuffer(uint_fast32_t, const std::string&);
-
+        void setScissor(const glm::uvec4&);
+        void setViewport(const glm::vec4&);
     private:
         std::weak_ptr<RendererImpl> renderer_;
         CommandDesc desc_;

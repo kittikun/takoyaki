@@ -32,9 +32,19 @@ namespace Takoyaki
 
     Command::~Command() = default;
 
+    void Command::clearRenderTarget(const glm::vec4& color)
+    {
+        impl_->clearRenderTarget(color);
+    }
+
     void Command::drawIndexedInstanced()
     {
         impl_->drawIndexedInstanced();
+    }
+
+    void Command::setDefaultRenderTarget()
+    {
+        impl_->setDefaultRenderTarget();
     }
 
     void Command::setPriority(uint_fast32_t priority)
@@ -50,6 +60,16 @@ namespace Takoyaki
     void Command::setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name)
     {
         impl_->setRootSignatureConstantBuffer(index, name);
+    }
+
+    void Command::setScissor(const glm::uvec4& scissor)
+    {
+        impl_->setScissor(scissor);
+    }
+
+    void Command::setViewport(const glm::vec4& viewport)
+    {
+        impl_->setViewport(viewport);
     }
 }
 // namespace Takoyaki

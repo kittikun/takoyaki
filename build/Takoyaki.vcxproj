@@ -41,7 +41,7 @@
     <ClCompile Include="..\src\takoyaki\dx12\dxsystem.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dxutility.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_input_layout.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\texture.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_texture.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_worker.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\command_impl.cpp" />
@@ -86,7 +86,7 @@
     <ClInclude Include="..\src\takoyaki\dx12\dxsystem.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dxutility.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_input_layout.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\texture.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_texture.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_pipeline_state.h" />
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_worker.h" />

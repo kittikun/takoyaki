@@ -20,15 +20,16 @@
 
 #pragma once
 
+#include "dx12_texture.h"
 #include "dxcommon.h"
 #include "../thread_safe_stack.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki
 {
+    class DX12Context;
     struct TaskCommand;
     struct FrameworkDesc;
-    class DX12Context;
 
     class DX12Device
     {
@@ -51,6 +52,7 @@ namespace Takoyaki
 
         inline uint_fast32_t getFrameCount() const { return bufferCount_; }
         inline uint_fast32_t getCurrentFrame() const { return currentFrame_; }
+        inline DX12Texture& getCurrentRenderTarget() { return renderTargets_[currentFrame_]; }
 
         inline CommandListReturn getCommandList() { return CommandListReturn(commandLists_[currentFrame_], std::unique_lock<std::mutex>(commandListMutexes_[currentFrame_])); }
         inline std::unique_lock<std::mutex> getDeviceLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
@@ -100,6 +102,7 @@ namespace Takoyaki
 
         // swap chain
         Microsoft::WRL::ComPtr<IDXGISwapChain3> swapChain_;
+        std::vector<DX12Texture> renderTargets_;
         uint_fast32_t bufferCount_;
 
         // misc

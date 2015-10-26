@@ -38,6 +38,7 @@ namespace Takoyaki
         , mappedAddr_{ nullptr }
         , curOffset_{ 0 }
         , size_{ sizeByte }
+        , ready_{ false }
     {
 
     }
@@ -115,6 +116,8 @@ namespace Takoyaki
         // we don't unmap this until the app closes. Keeping things mapped for the lifetime of the resource is okay.
         DXCheckThrow(res->Map(0, nullptr, reinterpret_cast<void**>(&mappedAddr_)));
         ZeroMemory(mappedAddr_, size_ * bufCount);
+
+        ready_.store(true);
     }
 
     void DX12ConstantBuffer::setMatrix4x4(const std::string& name, const glm::mat4x4& value, uint_fast32_t frame)

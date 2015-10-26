@@ -66,7 +66,7 @@ namespace Takoyaki
             std::lock_guard<std::mutex> lock{ mutex_ };
             std::vector<HandlePair> res;
 
-            res.reserve(3);
+            res.reserve(count);
 
             // TODO: don't be lazy dude..
             for (uint_fast32_t i = 0; i < count; ++i)

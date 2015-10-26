@@ -25,7 +25,6 @@
 
 #include "context.h"
 #include "descriptor_heap.h"
-#include "texture.h"
 #include "dxutility.h"
 #include "../utility/log.h"
 #include "../public/definitions.h"
@@ -177,6 +176,9 @@ namespace Takoyaki
 
         currentFrame_ = 0;
 
+        // create rendertargets
+        renderTargets_.reserve(bufferCount_);
+
         auto context = context_.lock();
 
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
@@ -189,6 +191,8 @@ namespace Takoyaki
             auto fmt = boost::wformat(L"Swap chain Render Target %1%") % i;
 
             res->SetName(boost::str(fmt).c_str());
+
+            renderTargets_.push_back(std::move(tex));
         }
     }
 

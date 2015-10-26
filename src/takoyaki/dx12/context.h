@@ -29,7 +29,7 @@
 #include "dx12_pipeline_state.h"
 #include "dx12_root_signature.h"
 #include "dx12_vertex_buffer.h"
-#include "texture.h"
+#include "dx12_texture.h"
 #include "../rwlock_map.h"
 #include "../thread_safe_stack.h"
 #include "../thread_safe_queue.h"

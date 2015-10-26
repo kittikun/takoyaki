@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "texture.h"
+#include "dx12_texture.h"
 
 #include <intsafe.h>
 
@@ -35,6 +35,7 @@ namespace Takoyaki
 
     DX12Texture::DX12Texture(DX12Texture&& other) noexcept
         : owner_{ other.owner_ }
+        , resource_{ std::move(other.resource_) }
         , cpuHandle_{ std::move(other.cpuHandle_) }
     {
 

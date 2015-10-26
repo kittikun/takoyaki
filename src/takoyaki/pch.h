@@ -37,6 +37,7 @@
 #include <dxgi1_4.h>
 
 // STL
+#include <atomic>
 #include <array>
 #include <exception>
 #include <memory>
@@ -63,4 +64,5 @@
 
 // Maths
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>

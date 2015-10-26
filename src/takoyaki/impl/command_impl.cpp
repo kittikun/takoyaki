@@ -34,11 +34,11 @@ namespace Takoyaki
     CommandImpl::CommandImpl(const std::shared_ptr<RendererImpl>& renderer) noexcept
         : renderer_{ renderer }
     {
-
     }
 
-    CommandImpl::~CommandImpl() noexcept
+    void CommandImpl::clearRenderTarget(const glm::vec4& color)
     {
+        desc_.commands.push_back(std::make_pair(ECommandType::CLEAR_COLOR, color));
     }
 
     void CommandImpl::drawIndexedInstanced()
@@ -48,9 +48,29 @@ namespace Takoyaki
         renderer->buildCommand(desc_);
     }
 
+    void CommandImpl::setDefaultRenderTarget()
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::RENDERTARGET_DEFAULT, boost::any()));
+    }
+
+    void CommandImpl::setRootSignature(const std::string& name)
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE, name)); 
+    }
+
     void CommandImpl::setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name)
     {
         desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE_CONSTANT_BUFFER, std::make_pair(index, name)));
+    }
+
+    void CommandImpl::setScissor(const glm::uvec4& scissor)
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::SCISSOR, scissor));
+    }
+
+    void CommandImpl::setViewport(const glm::vec4& viewport)
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::VIEWPORT, viewport));
     }
 }
 // namespace Takoyaki

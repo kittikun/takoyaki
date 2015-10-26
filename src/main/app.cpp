@@ -25,7 +25,6 @@
 #include <array>
 
 #include <d3d12.h>  // will be removed later once Vulkan abstraction has been added
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <takoyaki.h>
 
@@ -129,6 +128,10 @@ void App::initialize(Takoyaki::Framework* framework)
 
     vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), sizeof(Vertex), static_cast<uint_fast32_t>(cubeVertices.size() * sizeof(Vertex))));
     indexBuffer_ = std::move(renderer->createIndexBuffer(reinterpret_cast<uint8_t*>(&cubeIndices.front()), Takoyaki::EFormat::R16_UINT, static_cast<uint_fast32_t>(cubeIndices.size() * sizeof(uint16_t))));
+
+    auto size = framework->getWindowSize();
+    viewport_ = { 0, 0, size.x, size.y };
+    scissor_ = { 0, 0, static_cast<uint_fast32_t>(viewport_.x), static_cast<uint_fast32_t>(viewport_.y) };
 }
 
 void App::render(Takoyaki::Renderer* renderer)
@@ -137,21 +140,22 @@ void App::render(Takoyaki::Renderer* renderer)
     auto cmd = renderer->createCommand();
 
     cmd->setRootSignature("SimpleSignature");
+    cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
 
-    auto mvp = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
-    if (mvp) {
-        cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
+    cmd->setViewport(viewport_);
+    cmd->setScissor(scissor_);
 
-        cmd->drawIndexedInstanced();
-    }
+    cmd->setDefaultRenderTarget();
+    cmd->clearRenderTarget(glm::vec4{ 0.f, 0.f, 1.f, 1.f });
+
+    cmd->drawIndexedInstanced();
 }
 
 void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
 {
     // perspective matrix
-    auto winSize = framework->getWindowSize();
     float fov = glm::radians(70.0f);
-    auto perspective = glm::perspectiveFovLH(fov, winSize.x, winSize.y, 1.0f, 100.0f);
+    auto perspective = glm::perspectiveFovLH(fov, viewport_.z, viewport_.w, 1.0f, 100.0f);
 
     // lookat
     auto eye = glm::vec3(0.0f, 0.7f, 1.5f);

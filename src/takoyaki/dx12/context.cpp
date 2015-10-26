@@ -62,9 +62,38 @@ namespace Takoyaki
         // at this stage shouldn't need to lock to access resources anymore
 
         auto frame = device_->getCurrentFrame();
+        auto defaultRT = false;
 
         for (auto descCmd : desc.commands) {
             switch (descCmd.first) {
+                case ECommandType::CLEAR_COLOR:
+                {
+                    auto color = boost::any_cast<glm::vec4>(descCmd.second);
+                    auto& rt = device_->getCurrentRenderTarget();
+
+                    cmd->commands->ClearRenderTargetView(rt.getRenderTargetView(), glm::value_ptr(color), 0, nullptr);
+                }
+                break;
+
+                case ECommandType::RENDERTARGET_DEFAULT:
+                {
+                    auto& rt = device_->getCurrentRenderTarget();
+                    D3D12_RESOURCE_BARRIER barrier;
+
+                    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+                    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+                    barrier.Transition.pResource = rt.getResource().Get();
+                    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+                    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+                    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+                    cmd->commands->ResourceBarrier(1, &barrier);
+
+                    // flag so we transition it back at the end
+                    defaultRT = true;
+                }
+                break;
+
                 case ECommandType::ROOT_SIGNATURE:
                 {
                     auto name = boost::any_cast<std::string>(descCmd.second);                    
@@ -82,11 +111,18 @@ namespace Takoyaki
 
                 case ECommandType::ROOT_SIGNATURE_CONSTANT_BUFFER:
                 {
-                    auto pair = boost::any_cast<CommandDesc::RSCBuffer>(descCmd.second);
+                    auto pair = boost::any_cast<CommandDesc::RSCBPair>(descCmd.second);
                     auto found = constantBuffers_.find(pair.second);
 
                     if (found == constantBuffers_.end()) {
                         auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find constant buffer \"%1%\"" } % pair.second;
+
+                        LOGW << boost::str(fmt);
+                        return false;
+                    }
+
+                    if (!found->second.isReady()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand,constant buffer not readu \"%1%\"" } % pair.second;
 
                         LOGW << boost::str(fmt);
                         return false;
@@ -98,7 +134,42 @@ namespace Takoyaki
                     cmd->commands->SetGraphicsRootDescriptorTable(pair.first, found->second.getGPUView(frame));
                 }
                 break;
+
+                case ECommandType::SCISSOR:
+                {
+                    auto scissor = boost::any_cast<glm::uvec4>(descCmd.second);
+                    
+                    D3D12_RECT rect = { static_cast<LONG>(scissor.x), static_cast<LONG>(scissor.y), static_cast<LONG>(scissor.z), static_cast<LONG>(scissor.w) };
+
+                    cmd->commands->RSSetScissorRects(1, &rect);
+                }
+                break;
+
+                case ECommandType::VIEWPORT:
+                {
+                    auto vp = boost::any_cast<glm::vec4>(descCmd.second);
+
+                    D3D12_VIEWPORT viewport = { vp.x, vp.y, vp.z, vp.w, 0.f, 1.f };
+
+                    cmd->commands->RSSetViewports(1, &viewport);
+                }
+                break;
             }
+        }
+
+        // we need to transition back the render target
+        if (defaultRT) {
+            auto& rt = device_->getCurrentRenderTarget();
+            D3D12_RESOURCE_BARRIER barrier;
+
+            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            barrier.Transition.pResource = rt.getResource().Get();
+            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+            barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+            cmd->commands->ResourceBarrier(1, &barrier);
         }
 
 

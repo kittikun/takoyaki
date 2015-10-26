@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <fwd.h>
+#include <glm/glm.hpp>
 
 class App
 {
@@ -42,4 +43,6 @@ private:
     std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
     std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
     uint_fast32_t rsCBIndex_;
+    glm::vec4 viewport_;
+    glm::uvec4 scissor_;
 };

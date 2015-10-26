@@ -60,9 +60,6 @@
     <ClCompile Include="..\src\takoyaki\dx12\device.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\dx12\texture.cpp">
-      <Filter>Source Files\dx12</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\takoyaki\dx12\dxutility.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
@@ -141,6 +138,9 @@
     <ClCompile Include="..\src\takoyaki\dx12\dx12_constant_buffer.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_texture.cpp">
+      <Filter>Source Files\dx12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
@@ -195,9 +195,6 @@
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\device.h">
-      <Filter>Source Files\dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\takoyaki\dx12\texture.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\dxutility.h">
@@ -282,6 +279,9 @@
       <Filter>Source Files\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\dx12_constant_buffer.h">
+      <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_texture.h">
       <Filter>Source Files\dx12</Filter>
     </ClInclude>
   </ItemGroup>

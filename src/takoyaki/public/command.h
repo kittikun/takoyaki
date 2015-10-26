@@ -37,10 +37,23 @@ namespace Takoyaki
         Command(std::unique_ptr<CommandImpl>) noexcept;
         ~Command() noexcept;
 
+        void setPriority(uint_fast32_t priority);
+
+        // draw commands
         void drawIndexedInstanced();
+
+        // root signature
         void setRootSignature(const std::string& name);
         void setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name);
-        void setPriority(uint_fast32_t priority);
+
+        // viewport
+        void setScissor(const glm::uvec4& scissor);
+        void setViewport(const glm::vec4& viewport);
+
+        // render target related
+        void setDefaultRenderTarget();
+        void clearRenderTarget(const glm::vec4& color);
+        
 
     private:
         std::unique_ptr<CommandImpl> impl_;

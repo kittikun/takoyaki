@@ -23,7 +23,7 @@
 
 #include "../dx12/context.h"
 #include "../dx12/shader_compiler.h"
-#include "../dx12/texture.h"
+#include "../dx12/dx12_texture.h"
 #include "../dx12/dx12_worker.h"
 #include "../impl/renderer_impl.h"
 #include "../public/framework.h"

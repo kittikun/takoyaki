@@ -53,6 +53,11 @@ namespace Takoyaki
         desc_.commands.push_back(std::make_pair(ECommandType::RENDERTARGET_DEFAULT, boost::any()));
     }
 
+    void CommandImpl::setPipelineState(const std::string& name)
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::PIPELINE_STATE, name));
+    }
+
     void CommandImpl::setRootSignature(const std::string& name)
     {
         desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE, name)); 

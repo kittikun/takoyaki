@@ -31,6 +31,7 @@ namespace Takoyaki
         , device_(std::move(desc.device))
         , threadPool_{ desc.threadPool }
         , sync_{ device_.get() }
+        , idle_{ false }
     {
         auto lock = desc.device->getDeviceLock();
 
@@ -48,6 +49,7 @@ namespace Takoyaki
             if (threadPool_->tryPopGPUTask(gpuCmd)) {
                 TaskCommand cmd;
 
+                idle_.store(false);
                 cmd.priority = 0;
                 {
                     auto lock = device_->getDeviceLock();
@@ -55,11 +57,17 @@ namespace Takoyaki
                     DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&cmd.commands)));
                 }
 
-                if (gpuCmd(&cmd, device_.get()))
+                if (gpuCmd(&cmd, device_.get())) {
                     commandList_.push_back(std::move(cmd));
+                } else {
+                    cmd.commands->Close();
+                    cmd.commands->Reset(commandAllocator_.Get(), nullptr);
+                }
             } else if (threadPool_->tryPopGenericTask(genericCmd)) {
+                idle_.store(false);
                 genericCmd();
             } else {
+                idle_.store(true);
                 std::this_thread::yield();
             }
         }

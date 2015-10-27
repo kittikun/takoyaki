@@ -36,6 +36,13 @@ namespace Takoyaki
         done_ = true;
     }
 
+    void ThreadPool::resetWorkers()
+    {
+        //LOGC << "ThreadPool::resetWorkers()";
+        for (auto& worker : workers_)
+            worker->reset();
+    }
+
     void ThreadPool::submitGPUCommandLists()
     {
         for (auto& worker : workers_)
@@ -44,15 +51,45 @@ namespace Takoyaki
 
     void ThreadPool::swapQueues()
     {
-        // wait to all jobs for this frame to be processed
-        std::unique_lock<std::mutex> lock{ swapMutex_ };
+        //LOGC << "ThreadPool::swapQueues";
 
-        swapCond_.wait(lock, [this] { return genericWorkQueues_[0].empty() && gpuWorkQueues_[0].empty(); });
 
-        // no thread-safe but has caller ensured it is safe here
-        genericWorkQueues_[0].swap(genericWorkQueues_[1]);
-        genericWorkQueues_[1].swap(genericWorkQueues_[2]);
-        gpuWorkQueues_[0].swap(gpuWorkQueues_[1]);
-        gpuWorkQueues_[1].swap(gpuWorkQueues_[2]);
+        // TODO: this while block need to be made more efficient
+        {
+            bool done = false;
+
+            while (!done) {
+                bool queueDone = genericWorkQueues_[0].empty() && gpuWorkQueues_[0].empty();
+                bool workerDone = true;
+
+                for (auto& worker : workers_)
+                    workerDone &= worker->isIdle();
+
+                done = queueDone & workerDone;
+
+                if (!done)
+                    std::this_thread::yield();
+            }
+        }
+
+        {
+            auto gen0 = genericWorkQueues_[0].getLock();
+            auto gen1 = genericWorkQueues_[1].getLock();
+            auto gen2 = genericWorkQueues_[2].getLock();
+
+            genericWorkQueues_[0].swap(genericWorkQueues_[1]);
+            genericWorkQueues_[1].swap(genericWorkQueues_[2]);
+        }
+
+        {
+            auto gpu0 = gpuWorkQueues_[0].getLock();
+            auto gpu1 = gpuWorkQueues_[1].getLock();
+            auto gpu2 = gpuWorkQueues_[2].getLock();
+
+            gpuWorkQueues_[0].swap(gpuWorkQueues_[1]);
+            gpuWorkQueues_[1].swap(gpuWorkQueues_[2]);
+        }
+
+        //resetWorkers();
     }
 } // namespace Takoyaki

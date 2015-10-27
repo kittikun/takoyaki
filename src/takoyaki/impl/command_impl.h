@@ -34,6 +34,7 @@ namespace Takoyaki
     enum class ECommandType
     {
         CLEAR_COLOR,
+        PIPELINE_STATE,
         RENDERTARGET_DEFAULT,
         ROOT_SIGNATURE,
         ROOT_SIGNATURE_CONSTANT_BUFFER,
@@ -64,6 +65,7 @@ namespace Takoyaki
         void clearRenderTarget(const glm::vec4&);
         void drawIndexedInstanced();
         void setDefaultRenderTarget();
+        void setPipelineState(const std::string&);
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }
         void setRootSignature(const std::string&);
         void setRootSignatureConstantBuffer(uint_fast32_t, const std::string&);

@@ -54,6 +54,11 @@ namespace Takoyaki
             return lock;
         }
 
+        std::unique_lock<std::mutex> getLock()
+        {
+            return std::unique_lock<std::mutex>(mutex_);
+        }
+
         void push(T value)
         {
             std::lock_guard<std::mutex> lock{ mutex_ };

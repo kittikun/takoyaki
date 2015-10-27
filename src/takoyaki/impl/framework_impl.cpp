@@ -94,6 +94,7 @@ namespace Takoyaki
         threadPool_->submitGPUCommandLists();
         device_->executeCommandList();
         device_->present();
+        //threadPool_->resetWorkers();
     }
 
     void FrameworkImpl::terminate()

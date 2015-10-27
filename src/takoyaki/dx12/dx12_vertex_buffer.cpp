@@ -102,7 +102,7 @@ namespace Takoyaki
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
         cmd->commands->ResourceBarrier(1, &barrier);
-        cmd->commands->Close();
+        DXCheckThrow(cmd->commands->Close());
         
 
         return true;
@@ -113,7 +113,7 @@ namespace Takoyaki
         auto cmd = static_cast<TaskCommand*>(command);
 
         cmd->commands->DiscardResource(uploadBuffer_->getResource(), nullptr);
-        cmd->commands->Close();
+        DXCheckThrow(cmd->commands->Close());
 
         return true;
     }
@@ -128,7 +128,7 @@ namespace Takoyaki
         auto cmd = static_cast<TaskCommand*>(command);
 
         cmd->commands->DiscardResource(vertexBuffer_->getResource(), nullptr);
-        cmd->commands->Close();
+        DXCheckThrow(cmd->commands->Close());
 
         return true;
     }

@@ -43,6 +43,8 @@ namespace Takoyaki
 
         // device has already been locked from context
         void create(DX12Device*, DX12Context*);
+        inline ID3D12PipelineState* getPipelineState() { return state_.Get(); }
+        inline bool isReady() const { return state_.Get() != nullptr; }
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External

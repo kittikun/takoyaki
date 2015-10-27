@@ -51,6 +51,7 @@ namespace Takoyaki
         , mappedAddr_{ other.mappedAddr_ }
         , curOffset_{ other.curOffset_ }
         , size_{ other.size_ }
+        , ready_{ other.ready_.load() }
     {
 
     }

@@ -176,21 +176,21 @@ namespace Takoyaki
 
         currentFrame_ = 0;
 
-        // create rendertargets
+        // create render targets
         renderTargets_.reserve(bufferCount_);
 
         auto context = context_.lock();
 
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
             auto& tex = context->createTexture();
-            auto& res = tex.getResource();
+            auto& com = tex.getCOMObj();
 
-            DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&res)));            
-            D3DDevice_->CreateRenderTargetView(res.Get(), nullptr, tex.getRenderTargetView());
+            DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&com)));
+            D3DDevice_->CreateRenderTargetView(tex.getResource(), nullptr, tex.getRenderTargetView());
 
             auto fmt = boost::wformat(L"Swap chain Render Target %1%") % i;
 
-            res->SetName(boost::str(fmt).c_str());
+            tex.getResource()->SetName(boost::str(fmt).c_str());
 
             renderTargets_.push_back(std::move(tex));
         }
@@ -198,6 +198,7 @@ namespace Takoyaki
 
     void DX12Device::executeCommandList()
     {
+        //LOGC << "DX12Device::executeCommandList";
         auto& cmdList = commandLists_[currentFrame_];
         auto& dxList = dxCommandLists_[currentFrame_];
 

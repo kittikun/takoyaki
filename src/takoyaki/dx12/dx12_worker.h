@@ -48,8 +48,10 @@ namespace Takoyaki
     public:
         DX12Worker(const DX12WorkerDesc&);
 
+        inline bool isIdle() { return idle_.load(); }
         void main() override;
         void submitCommandList() override;
+        inline void reset() override { commandAllocator_->Reset(); }
 
     private:
         ThreadPool* threadPool_;
@@ -58,5 +60,6 @@ namespace Takoyaki
         Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
         std::vector<TaskCommand> commandList_;
         DX12Synchronisation sync_;
+        std::atomic<bool> idle_;
     };
 } // namespace Takoyaki

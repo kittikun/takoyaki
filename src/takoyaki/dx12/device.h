@@ -52,7 +52,7 @@ namespace Takoyaki
 
         inline uint_fast32_t getFrameCount() const { return bufferCount_; }
         inline uint_fast32_t getCurrentFrame() const { return currentFrame_; }
-        inline DX12Texture& getCurrentRenderTarget() { return renderTargets_[currentFrame_]; }
+        inline DX12Texture& getRenderTarget(uint_fast32_t frame) { return renderTargets_[frame]; }
 
         inline CommandListReturn getCommandList() { return CommandListReturn(commandLists_[currentFrame_], std::unique_lock<std::mutex>(commandListMutexes_[currentFrame_])); }
         inline std::unique_lock<std::mutex> getDeviceLock() { return std::unique_lock<std::mutex>(deviceMutex_); }

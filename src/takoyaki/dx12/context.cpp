@@ -61,6 +61,7 @@ namespace Takoyaki
     {
         // at this stage shouldn't need to lock to access resources anymore
 
+        //auto frame = (device_->getCurrentFrame() + 1) % 3;
         auto frame = device_->getCurrentFrame();
         auto defaultRT = false;
 
@@ -69,20 +70,58 @@ namespace Takoyaki
                 case ECommandType::CLEAR_COLOR:
                 {
                     auto color = boost::any_cast<glm::vec4>(descCmd.second);
-                    auto& rt = device_->getCurrentRenderTarget();
+                    auto test = glm::value_ptr(color);
+                    
+                    LOGC << glm::to_string(color);
 
-                    cmd->commands->ClearRenderTargetView(rt.getRenderTargetView(), glm::value_ptr(color), 0, nullptr);
+                    auto& tex = device_->getRenderTarget(frame);
+
+                    if (tex.isReady()) {
+
+                        //cmd->commands->ClearRenderTargetView(device_->getRenderTarget(frame).getRenderTargetView(), test, 0, nullptr);
+
+                        cmd->commands->OMSetRenderTargets(1, &tex.getRenderTargetView(), false, nullptr);
+                    }
+
+                }
+                break;
+
+                case ECommandType::PIPELINE_STATE:
+                {
+                    auto name = boost::any_cast<std::string>(descCmd.second);
+                    auto found = pipelineStates_.find(name);
+
+                    if (found == pipelineStates_.end()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find pipeline state \"%1%\"" } % name;
+
+                        throw new std::runtime_error{ boost::str(fmt) };
+                    }
+
+                    if (!found->second.isReady()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, pipeline state not ready \"%1%\"" } % name;
+
+                        LOGW << boost::str(fmt);
+                        return false;
+                    }
+                    
+                    cmd->commands->SetPipelineState(found->second.getPipelineState());
                 }
                 break;
 
                 case ECommandType::RENDERTARGET_DEFAULT:
                 {
-                    auto& rt = device_->getCurrentRenderTarget();
+                    auto& tex = device_->getRenderTarget(frame);
+
+                    if (!tex.isReady()) {
+                        LOGW << "DX12DeviceContext::buildCommand, rendertarget not ready";
+                        return false;
+                    }
+
                     D3D12_RESOURCE_BARRIER barrier;
 
                     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
                     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-                    barrier.Transition.pResource = rt.getResource().Get();
+                    barrier.Transition.pResource = tex.getResource();
                     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
                     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
                     barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -100,7 +139,7 @@ namespace Takoyaki
                     auto found = rootSignatures_.find(name);
 
                     if (found == rootSignatures_.end()) {
-                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find key \"%1%\"" } % name;
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find root signature \"%1%\"" } % name;
 
                         throw new std::runtime_error{ boost::str(fmt) };
                     }
@@ -122,7 +161,7 @@ namespace Takoyaki
                     }
 
                     if (!found->second.isReady()) {
-                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand,constant buffer not readu \"%1%\"" } % pair.second;
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, constant buffer not ready \"%1%\"" } % pair.second;
 
                         LOGW << boost::str(fmt);
                         return false;
@@ -159,12 +198,11 @@ namespace Takoyaki
 
         // we need to transition back the render target
         if (defaultRT) {
-            auto& rt = device_->getCurrentRenderTarget();
             D3D12_RESOURCE_BARRIER barrier;
 
             barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
             barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            barrier.Transition.pResource = rt.getResource().Get();
+            barrier.Transition.pResource = device_->getRenderTarget(frame).getResource();
             barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
             barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
             barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -172,9 +210,8 @@ namespace Takoyaki
             cmd->commands->ResourceBarrier(1, &barrier);
         }
 
-
         cmd->priority = desc.priority;
-        cmd->commands->Close();
+        DXCheckThrow(cmd->commands->Close());
 
         return true;
     }

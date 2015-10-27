@@ -140,7 +140,9 @@ void App::render(Takoyaki::Renderer* renderer)
     auto cmd = renderer->createCommand();
 
     cmd->setRootSignature("SimpleSignature");
+    cmd->setPipelineState("SimpleState");
     cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
+
 
     cmd->setViewport(viewport_);
     cmd->setScissor(scissor_);

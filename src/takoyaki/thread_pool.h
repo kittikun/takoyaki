@@ -65,8 +65,10 @@ namespace Takoyaki
         class IWorker
         {
         public:
+            virtual bool isIdle() = 0;
             virtual void main() = 0;
             virtual void submitCommandList() = 0;
+            virtual void reset() = 0;
         };
 
         ThreadPool() noexcept;
@@ -124,6 +126,7 @@ namespace Takoyaki
         //    return res;
         //}
 
+        void resetWorkers();
         void submitGPUCommandLists();
         void swapQueues();
 
@@ -135,8 +138,6 @@ namespace Takoyaki
 
     private:
         std::atomic<bool> done_;
-        std::mutex swapMutex_;
-        std::condition_variable swapCond_;
         std::vector<std::unique_ptr<IWorker>> workers_;
         std::array<ThreadSafeQueue<MoveOnlyFunc>, 3> genericWorkQueues_;
         std::array<ThreadSafeQueue<MoveOnlyFuncParamTwoReturn>, 3> gpuWorkQueues_;

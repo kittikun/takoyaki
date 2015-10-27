@@ -51,7 +51,7 @@ namespace Takoyaki
         DX12DescriptorHeapCollection& operator=(DX12DescriptorHeapCollection&&) = delete;
 
     public:
-        using HandlePair = std::tuple<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE, DX12DescriptorHeap*>;
+        using HandleTuple = std::tuple<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE, DX12DescriptorHeap*>;
 
         DX12DescriptorHeapCollection(std::weak_ptr<DX12Device> device) noexcept
             : device_{ device }
@@ -61,21 +61,21 @@ namespace Takoyaki
 
         ~DX12DescriptorHeapCollection() = default;
 
-        std::vector<HandlePair> createRange(uint_fast32_t count)
+        std::vector<HandleTuple> createRange(uint_fast32_t count)
         {
             std::lock_guard<std::mutex> lock{ mutex_ };
-            std::vector<HandlePair> res;
+            std::vector<HandleTuple> res;
 
             res.reserve(count);
 
-            // TODO: don't be lazy dude..
+            // use create one since descriptors might end on different heaps
             for (uint_fast32_t i = 0; i < count; ++i)
                 res.push_back(createOneInternal());
 
             return res;
         }
 
-        HandlePair createOne()
+        HandleTuple createOne()
         {
             std::lock_guard<std::mutex> lock{ mutex_ };
 
@@ -109,7 +109,7 @@ namespace Takoyaki
         }
 
     private:
-        HandlePair createOneInternal()
+        HandleTuple createOneInternal()
         {
             D3D12_CPU_DESCRIPTOR_HANDLE cpu;
             D3D12_GPU_DESCRIPTOR_HANDLE gpu;

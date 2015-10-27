@@ -46,6 +46,9 @@ namespace Takoyaki
         void setRootSignature(const std::string& name);
         void setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name);
 
+        // pipeline state
+        void setPipelineState(const std::string& name);
+
         // viewport
         void setScissor(const glm::uvec4& scissor);
         void setViewport(const glm::vec4& viewport);

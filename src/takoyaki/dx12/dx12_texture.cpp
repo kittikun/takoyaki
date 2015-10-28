@@ -38,7 +38,7 @@ namespace Takoyaki
         , resource_{ std::move(other.resource_) }
         , cpuHandle_{ std::move(other.cpuHandle_) }
     {
-
+        other.cpuHandle_.ptr =  ULONG_PTR_MAX;
     }
 
     DX12Texture::~DX12Texture()

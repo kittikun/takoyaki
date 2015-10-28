@@ -68,7 +68,6 @@ namespace Takoyaki
             virtual bool isIdle() = 0;
             virtual void main() = 0;
             virtual void submitCommandList() = 0;
-            virtual void reset() = 0;
         };
 
         ThreadPool() noexcept;
@@ -126,7 +125,6 @@ namespace Takoyaki
         //    return res;
         //}
 
-        void resetWorkers();
         void submitGPUCommandLists();
         void swapQueues();
 
@@ -135,6 +133,7 @@ namespace Takoyaki
 
     private:
         void workerMain();
+        std::vector<std::unique_lock<std::mutex>> lockQueues();
 
     private:
         std::atomic<bool> done_;

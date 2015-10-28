@@ -182,7 +182,9 @@ namespace Takoyaki
         auto context = context_.lock();
 
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
-            auto& tex = context->createTexture();
+            context->createTexture(i);
+
+            auto& tex = context->getTexture(i);
             auto& com = tex.getCOMObj();
 
             DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&com)));
@@ -191,8 +193,7 @@ namespace Takoyaki
             auto fmt = boost::wformat(L"Swap chain Render Target %1%") % i;
 
             tex.getResource()->SetName(boost::str(fmt).c_str());
-
-            renderTargets_.push_back(std::move(tex));
+            renderTargets_.push_back(&tex);
         }
     }
 
@@ -297,7 +298,7 @@ namespace Takoyaki
             DXCheckThrow(commandQueue_->Signal(fence_.Get(), current));
 
             // Advance the frame index.
-            currentFrame_ = (currentFrame_ + 1) % bufferCount_;
+            currentFrame_.store((currentFrame_ + 1) % bufferCount_);
 
             // Check to see if the next frame is ready to start.
             if (fence_->GetCompletedValue() < fenceValues_[currentFrame_]) {

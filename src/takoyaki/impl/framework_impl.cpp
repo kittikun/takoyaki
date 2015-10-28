@@ -44,7 +44,6 @@ namespace Takoyaki
 
     void FrameworkImpl::compileShader(const ShaderDesc& desc)
     {
-        // system will use shaderlist, this is for app
         threadPool_->submitGeneric(std::bind(&ShaderCompiler::compileShader, &io_, desc, context_), 0);
     }
 
@@ -64,6 +63,7 @@ namespace Takoyaki
             workerDesc.context = context_;
             workerDesc.device = device_;
             workerDesc.threadPool = threadPool_.get();
+            workerDesc.numFrames = desc.bufferCount;
 
             threadPool_->initialize<DX12Worker, DX12WorkerDesc>(desc.numWorkerThreads, workerDesc);
         }

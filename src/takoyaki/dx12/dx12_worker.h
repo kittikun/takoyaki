@@ -36,6 +36,7 @@ namespace Takoyaki
         std::shared_ptr<DX12Context> context;
         std::shared_ptr<DX12Device> device;
         ThreadPool* threadPool;
+        uint_fast32_t numFrames;
     };
 
     class DX12Worker : public ThreadPool::IWorker
@@ -51,15 +52,13 @@ namespace Takoyaki
         inline bool isIdle() { return idle_.load(); }
         void main() override;
         void submitCommandList() override;
-        inline void reset() override { commandAllocator_->Reset(); }
 
     private:
         ThreadPool* threadPool_;
         std::shared_ptr<DX12Context> context_;
         std::shared_ptr<DX12Device> device_;
-        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
+        std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
         std::vector<TaskCommand> commandList_;
-        DX12Synchronisation sync_;
         std::atomic<bool> idle_;
     };
 } // namespace Takoyaki

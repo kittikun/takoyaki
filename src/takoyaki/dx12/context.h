@@ -73,7 +73,7 @@ namespace Takoyaki
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
         DX12ConstantBuffer& createConstanBuffer(const std::string&, uint_fast32_t);
-        DX12Texture& createTexture();
+        void createTexture(uint_fast32_t);
 
         // Get
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
@@ -98,6 +98,7 @@ namespace Takoyaki
         auto getInputLayout(const std::string&) -> InputLayoutReturn;
         auto getPipelineState(const std::string&) -> PipelineStateReturn;
         auto getRootSignature(const std::string&) -> RootSignatureReturn;
+        DX12Texture& getTexture(uint_fast32_t);
         const DX12VertexBuffer& getVertexBuffer(uint_fast32_t);
 
         //////////////////////////////////////////////////////////////////////////
@@ -122,13 +123,12 @@ namespace Takoyaki
         RWLockMap<std::string, DX12InputLayout> inputLayouts_;
         RWLockMap<std::string, DX12PipelineState> pipelineStates_;
         RWLockMap<std::string, DX12RootSignature> rootSignatures_;
+        RWLockMap<uint_fast32_t, DX12Texture> textures_;
         RWLockMap<uint_fast32_t, DX12VertexBuffer> vertexBuffers_;
 
         // use multiples maps to allow same name in different categories
         using ShaderMap = RWLockMap<std::string, D3D12_SHADER_BYTECODE>;
         std::unordered_map<EShaderType, ShaderMap> shaders_;
-
-        ThreadSafeStack<DX12Texture> textures_;
 
         // resource destruction have to be handled by the context
         using DestroyQueueType = ThreadSafeQueue<std::pair<EResourceType, uint_fast32_t>>;

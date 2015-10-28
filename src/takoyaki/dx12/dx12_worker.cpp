@@ -30,12 +30,14 @@ namespace Takoyaki
         : context_(std::move(desc.context))
         , device_(std::move(desc.device))
         , threadPool_{ desc.threadPool }
-        , sync_{ device_.get() }
         , idle_{ false }
     {
+        commandAllocators_.resize(desc.numFrames);
+
         auto lock = desc.device->getDeviceLock();
 
-        DXCheckThrow(desc.device->getDXDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_)));
+        for (uint_fast32_t i = 0; i < desc.numFrames; ++i)
+            DXCheckThrow(desc.device->getDXDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
     }
 
     void DX12Worker::main()
@@ -45,7 +47,16 @@ namespace Takoyaki
         MoveOnlyFunc genericCmd;
         MoveOnlyFuncParamTwoReturn gpuCmd;
 
+        auto prevFrame = device_->getCurrentFrame();
+
         while (!threadPool_->isDone()) {
+            auto frame = device_->getCurrentFrame();
+
+            if (frame != prevFrame) {
+                DXCheckThrow(commandAllocators_[frame]->Reset());
+                prevFrame = frame;
+            }
+
             if (threadPool_->tryPopGPUTask(gpuCmd)) {
                 TaskCommand cmd;
 
@@ -54,14 +65,14 @@ namespace Takoyaki
                 {
                     auto lock = device_->getDeviceLock();
 
-                    DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&cmd.commands)));
+                    DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frame].Get(), nullptr, IID_PPV_ARGS(&cmd.commands)));
                 }
 
                 if (gpuCmd(&cmd, device_.get())) {
                     commandList_.push_back(std::move(cmd));
                 } else {
                     cmd.commands->Close();
-                    cmd.commands->Reset(commandAllocator_.Get(), nullptr);
+                    cmd.commands->Reset(commandAllocators_[frame].Get(), nullptr);
                 }
             } else if (threadPool_->tryPopGenericTask(genericCmd)) {
                 idle_.store(false);

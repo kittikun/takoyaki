@@ -36,11 +36,19 @@ namespace Takoyaki
         done_ = true;
     }
 
-    void ThreadPool::resetWorkers()
+    std::vector<std::unique_lock<std::mutex>> ThreadPool::lockQueues()
     {
-        //LOGC << "ThreadPool::resetWorkers()";
-        for (auto& worker : workers_)
-            worker->reset();
+        std::vector<std::unique_lock<std::mutex>> locks;
+
+        locks.reserve(genericWorkQueues_.size() + gpuWorkQueues_.size());
+
+        for (auto& gen : genericWorkQueues_)
+            locks.push_back(gen.getLock());
+
+        for (auto& gpu : gpuWorkQueues_)
+            locks.push_back(gpu.getLock());
+
+        return locks;
     }
 
     void ThreadPool::submitGPUCommandLists()
@@ -53,8 +61,7 @@ namespace Takoyaki
     {
         //LOGC << "ThreadPool::swapQueues";
 
-
-        // TODO: this while block need to be made more efficient
+        // Barrier
         {
             bool done = false;
 
@@ -72,24 +79,11 @@ namespace Takoyaki
             }
         }
 
-        {
-            auto gen0 = genericWorkQueues_[0].getLock();
-            auto gen1 = genericWorkQueues_[1].getLock();
-            auto gen2 = genericWorkQueues_[2].getLock();
+        auto locks = lockQueues();
 
-            genericWorkQueues_[0].swap(genericWorkQueues_[1]);
-            genericWorkQueues_[1].swap(genericWorkQueues_[2]);
-        }
-
-        {
-            auto gpu0 = gpuWorkQueues_[0].getLock();
-            auto gpu1 = gpuWorkQueues_[1].getLock();
-            auto gpu2 = gpuWorkQueues_[2].getLock();
-
-            gpuWorkQueues_[0].swap(gpuWorkQueues_[1]);
-            gpuWorkQueues_[1].swap(gpuWorkQueues_[2]);
-        }
-
-        //resetWorkers();
+        genericWorkQueues_[0].swap(genericWorkQueues_[1]);
+        genericWorkQueues_[1].swap(genericWorkQueues_[2]);
+        gpuWorkQueues_[0].swap(gpuWorkQueues_[1]);
+        gpuWorkQueues_[1].swap(gpuWorkQueues_[2]);
     }
 } // namespace Takoyaki

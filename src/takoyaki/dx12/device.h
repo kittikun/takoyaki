@@ -52,9 +52,9 @@ namespace Takoyaki
 
         inline uint_fast32_t getFrameCount() const { return bufferCount_; }
         inline uint_fast32_t getCurrentFrame() const { return currentFrame_; }
-        inline DX12Texture& getRenderTarget(uint_fast32_t frame) { return renderTargets_[frame]; }
+        inline DX12Texture* getRenderTarget(uint_fast32_t frame) { return renderTargets_[frame]; }
 
-        inline CommandListReturn getCommandList() { return CommandListReturn(commandLists_[currentFrame_], std::unique_lock<std::mutex>(commandListMutexes_[currentFrame_])); }
+        inline CommandListReturn getCommandList() { return CommandListReturn(commandLists_[currentFrame_.load()], std::unique_lock<std::mutex>(commandListMutexes_[currentFrame_.load()])); }
         inline std::unique_lock<std::mutex> getDeviceLock() { return std::unique_lock<std::mutex>(deviceMutex_); }
         inline const Microsoft::WRL::ComPtr<ID3D12Device>& getDXDevice() { return D3DDevice_; }
 
@@ -102,11 +102,11 @@ namespace Takoyaki
 
         // swap chain
         Microsoft::WRL::ComPtr<IDXGISwapChain3> swapChain_;
-        std::vector<DX12Texture> renderTargets_;
+        std::vector<DX12Texture*> renderTargets_;
         uint_fast32_t bufferCount_;
 
         // misc
-        uint_fast32_t currentFrame_;
+        std::atomic<uint_fast32_t> currentFrame_;
         glm::mat4x4 matDeviceRotation_;        
     };
 } // namespace Takoyaki

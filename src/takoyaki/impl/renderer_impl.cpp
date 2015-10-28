@@ -36,6 +36,7 @@ namespace Takoyaki
         : context_{ context }
         , device_{ device }
         , threadPool_{ threadPool }
+        , uidGenerator_{ device->getFrameCount() }
     {
 
     }

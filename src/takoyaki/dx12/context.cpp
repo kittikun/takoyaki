@@ -74,13 +74,13 @@ namespace Takoyaki
                     
                     LOGC << glm::to_string(color);
 
-                    auto& tex = device_->getRenderTarget(frame);
+                    auto tex = device_->getRenderTarget(frame);
 
-                    if (tex.isReady()) {
+                    if (tex->isReady()) {
 
-                        //cmd->commands->ClearRenderTargetView(device_->getRenderTarget(frame).getRenderTargetView(), test, 0, nullptr);
+                        cmd->commands->ClearRenderTargetView(tex->getRenderTargetView(), test, 0, nullptr);
 
-                        cmd->commands->OMSetRenderTargets(1, &tex.getRenderTargetView(), false, nullptr);
+                        //cmd->commands->OMSetRenderTargets(1, &tex.getRenderTargetView(), false, nullptr);
                     }
 
                 }
@@ -110,9 +110,9 @@ namespace Takoyaki
 
                 case ECommandType::RENDERTARGET_DEFAULT:
                 {
-                    auto& tex = device_->getRenderTarget(frame);
+                    auto tex = device_->getRenderTarget(frame);
 
-                    if (!tex.isReady()) {
+                    if (!tex->isReady()) {
                         LOGW << "DX12DeviceContext::buildCommand, rendertarget not ready";
                         return false;
                     }
@@ -121,7 +121,7 @@ namespace Takoyaki
 
                     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
                     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-                    barrier.Transition.pResource = tex.getResource();
+                    barrier.Transition.pResource = tex->getResource();
                     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
                     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
                     barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -202,7 +202,7 @@ namespace Takoyaki
 
             barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
             barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            barrier.Transition.pResource = device_->getRenderTarget(frame).getResource();
+            barrier.Transition.pResource = device_->getRenderTarget(frame)->getResource();
             barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
             barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
             barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -293,9 +293,11 @@ namespace Takoyaki
         rootSignatures_.insert(std::make_pair(name, DX12RootSignature{}));
     }
 
-    DX12Texture& DX12Context::createTexture()
+    void DX12Context::createTexture(uint_fast32_t id)
     {
-        return textures_.push(DX12Texture{ this });
+        auto lock = textures_.getWriteLock();
+
+        textures_.insert(std::make_pair(id, DX12Texture{ this }));
     }
 
     void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast32_t sizeByte)
@@ -480,6 +482,20 @@ namespace Takoyaki
             std::this_thread::yield();
             lock.lock();
             found = map.find(name);
+        }
+
+        return found->second;
+    }
+
+    DX12Texture& DX12Context::getTexture(uint_fast32_t id)
+    {
+        auto lock = textures_.getReadLock();
+        auto found = textures_.find(id);
+
+        if (found == textures_.end()) {
+            auto fmt = boost::format{ "DX12DeviceContext::getTexture, cannot find key \"%1%\"" } % id;
+
+            throw new std::runtime_error{ boost::str(fmt) };
         }
 
         return found->second;

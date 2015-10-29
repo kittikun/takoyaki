@@ -36,21 +36,6 @@ namespace Takoyaki
         done_ = true;
     }
 
-    std::vector<std::unique_lock<std::mutex>> ThreadPool::lockQueues()
-    {
-        std::vector<std::unique_lock<std::mutex>> locks;
-
-        locks.reserve(genericWorkQueues_.size() + gpuWorkQueues_.size());
-
-        for (auto& gen : genericWorkQueues_)
-            locks.push_back(gen.getLock());
-
-        for (auto& gpu : gpuWorkQueues_)
-            locks.push_back(gpu.getLock());
-
-        return locks;
-    }
-
     void ThreadPool::submitGPUCommandLists()
     {
         for (auto& worker : workers_)
@@ -78,8 +63,6 @@ namespace Takoyaki
                     std::this_thread::yield();
             }
         }
-
-        auto locks = lockQueues();
 
         genericWorkQueues_[0].swap(genericWorkQueues_[1]);
         genericWorkQueues_[1].swap(genericWorkQueues_[2]);

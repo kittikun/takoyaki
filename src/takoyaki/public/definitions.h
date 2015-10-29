@@ -101,6 +101,7 @@ namespace Takoyaki
         WIREFRAME,
     };
 
+    // will add as needed
     enum class EFormat
     {
         UNKNOWN,
@@ -129,13 +130,6 @@ namespace Takoyaki
         OR_INVERTED
     };
 
-    enum class EPropertyID
-    {
-        WINDOW_SIZE,            // glm::vec2
-        WINDOW_ORIENTATION,     // DisplayOrientation
-        WINDOW_DPI
-    };
-
 // undef the one from math.h
 #undef DOMAIN
 
@@ -161,7 +155,13 @@ namespace Takoyaki
         DECR
     };
 
+    // will add as needed
     enum class ETopology
+    {
+        TRIANGLELIST
+    };
+
+    enum class ETopologyType
     {
         POINT,
         LINE,
@@ -278,7 +278,7 @@ namespace Takoyaki
         MultiSampleDesc multiSampleState;
         uint_fast32_t sampleMask;
         std::unordered_map<EShaderType, std::string> shaders;
-        ETopology topology;
+        ETopologyType topology;
     };
 
     struct ShaderDesc

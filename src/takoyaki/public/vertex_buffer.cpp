@@ -31,5 +31,11 @@ namespace Takoyaki
     }
 
     VertexBuffer::~VertexBuffer() noexcept = default;
+
+    uint_fast32_t VertexBuffer::getHandle() const
+    {
+        return impl_->getHandle();
+    }
+
 }
 // namespace Takoyaki

@@ -37,7 +37,8 @@ namespace Takoyaki
     D3D12_FILL_MODE FillModeToDX(EFillMode);
     D3D12_LOGIC_OP LogicOpToDX(ELogicOp);
     D3D12_STENCIL_OP StencilOpToDX(EStencilOp);
-    D3D12_PRIMITIVE_TOPOLOGY_TYPE TopologyToDX(ETopology);
+    D3D12_PRIMITIVE_TOPOLOGY TopologyToDX(ETopology);
+    D3D12_PRIMITIVE_TOPOLOGY_TYPE TopologyTypeToDX(ETopologyType);
 
     // struct conversions
     D3D12_BLEND_DESC BlendDescToDX(const BlendDesc&);

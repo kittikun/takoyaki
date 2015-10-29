@@ -133,7 +133,6 @@ namespace Takoyaki
 
     private:
         void workerMain();
-        std::vector<std::unique_lock<std::mutex>> lockQueues();
 
     private:
         std::atomic<bool> done_;

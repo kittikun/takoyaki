@@ -22,6 +22,8 @@
 
 #include <memory>
 
+#include "definitions.h"
+
 namespace Takoyaki
 {
     class CommandImpl;
@@ -40,7 +42,12 @@ namespace Takoyaki
         void setPriority(uint_fast32_t priority);
 
         // draw commands
-        void drawIndexedInstanced();
+        void drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex);
+
+        // geometry
+        void setTopology(ETopology topology);
+        void setIndexBuffer(uint_fast32_t handle);
+        void setVertexBuffer(uint_fast32_t handle);
 
         // root signature
         void setRootSignature(const std::string& name);

@@ -85,7 +85,7 @@ void App::initialize(Takoyaki::Framework* framework)
     psDesc.depthStencilState.depthEnable = false;
     psDesc.formatRenderTarget[0] = Takoyaki::EFormat::B8G8R8A8_UNORM;
     psDesc.numRenderTargets = 1;
-    psDesc.topology = Takoyaki::ETopology::TRIANGLE;
+    psDesc.topology = Takoyaki::ETopologyType::TRIANGLE;
     renderer->createPipelineState("SimpleState", psDesc);
 
     // compile PSO, this only needs to be called once for all your PSO
@@ -143,14 +143,18 @@ void App::render(Takoyaki::Renderer* renderer)
     cmd->setPipelineState("SimpleState");
     cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
 
-
     cmd->setViewport(viewport_);
     cmd->setScissor(scissor_);
 
     cmd->setDefaultRenderTarget();
     cmd->clearRenderTarget(glm::vec4{ 0.f, 0.f, 1.f, 1.f });
 
-    cmd->drawIndexedInstanced();
+    cmd->setTopology(Takoyaki::ETopology::TRIANGLELIST);
+    cmd->setVertexBuffer(vertexBuffer_->getHandle());
+    cmd->setIndexBuffer(indexBuffer_->getHandle());
+
+    // command to gpu will actually be created here
+    cmd->drawIndexed(36, 0, 0);
 }
 
 void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)

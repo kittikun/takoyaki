@@ -24,6 +24,7 @@
 #include <boost/any.hpp>
 
 #include "../dx12/dxcommon.h"
+#include "../public/definitions.h"
 
 namespace Takoyaki
 {
@@ -34,17 +35,22 @@ namespace Takoyaki
     enum class ECommandType
     {
         CLEAR_COLOR,
+        DRAW_INDEXED,
+        INDEX_BUFFER,
         PIPELINE_STATE,
         RENDERTARGET_DEFAULT,
         ROOT_SIGNATURE,
         ROOT_SIGNATURE_CONSTANT_BUFFER,
+        PRIMITIVE_TOPOLOGY,
         SCISSOR,
+        VERTEX_BUFFER,
         VIEWPORT
     };
 
     struct CommandDesc
     {
-        using RSCBPair = std::pair<uint_fast32_t, std::string>;
+        using RSCBParams = std::pair<uint_fast32_t, std::string>;
+        using DrawIndexedParams = std::tuple<uint_fast32_t, uint_fast32_t, int_fast32_t>;
 
         CommandDesc();
         uint_fast32_t priority;
@@ -63,14 +69,18 @@ namespace Takoyaki
         ~CommandImpl() = default;
 
         void clearRenderTarget(const glm::vec4&);
-        void drawIndexedInstanced();
+        void drawIndexed(uint_fast32_t, uint_fast32_t, int_fast32_t);
         void setDefaultRenderTarget();
+        void setIndexBuffer(uint_fast32_t);
         void setPipelineState(const std::string&);
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }
         void setRootSignature(const std::string&);
         void setRootSignatureConstantBuffer(uint_fast32_t, const std::string&);
         void setScissor(const glm::uvec4&);
+        void setTopology(ETopology);
+        void setVertexBuffer(uint_fast32_t);
         void setViewport(const glm::vec4&);
+
     private:
         std::weak_ptr<RendererImpl> renderer_;
         CommandDesc desc_;

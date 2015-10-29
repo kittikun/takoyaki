@@ -31,5 +31,10 @@ namespace Takoyaki
     }
 
     IndexBuffer::~IndexBuffer() noexcept = default;
+
+    uint_fast32_t IndexBuffer::getHandle() const
+    {
+        return impl_->getHandle();
+    }
 }
 // namespace Takoyaki

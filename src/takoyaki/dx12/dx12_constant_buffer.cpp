@@ -53,13 +53,14 @@ namespace Takoyaki
         , size_{ other.size_ }
         , ready_{ other.ready_.load() }
     {
-
+        other.cpuHandles_.clear();
     }
 
     DX12ConstantBuffer::~DX12ConstantBuffer()
     {
         // only cpu handles are used to track descriptor heap usage
-        owner_->getRTVDescHeapCollection().releaseRange(cpuHandles_.begin(), cpuHandles_.end());
+        if (!cpuHandles_.empty())
+            owner_->getRTVDescHeapCollection().releaseRange(cpuHandles_.begin(), cpuHandles_.end());
     }
 
     void DX12ConstantBuffer::addVariable(const std::string& name, uint_fast32_t offset, uint_fast32_t size)

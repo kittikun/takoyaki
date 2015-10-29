@@ -50,7 +50,9 @@ namespace Takoyaki
         bool destroy(void*, void*);
 
         //////////////////////////////////////////////////////////////////////////
-        // Internal & External    
+        // Internal & External
+
+        inline D3D12_INDEX_BUFFER_VIEW getView() const { return view_; }
 
     private:
         struct Intermediate

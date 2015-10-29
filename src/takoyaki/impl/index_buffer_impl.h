@@ -38,6 +38,8 @@ namespace Takoyaki
         explicit IndexBufferImpl(const std::shared_ptr<DX12Context>&, const DX12IndexBuffer&, uint_fast32_t) noexcept;
         ~IndexBufferImpl();
 
+        inline uint_fast32_t getHandle() const { return handle_; }
+
     private:
         // must own pointer to context for destruction
         std::weak_ptr<DX12Context> context_;

@@ -96,7 +96,7 @@ namespace Takoyaki
             desc.DepthStencilState = DepthStencilDescToDX(intermediate_->depthStencilState);
             desc.RasterizerState = RasterizerDescToDX(intermediate_->rasterizerState);
             desc.SampleMask = intermediate_->sampleMask;
-            desc.PrimitiveTopologyType = TopologyToDX(intermediate_->topology);
+            desc.PrimitiveTopologyType = TopologyTypeToDX(intermediate_->topology);
             desc.NumRenderTargets = intermediate_->numRenderTargets;
             desc.SampleDesc = MultiSampleDescToDX(intermediate_->multiSampleState);
             

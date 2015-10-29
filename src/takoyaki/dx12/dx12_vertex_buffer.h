@@ -50,7 +50,7 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
 
-
+        inline D3D12_VERTEX_BUFFER_VIEW getView() const { return view_; }
 
     private:
         struct Intermediate

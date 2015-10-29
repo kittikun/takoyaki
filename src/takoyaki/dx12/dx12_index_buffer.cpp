@@ -53,6 +53,7 @@ namespace Takoyaki
         : indexBuffer_{ std::move(other.indexBuffer_) }
         , uploadBuffer_{ std::move(other.uploadBuffer_) }
         , intermediate_{ std::move(other.intermediate_) }
+        , view_{ std::move(other.view_) }
     {
 
     }

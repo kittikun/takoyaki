@@ -41,9 +41,12 @@ namespace Takoyaki
         desc_.commands.push_back(std::make_pair(ECommandType::CLEAR_COLOR, color));
     }
 
-    void CommandImpl::drawIndexedInstanced()
+    void CommandImpl::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)
     {
+        // TODO: move this lock to present
         auto renderer = renderer_.lock();
+
+        desc_.commands.push_back(std::make_pair(ECommandType::RENDERTARGET_DEFAULT, std::make_tuple(indexCount, startIndex, baseVertex)));
 
         renderer->buildCommand(desc_);
     }
@@ -51,6 +54,11 @@ namespace Takoyaki
     void CommandImpl::setDefaultRenderTarget()
     {
         desc_.commands.push_back(std::make_pair(ECommandType::RENDERTARGET_DEFAULT, boost::any()));
+    }
+
+    void CommandImpl::setIndexBuffer(uint_fast32_t handle)
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::INDEX_BUFFER, handle));
     }
 
     void CommandImpl::setPipelineState(const std::string& name)
@@ -71,6 +79,16 @@ namespace Takoyaki
     void CommandImpl::setScissor(const glm::uvec4& scissor)
     {
         desc_.commands.push_back(std::make_pair(ECommandType::SCISSOR, scissor));
+    }
+
+    void CommandImpl::setTopology(ETopology topology)
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::PRIMITIVE_TOPOLOGY, topology));
+    }
+
+    void CommandImpl::setVertexBuffer(uint_fast32_t handle)
+    {
+        desc_.commands.push_back(std::make_pair(ECommandType::VERTEX_BUFFER, handle));
     }
 
     void CommandImpl::setViewport(const glm::vec4& viewport)

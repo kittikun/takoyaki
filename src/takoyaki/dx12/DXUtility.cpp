@@ -254,17 +254,28 @@ namespace Takoyaki
         return D3D12_STENCIL_OP_KEEP;
     }
 
-    D3D12_PRIMITIVE_TOPOLOGY_TYPE TopologyToDX(ETopology value)
+    D3D12_PRIMITIVE_TOPOLOGY TopologyToDX(ETopology value)
+    {
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/ff728726(v=vs.85).aspx
+        switch (value) {
+            case ETopology::TRIANGLELIST:
+                return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        }
+
+        return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+    }
+
+    D3D12_PRIMITIVE_TOPOLOGY_TYPE TopologyTypeToDX(ETopologyType value)
     {
         // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770385(v=vs.85).aspx
         switch (value) {
-            case ETopology::LINE:
+            case ETopologyType::LINE:
                 return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
-            case ETopology::PATCH:
+            case ETopologyType::PATCH:
                 return D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH;
-            case ETopology::POINT:
+            case ETopologyType::POINT:
                 return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
-            case ETopology::TRIANGLE:
+            case ETopologyType::TRIANGLE:
                 return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         }
 

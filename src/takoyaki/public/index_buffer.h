@@ -37,6 +37,8 @@ namespace Takoyaki
         IndexBuffer(std::unique_ptr<IndexBufferImpl>) noexcept;
         ~IndexBuffer() noexcept;
 
+        uint_fast32_t getHandle() const;
+
     private:
         std::unique_ptr<IndexBufferImpl> impl_;
     };

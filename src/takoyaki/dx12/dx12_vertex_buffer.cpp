@@ -54,6 +54,7 @@ namespace Takoyaki
         : vertexBuffer_{ std::move(other.vertexBuffer_) }
         , uploadBuffer_{ std::move(other.uploadBuffer_) }
         , intermediate_{ std::move(other.intermediate_) }
+        , view_{ std::move(other.view_) }
     {
 
     }

@@ -37,14 +37,19 @@ namespace Takoyaki
         impl_->clearRenderTarget(color);
     }
 
-    void Command::drawIndexedInstanced()
+    void Command::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)
     {
-        impl_->drawIndexedInstanced();
+        impl_->drawIndexed(indexCount, startIndex, baseVertex);
     }
 
     void Command::setDefaultRenderTarget()
     {
         impl_->setDefaultRenderTarget();
+    }
+
+    void Command::setIndexBuffer(uint_fast32_t handle)
+    {
+        impl_->setIndexBuffer(handle);
     }
 
     void Command::setPipelineState(const std::string& name)
@@ -70,6 +75,16 @@ namespace Takoyaki
     void Command::setScissor(const glm::uvec4& scissor)
     {
         impl_->setScissor(scissor);
+    }
+
+    void Command::setTopology(ETopology topology)
+    {
+        impl_->setTopology(topology);
+    }
+
+    void Command::setVertexBuffer(uint_fast32_t handle)
+    {
+        impl_->setVertexBuffer(handle);
     }
 
     void Command::setViewport(const glm::vec4& viewport)

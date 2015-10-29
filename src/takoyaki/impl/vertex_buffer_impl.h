@@ -38,6 +38,8 @@ namespace Takoyaki
         explicit VertexBufferImpl(const std::shared_ptr<DX12Context>&, const DX12VertexBuffer&, uint_fast32_t) noexcept;
         ~VertexBufferImpl();
 
+        inline uint_fast32_t getHandle() const { return handle_; }
+
     private:
         // must own pointer to context for destruction
         std::weak_ptr<DX12Context> context_;

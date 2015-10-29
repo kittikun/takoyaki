@@ -70,19 +70,31 @@ namespace Takoyaki
                 case ECommandType::CLEAR_COLOR:
                 {
                     auto color = boost::any_cast<glm::vec4>(descCmd.second);
-                    auto test = glm::value_ptr(color);
-                    
-                    LOGC << glm::to_string(color);
 
-                    auto tex = device_->getRenderTarget(frame);
+                    cmd->commands->ClearRenderTargetView(device_->getRenderTarget(frame)->getRenderTargetView(), glm::value_ptr(color), 0, nullptr);
+                }
+                break;
 
-                    if (tex->isReady()) {
+                case ECommandType::DRAW_INDEXED:
+                {
+                    auto params = boost::any_cast<CommandDesc::DrawIndexedParams>(descCmd.second);
 
-                        cmd->commands->ClearRenderTargetView(tex->getRenderTargetView(), test, 0, nullptr);
+                    cmd->commands->DrawIndexedInstanced(std::get<0>(params), 1, std::get<1>(params), std::get<2>(params), 0);
+                }
+                break;
 
-                        //cmd->commands->OMSetRenderTargets(1, &tex.getRenderTargetView(), false, nullptr);
+                case ECommandType::INDEX_BUFFER:
+                {
+                    auto handle = boost::any_cast<uint_fast32_t>(descCmd.second);
+                    auto found = indexBuffers_.find(handle);
+
+                    if (found == indexBuffers_.end()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find index buffer \"%1%\"" } % handle;
+
+                        throw new std::runtime_error{ boost::str(fmt) };
                     }
 
+                    cmd->commands->IASetIndexBuffer(&found->second.getView());
                 }
                 break;
 
@@ -108,6 +120,14 @@ namespace Takoyaki
                 }
                 break;
 
+                case ECommandType::PRIMITIVE_TOPOLOGY:
+                {
+                    auto topology = boost::any_cast<ETopology>(descCmd.second);
+                    
+                    cmd->commands->IASetPrimitiveTopology(TopologyToDX(topology));
+                }
+                break;
+
                 case ECommandType::RENDERTARGET_DEFAULT:
                 {
                     auto tex = device_->getRenderTarget(frame);
@@ -127,6 +147,7 @@ namespace Takoyaki
                     barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
                     cmd->commands->ResourceBarrier(1, &barrier);
+                    cmd->commands->OMSetRenderTargets(1, &tex->getRenderTargetView(), false, nullptr);
 
                     // flag so we transition it back at the end
                     defaultRT = true;
@@ -150,7 +171,7 @@ namespace Takoyaki
 
                 case ECommandType::ROOT_SIGNATURE_CONSTANT_BUFFER:
                 {
-                    auto pair = boost::any_cast<CommandDesc::RSCBPair>(descCmd.second);
+                    auto pair = boost::any_cast<CommandDesc::RSCBParams>(descCmd.second);
                     auto found = constantBuffers_.find(pair.second);
 
                     if (found == constantBuffers_.end()) {
@@ -181,6 +202,21 @@ namespace Takoyaki
                     D3D12_RECT rect = { static_cast<LONG>(scissor.x), static_cast<LONG>(scissor.y), static_cast<LONG>(scissor.z), static_cast<LONG>(scissor.w) };
 
                     cmd->commands->RSSetScissorRects(1, &rect);
+                }
+                break;
+
+                case ECommandType::VERTEX_BUFFER:
+                {
+                    auto handle = boost::any_cast<uint_fast32_t>(descCmd.second);
+                    auto found = vertexBuffers_.find(handle);
+
+                    if (found == vertexBuffers_.end()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find vertex buffer \"%1%\"" } % handle;
+
+                        throw new std::runtime_error{ boost::str(fmt) };
+                    }
+
+                    cmd->commands->IASetVertexBuffers(0, 1, &found->second.getView());
                 }
                 break;
 

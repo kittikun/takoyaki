@@ -39,7 +39,7 @@ namespace Takoyaki
 
         prop.Type = intermediate_->type;
 
-        // let the driver about those properties
+        // let the driver decide about those properties
         prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
         prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
 

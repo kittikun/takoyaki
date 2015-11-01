@@ -41,7 +41,7 @@ namespace Takoyaki
 
     }
 
-    void RendererImpl::buildCommand(const CommandDesc& desc) const
+    void RendererImpl::buildCommand(const CommandDesc& desc, const std::string& pipelineState) const
     {
         // capture by value is important here
         auto lamda = [this, desc](void* cmd, void* dev)
@@ -51,7 +51,7 @@ namespace Takoyaki
             return context_->buildCommand(desc, taskCmd);
         };
 
-        threadPool_->submitGPU(std::bind(lamda, std::placeholders::_1, std::placeholders::_2), 0);
+        threadPool_->submitGPUDraw(std::bind(lamda, std::placeholders::_1, std::placeholders::_2), pipelineState, 0);
     }
 
     void RendererImpl::compilePipelineStateObjects()
@@ -61,9 +61,9 @@ namespace Takoyaki
         context_->compilePipelineStateObjects();
     }
 
-    std::unique_ptr<CommandImpl> RendererImpl::createCommand()
+    std::unique_ptr<CommandImpl> RendererImpl::createCommand(const std::string& pipelineState)
     {
-        return std::make_unique<CommandImpl>(shared_from_this());
+        return std::make_unique<CommandImpl>(shared_from_this(), pipelineState);
     }
 
     std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, EFormat format, uint_fast32_t sizeByte)

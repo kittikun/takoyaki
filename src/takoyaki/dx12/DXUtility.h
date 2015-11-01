@@ -26,7 +26,6 @@ namespace Takoyaki
 {
     float ConvertDipsToPixels(float dips, float dpi);
     void DXCheckThrow(HRESULT);
-    std::string GetDXError(HRESULT);
 
     // enum conversions
     D3D12_BLEND BlendToDX(EBlend);
@@ -35,6 +34,7 @@ namespace Takoyaki
     D3D12_CULL_MODE CullModeToDX(ECullMode);
     DXGI_FORMAT FormatToDX(EFormat);
     D3D12_FILL_MODE FillModeToDX(EFillMode);
+    std::string GetDXError(HRESULT);
     D3D12_LOGIC_OP LogicOpToDX(ELogicOp);
     D3D12_STENCIL_OP StencilOpToDX(EStencilOp);
     D3D12_PRIMITIVE_TOPOLOGY TopologyToDX(ETopology);

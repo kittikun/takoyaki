@@ -51,7 +51,7 @@ namespace Takoyaki
             bool done = false;
 
             while (!done) {
-                bool queueDone = genericWorkQueues_[0].empty() && gpuWorkQueues_[0].empty();
+                bool queueDone = genericWorkQueues_[0].empty() && gpuWorkQueues_[0].empty() && gpuDrawQueues_[0].empty();
                 bool workerDone = true;
 
                 for (auto& worker : workers_)
@@ -59,6 +59,7 @@ namespace Takoyaki
 
                 done = queueDone & workerDone;
 
+                // yield while we wait for the workers to finish working
                 if (!done)
                     std::this_thread::yield();
             }
@@ -68,5 +69,7 @@ namespace Takoyaki
         genericWorkQueues_[1].swap(genericWorkQueues_[2]);
         gpuWorkQueues_[0].swap(gpuWorkQueues_[1]);
         gpuWorkQueues_[1].swap(gpuWorkQueues_[2]);
+        gpuDrawQueues_[0].swap(gpuDrawQueues_[1]);
+        gpuDrawQueues_[1].swap(gpuDrawQueues_[2]);
     }
 } // namespace Takoyaki

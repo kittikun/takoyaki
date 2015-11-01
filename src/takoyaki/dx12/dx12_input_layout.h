@@ -43,7 +43,7 @@ namespace Takoyaki
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
-        void addInput(const std::string&, EFormat, uint_fast32_t);
+        void addInput(const std::string&, EFormat, uint_fast32_t, uint_fast32_t);
 
     private:
         std::vector<std::string> names_; // we need to keep copies of semantic names for LPCSTR

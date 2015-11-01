@@ -23,12 +23,8 @@
 #include "app.h"
 
 #include <array>
-
 #include <d3d12.h>  // will be removed later once Vulkan abstraction has been added
-#include <glm/gtc/matrix_transform.hpp>
 #include <takoyaki.h>
-
-#include <DirectXMath.h>
 
 struct Vertex
 {
@@ -47,18 +43,20 @@ void App::initialize(Takoyaki::Framework* framework)
     shDescs[0].path = "data/SimpleVS.hlsl";
     shDescs[0].type = Takoyaki::EShaderType::VERTEX;
     shDescs[0].entry = "main";
+    shDescs[0].debug = true;
     shDescs[1].name = "SimplePS";
     shDescs[1].path = "data/SimplePS.hlsl";
     shDescs[1].type = Takoyaki::EShaderType::PIXEL;
     shDescs[1].entry = "main";
+    shDescs[1].debug = true;
 
     for (auto& shDesc : shDescs)
         framework->compileShader(shDesc);
 
     // create vertex layout
     auto layout = renderer->createInputLayout("SimpleVertex");
-    layout->addInput("POSITION", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
-    layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 0);
+    layout->addInput("POSITION", Takoyaki::EFormat::R32G32B32_FLOAT, 0, 0);
+    layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 12, 0);
 
     // create root signature that will be using the input assembler 
     // and only allow the constant buffer to be accessed from the vertex shader
@@ -126,21 +124,20 @@ void App::initialize(Takoyaki::Framework* framework)
         1, 7, 5,
     };
 
-    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices[0]), sizeof(Vertex), static_cast<uint_fast32_t>(cubeVertices.size() * sizeof(Vertex))));
+    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices.front()), sizeof(Vertex), static_cast<uint_fast32_t>(cubeVertices.size() * sizeof(Vertex))));
     indexBuffer_ = std::move(renderer->createIndexBuffer(reinterpret_cast<uint8_t*>(&cubeIndices.front()), Takoyaki::EFormat::R16_UINT, static_cast<uint_fast32_t>(cubeIndices.size() * sizeof(uint16_t))));
 
     auto size = framework->getWindowSize();
     viewport_ = { 0, 0, size.x, size.y };
-    scissor_ = { 0, 0, static_cast<uint_fast32_t>(viewport_.x), static_cast<uint_fast32_t>(viewport_.y) };
+    scissor_ = { 0, 0, static_cast<uint_fast32_t>(size.x), static_cast<uint_fast32_t>(size.y) };
 }
 
 void App::render(Takoyaki::Renderer* renderer)
 {
     // Work sent to GPU actually happens here
-    auto cmd = renderer->createCommand();
+    auto cmd = renderer->createCommand("SimpleState");
 
     cmd->setRootSignature("SimpleSignature");
-    cmd->setPipelineState("SimpleState");
     cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
 
     cmd->setViewport(viewport_);
@@ -161,14 +158,14 @@ void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
 {
     // perspective matrix
     float fov = glm::radians(70.0f);
-    auto perspective = glm::perspectiveFovLH(fov, viewport_.z, viewport_.w, 1.0f, 100.0f);
+    const auto perspective = Takoyaki::perspectiveFovLH(fov, viewport_.z, viewport_.w, 0.01f, 100.0f);
 
     // lookat
-    auto eye = glm::vec3(0.0f, 0.7f, 1.5f);
-    auto at = glm::vec3(0.0f, -0.1f, 0.0f);
-    auto up = glm::vec3(0.0f, 1.0f, 0.0f);
-    auto lookAt = glm::lookAtLH(eye, at, up);
-    
+    const auto eye = glm::vec3{ 0.0f, 0.7f, 1.5f };
+    const auto at = glm::vec3{ 0.0f, -0.1f, 0.0f };
+    const auto up = glm::vec3{ 0.0f, 1.0f, 0.0f };
+    const auto lookAt = Takoyaki::lookAtLH(eye, at, up);
+
     // update constant buffer
     auto mvp = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
 

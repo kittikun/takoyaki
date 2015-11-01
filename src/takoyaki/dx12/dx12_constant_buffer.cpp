@@ -80,7 +80,7 @@ namespace Takoyaki
 
         auto res = buffer_->getResource();
         auto gpuAddress = res->GetGPUVirtualAddress();
-        auto fmt = boost::wformat{ L"Constant Buffer %1%" } % name.c_str();
+        auto fmt = boost::wformat{ L"%1%" } % name.c_str();
         auto bufCount = device->getFrameCount();
 
         cpuHandles_.reserve(bufCount);
@@ -95,7 +95,7 @@ namespace Takoyaki
             heaps_.push_back(std::get<2>(tuple));
         }
 
-        buffer_->getResource()->SetName(boost::str(fmt).c_str());
+        res->SetName(boost::str(fmt).c_str());
 
         // create view, one per buffer in the swap-chain
         for (uint_fast32_t i = 0; i < bufCount; ++i) {
@@ -104,15 +104,12 @@ namespace Takoyaki
             desc.BufferLocation = gpuAddress + (i * size_);
             desc.SizeInBytes = size_;
 
-            // TODO: createRange/creatOne will lock device too so it will be double locked just for here
             {
                 auto lock = device->getDeviceLock();
 
                 // create constant buffer views to access the upload buffer
                 device->getDXDevice()->CreateConstantBufferView(&desc, cpuHandles_[i]);
             }
-
-            gpuAddress += size_;
         }
 
         // we don't unmap this until the app closes. Keeping things mapped for the lifetime of the resource is okay.

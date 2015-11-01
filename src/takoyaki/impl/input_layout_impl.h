@@ -37,7 +37,7 @@ namespace Takoyaki
         InputLayoutImpl(DX12InputLayout&, std::shared_lock<std::shared_timed_mutex>) noexcept;
         ~InputLayoutImpl() = default;
 
-        void addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep = 0);
+        void addInput(const std::string&, EFormat, uint_fast32_t, uint_fast32_t);
 
     private:
         DX12InputLayout& layout_;

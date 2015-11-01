@@ -31,8 +31,9 @@ namespace Takoyaki
         commands.reserve(16);
     }
 
-    CommandImpl::CommandImpl(const std::shared_ptr<RendererImpl>& renderer) noexcept
+    CommandImpl::CommandImpl(const std::shared_ptr<RendererImpl>& renderer, const std::string& pipelineState) noexcept
         : renderer_{ renderer }
+        , pipelineState_{ pipelineState }
     {
     }
 
@@ -46,9 +47,9 @@ namespace Takoyaki
         // TODO: move this lock to present
         auto renderer = renderer_.lock();
 
-        desc_.commands.push_back(std::make_pair(ECommandType::RENDERTARGET_DEFAULT, std::make_tuple(indexCount, startIndex, baseVertex)));
+        desc_.commands.push_back(std::make_pair(ECommandType::DRAW_INDEXED, std::make_tuple(indexCount, startIndex, baseVertex)));
 
-        renderer->buildCommand(desc_);
+        renderer->buildCommand(desc_, pipelineState_);
     }
 
     void CommandImpl::setDefaultRenderTarget()
@@ -59,11 +60,6 @@ namespace Takoyaki
     void CommandImpl::setIndexBuffer(uint_fast32_t handle)
     {
         desc_.commands.push_back(std::make_pair(ECommandType::INDEX_BUFFER, handle));
-    }
-
-    void CommandImpl::setPipelineState(const std::string& name)
-    {
-        desc_.commands.push_back(std::make_pair(ECommandType::PIPELINE_STATE, name));
     }
 
     void CommandImpl::setRootSignature(const std::string& name)

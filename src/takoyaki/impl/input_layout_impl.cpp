@@ -32,9 +32,9 @@ namespace Takoyaki
 
     }
 
-    void InputLayoutImpl::addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep)
+    void InputLayoutImpl::addInput(const std::string& name, EFormat format, uint_fast32_t byteOffset, uint_fast32_t instanceStep)
     {
-        layout_.addInput(name, format, instanceStep);
+        layout_.addInput(name, format, byteOffset, instanceStep);
     }
 }
 // namespace Takoyaki

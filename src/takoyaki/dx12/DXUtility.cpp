@@ -21,10 +21,31 @@
 #include "pch.h"
 #include "dxutility.h"
 
+#include <DirectXMath.h>
+
 #include "../utility/log.h"
 
 namespace Takoyaki
 {
+    float ConvertDipsToPixels(float dips, float dpi)
+    {
+        // https://en.wikipedia.org/wiki/Device_independent_pixel
+        constexpr float dipsPerInch = 96.0f;
+
+        return std::max(floorf(dips * dpi / dipsPerInch + 0.5f), 1.f);
+    }
+
+    void DXCheckThrow(HRESULT hr)
+    {
+        if (FAILED(hr)) {
+            throw std::runtime_error{ GetDXError(hr) };
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Enum conversions
+    //////////////////////////////////////////////////////////////////////////
+
     D3D12_BLEND BlendToDX(EBlend blend)
     {
         // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770338(v=vs.85).aspx
@@ -92,18 +113,6 @@ namespace Takoyaki
 
         return D3D12_COMPARISON_FUNC_ALWAYS;
     }
-
-    float ConvertDipsToPixels(float dips, float dpi)
-    {
-        // https://en.wikipedia.org/wiki/Device_independent_pixel
-        constexpr float dipsPerInch = 96.0f;
-
-        return std::max(floorf(dips * dpi / dipsPerInch + 0.5f), 1.f);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    // Enum conversions
-    //////////////////////////////////////////////////////////////////////////
 
     D3D12_CULL_MODE CullModeToDX(ECullMode mode)
     {
@@ -183,13 +192,6 @@ namespace Takoyaki
         };
 
         return map[code];
-    }
-
-    void DXCheckThrow(HRESULT hr)
-    {
-        if (FAILED(hr)) {
-            throw std::runtime_error{ GetDXError(hr) };
-        }
     }
 
     D3D12_LOGIC_OP LogicOpToDX(ELogicOp op)
@@ -325,7 +327,7 @@ namespace Takoyaki
         return res;
     }
 
-    DXGI_SAMPLE_DESC  MultiSampleDescToDX(const MultiSampleDesc& desc)
+    DXGI_SAMPLE_DESC MultiSampleDescToDX(const MultiSampleDesc& desc)
     {
         DXGI_SAMPLE_DESC res;
 

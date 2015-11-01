@@ -32,13 +32,14 @@ namespace Takoyaki
         names_.reserve(MAX_INPUT_SEMANTICS);
     }
 
-    void DX12InputLayout::addInput(const std::string& name, EFormat format, uint_fast32_t instanceStep)
+    void DX12InputLayout::addInput(const std::string& name, EFormat format, uint_fast32_t byteOffset, uint_fast32_t instanceStep)
     {
         D3D12_INPUT_ELEMENT_DESC desc = {};
 
         // Semantics names need to conform
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb509647(v=vs.85).aspx
         names_.push_back(name);
+        desc.AlignedByteOffset = byteOffset;
         desc.SemanticName = names_[names_.size() - 1].c_str();
 
         // For example POSITION[n], ignore for now
@@ -46,7 +47,6 @@ namespace Takoyaki
 
         // For MRT, ignore for now
         desc.InputSlot = 0;
-        desc.AlignedByteOffset = 0;
 
         desc.Format = FormatToDX(format);
 

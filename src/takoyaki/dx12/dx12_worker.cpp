@@ -21,6 +21,7 @@
 #include "pch.h"
 #include "dx12_worker.h"
 
+#include "context.h"
 #include "device.h"
 #include "dxutility.h"
 
@@ -46,6 +47,7 @@ namespace Takoyaki
 
         MoveOnlyFunc genericCmd;
         MoveOnlyFuncParamTwoReturn gpuCmd;
+        ThreadPool::GPUDrawFunc drawCmd;
 
         auto prevFrame = device_->getCurrentFrame();
 
@@ -53,6 +55,7 @@ namespace Takoyaki
             auto frame = device_->getCurrentFrame();
 
             if (frame != prevFrame) {
+                // frame changed, release memory used by previous allocator
                 DXCheckThrow(commandAllocators_[frame]->Reset());
                 prevFrame = frame;
             }
@@ -71,6 +74,27 @@ namespace Takoyaki
                 if (gpuCmd(&cmd, device_.get())) {
                     commandList_.push_back(std::move(cmd));
                 } else {
+                    // something went wrong, cancel current command creation
+                    cmd.commands->Close();
+                    cmd.commands->Reset(commandAllocators_[frame].Get(), nullptr);
+                }
+            } else if (threadPool_->tryPopGPUDrawTask(drawCmd)) {
+                // for this version we need to fetch the pipeline state
+                TaskCommand cmd;
+
+                idle_.store(false);
+                cmd.priority = 0;
+                {
+                    auto psPair = context_->getPipelineState(drawCmd.first);
+                    auto lock = device_->getDeviceLock();
+
+                    DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frame].Get(), psPair.first.getPipelineState(), IID_PPV_ARGS(&cmd.commands)));
+                }
+
+                if (drawCmd.second(&cmd, device_.get())) {
+                    commandList_.push_back(std::move(cmd));
+                } else {
+                    // something went wrong, cancel current command creation
                     cmd.commands->Close();
                     cmd.commands->Reset(commandAllocators_[frame].Get(), nullptr);
                 }

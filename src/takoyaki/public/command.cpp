@@ -52,11 +52,6 @@ namespace Takoyaki
         impl_->setIndexBuffer(handle);
     }
 
-    void Command::setPipelineState(const std::string& name)
-    {
-        impl_->setPipelineState(name);
-    }
-
     void Command::setPriority(uint_fast32_t priority)
     {
         impl_->setPriority(priority);

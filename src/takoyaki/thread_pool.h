@@ -73,6 +73,7 @@ namespace Takoyaki
         ThreadPool() noexcept;
         ~ThreadPool() noexcept;
 
+        using GPUDrawFunc = std::pair<std::string, MoveOnlyFuncParamTwoReturn>;
         using CreateWorkerFunc = std::function<std::unique_ptr<IWorker>()>;
 
         template<typename WorkerType, typename DescType>
@@ -115,6 +116,14 @@ namespace Takoyaki
             gpuWorkQueues_[target].push(std::move(f));
         }
 
+        template<typename Func>
+        void submitGPUDraw(Func f, const std::string& pipelineState, uint_fast32_t target)
+        {
+            // specialized submit
+            gpuDrawQueues_[target].push(std::make_pair(pipelineState, std::move(f)));
+        }
+
+
         //template<typename Func>
         //std::future<std::result_of_t<Func()>> submitGPUWithResult(Func f)
         //{
@@ -130,6 +139,7 @@ namespace Takoyaki
 
         inline bool tryPopGenericTask(MoveOnlyFunc& task) { return genericWorkQueues_[0].tryPop(task); }
         inline bool tryPopGPUTask(MoveOnlyFuncParamTwoReturn& task) { return gpuWorkQueues_[0].tryPop(task); }
+        inline bool tryPopGPUDrawTask(GPUDrawFunc& task) { return gpuDrawQueues_[0].tryPop(task); }
 
     private:
         void workerMain();
@@ -139,6 +149,7 @@ namespace Takoyaki
         std::vector<std::unique_ptr<IWorker>> workers_;
         std::array<ThreadSafeQueue<MoveOnlyFunc>, 3> genericWorkQueues_;
         std::array<ThreadSafeQueue<MoveOnlyFuncParamTwoReturn>, 3> gpuWorkQueues_;
+        std::array<ThreadSafeQueue<GPUDrawFunc>, 3> gpuDrawQueues_;
         std::vector<std::thread> threads;
         JoinThreads joiner;
     };

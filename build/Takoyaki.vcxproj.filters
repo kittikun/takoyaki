@@ -141,6 +141,9 @@
     <ClCompile Include="..\src\takoyaki\dx12\dx12_texture.cpp">
       <Filter>Source Files\dx12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\takoyaki\public\math_utils.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h">
@@ -283,6 +286,9 @@
     </ClInclude>
     <ClInclude Include="..\src\takoyaki\dx12\dx12_texture.h">
       <Filter>Source Files\dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\takoyaki\public\math_utils.h">
+      <Filter>Source Files\public</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -24,6 +24,7 @@
 #include <framework.h>
 #include <index_buffer.h>
 #include <input_layout.h>
+#include <math_utils.h>
 #include <pipeline_state.h>
 #include <renderer.h>
 #include <root_signature.h>

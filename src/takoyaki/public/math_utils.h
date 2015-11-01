@@ -16,34 +16,13 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
 #pragma once
 
-#include <memory>
-
-#include "definitions.h"
+#include <glm/fwd.hpp>
 
 namespace Takoyaki
 {
-    class InputLayoutImpl;
-
-    class InputLayout
-    {
-        InputLayout(const InputLayout&) = delete;
-        InputLayout& operator=(const InputLayout&) = delete;
-        InputLayout(InputLayout&&) = delete;
-        InputLayout& operator=(InputLayout&&) = delete;
-
-    public:
-        InputLayout(std::unique_ptr<InputLayoutImpl>) noexcept;
-        ~InputLayout() noexcept;
-
-        // Add order is important
-        void addInput(const std::string& name, EFormat format, uint_fast32_t byteOffset, uint_fast32_t instanceStep);
-
-    private:
-        std::unique_ptr<InputLayoutImpl> impl_;
-    };
+    glm::mat4 perspectiveFovLH(float fov, float width, float height, float zNear, float zFar);
+    glm::mat4 lookAtLH(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 }
-// namespace Takoyaki

@@ -65,13 +65,19 @@ namespace Takoyaki
         auto frame = device_->getCurrentFrame();
         auto defaultRT = false;
 
+        //LOGC << "frame " << frame;
+
         for (auto descCmd : desc.commands) {
+            //LOGC << (int)descCmd.first;
+
             switch (descCmd.first) {
                 case ECommandType::CLEAR_COLOR:
                 {
                     auto color = boost::any_cast<glm::vec4>(descCmd.second);
 
                     cmd->commands->ClearRenderTargetView(device_->getRenderTarget(frame)->getRenderTargetView(), glm::value_ptr(color), 0, nullptr);
+                    cmd->commands->OMSetRenderTargets(1, &device_->getRenderTarget(frame)->getRenderTargetView(), false, nullptr);
+
                 }
                 break;
 
@@ -95,28 +101,6 @@ namespace Takoyaki
                     }
 
                     cmd->commands->IASetIndexBuffer(&found->second.getView());
-                }
-                break;
-
-                case ECommandType::PIPELINE_STATE:
-                {
-                    auto name = boost::any_cast<std::string>(descCmd.second);
-                    auto found = pipelineStates_.find(name);
-
-                    if (found == pipelineStates_.end()) {
-                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find pipeline state \"%1%\"" } % name;
-
-                        throw new std::runtime_error{ boost::str(fmt) };
-                    }
-
-                    if (!found->second.isReady()) {
-                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, pipeline state not ready \"%1%\"" } % name;
-
-                        LOGW << boost::str(fmt);
-                        return false;
-                    }
-                    
-                    cmd->commands->SetPipelineState(found->second.getPipelineState());
                 }
                 break;
 
@@ -147,7 +131,6 @@ namespace Takoyaki
                     barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
                     cmd->commands->ResourceBarrier(1, &barrier);
-                    cmd->commands->OMSetRenderTargets(1, &tex->getRenderTargetView(), false, nullptr);
 
                     // flag so we transition it back at the end
                     defaultRT = true;
@@ -234,6 +217,7 @@ namespace Takoyaki
 
         // we need to transition back the render target
         if (defaultRT) {
+            //LOGC << "defaultRT";
             D3D12_RESOURCE_BARRIER barrier;
 
             barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -356,8 +340,8 @@ namespace Takoyaki
 
                 // then build a command to build underlaying resources
                 threadPool_->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), 0);
-                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), 1);
-                threadPool_->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
+                //threadPool_->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), 1);
+                //threadPool_->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
             }
             break;
         }

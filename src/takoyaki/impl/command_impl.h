@@ -37,7 +37,6 @@ namespace Takoyaki
         CLEAR_COLOR,
         DRAW_INDEXED,
         INDEX_BUFFER,
-        PIPELINE_STATE,
         RENDERTARGET_DEFAULT,
         ROOT_SIGNATURE,
         ROOT_SIGNATURE_CONSTANT_BUFFER,
@@ -65,14 +64,13 @@ namespace Takoyaki
         CommandImpl& operator=(CommandImpl&&) = delete;
 
     public:
-        CommandImpl(const std::shared_ptr<RendererImpl>&) noexcept;
+        CommandImpl(const std::shared_ptr<RendererImpl>&, const std::string&) noexcept;
         ~CommandImpl() = default;
 
         void clearRenderTarget(const glm::vec4&);
         void drawIndexed(uint_fast32_t, uint_fast32_t, int_fast32_t);
         void setDefaultRenderTarget();
         void setIndexBuffer(uint_fast32_t);
-        void setPipelineState(const std::string&);
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }
         void setRootSignature(const std::string&);
         void setRootSignatureConstantBuffer(uint_fast32_t, const std::string&);
@@ -83,6 +81,7 @@ namespace Takoyaki
 
     private:
         std::weak_ptr<RendererImpl> renderer_;
+        std::string pipelineState_;
         CommandDesc desc_;
     };
 }

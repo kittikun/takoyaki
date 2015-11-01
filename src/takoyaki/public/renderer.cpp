@@ -51,9 +51,9 @@ namespace Takoyaki
         impl_->compilePipelineStateObjects();
     }
 
-    std::unique_ptr<Command> Renderer::createCommand()
+    std::unique_ptr<Command> Renderer::createCommand(const std::string& pipelineState)
     {
-        return std::make_unique<Command>(impl_->createCommand());
+        return std::make_unique<Command>(impl_->createCommand(pipelineState));
     }
 
     std::unique_ptr<IndexBuffer> Renderer::createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte)

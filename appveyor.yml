@@ -19,7 +19,7 @@ before_build:
     
     if ($type -eq "Debug") {
         Write-Host "Pre-build step starting.."
-        $Env:BOOST_ROOT = $Env:APPVEYOR_BUILD_FOLDER\boost_1_59_0
+        $Env:BOOST_ROOT = "$Env:APPVEYOR_BUILD_FOLDER\boost_1_59_0"
 
         Write-Host "Downloading boost.."
         Add-Type -assembly "System.IO.Compression.Filesystem"

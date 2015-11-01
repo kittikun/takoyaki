@@ -12,17 +12,17 @@ environment:
     secure: fsImKF76tplc9AeyOQTMYA==    
 before_build:
 - ps: |
-    Write-Host "Pre-build step starting.."
-    Add-Type -assembly "System.IO.Compression.Filesystem"
     $path = $Env:APPVEYOR_BUILD_FOLDER
     $type = $Env:CONFIGURATION
     Write-Host "CONFIGURATION ="$type
     Write-Host "APPVEYOR_BUILD_FOLDER ="$path
     
     if ($type -eq "Debug") {
-        $Env:BOOST_ROOT = "$(APPVEYOR_BUILD_FOLDER)\boost_1_59_0"
+        Write-Host "Pre-build step starting.."
+        $Env:BOOST_ROOT = $Env:APPVEYOR_BUILD_FOLDER\boost_1_59_0
 
         Write-Host "Downloading boost.."
+        Add-Type -assembly "System.IO.Compression.Filesystem"
         (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
         Write-Host "Extracting archive.."
         [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)

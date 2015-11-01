@@ -25,8 +25,11 @@
 namespace Takoyaki
 {
 
-    glm::mat4 dxMatToGLM(const DirectX::XMMATRIX& dx)
+    glm::mat4 dxMatToGLM(const DirectX::XMMATRIX& mat)
     {
+        // we want to use column matrix so transpose
+        const auto dx = DirectX::XMMatrixTranspose(mat);
+
         const auto r0 = glm::vec4(DirectX::XMVectorGetX(dx.r[0]), DirectX::XMVectorGetY(dx.r[0]), DirectX::XMVectorGetZ(dx.r[0]), DirectX::XMVectorGetW(dx.r[0]));
         const auto r1 = glm::vec4(DirectX::XMVectorGetX(dx.r[1]), DirectX::XMVectorGetY(dx.r[1]), DirectX::XMVectorGetZ(dx.r[1]), DirectX::XMVectorGetW(dx.r[1]));
         const auto r2 = glm::vec4(DirectX::XMVectorGetX(dx.r[2]), DirectX::XMVectorGetY(dx.r[2]), DirectX::XMVectorGetZ(dx.r[2]), DirectX::XMVectorGetW(dx.r[2]));
@@ -37,9 +40,7 @@ namespace Takoyaki
 
     glm::mat4 perspectiveFovLH(float fov, float width, float height, float zNear, float zFar)
     {
-        const auto mat = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(fov, width / height, zNear, zFar));
-
-        return dxMatToGLM(mat);
+        return dxMatToGLM(DirectX::XMMatrixPerspectiveFovLH(fov, width / height, zNear, zFar));
     }
 
     glm::mat4 lookAtLH(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
@@ -48,8 +49,6 @@ namespace Takoyaki
         const DirectX::XMVECTORF32 dxAt = { at.x, at.y, at.z, 0.0f };
         const DirectX::XMVECTORF32 dxUp = { up.x, up.y, up.z, 0.0f };
 
-        const auto mat = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(dxEye, dxAt, dxUp));
-
-        return dxMatToGLM(mat);
+        return dxMatToGLM(DirectX::XMMatrixLookAtLH(dxEye, dxAt, dxUp));
     }
 }

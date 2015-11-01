@@ -51,7 +51,7 @@ namespace Takoyaki
             return context_->buildCommand(desc, taskCmd);
         };
 
-        threadPool_->submitGPUDraw(std::bind(lamda, std::placeholders::_1, std::placeholders::_2), pipelineState, 0);
+        threadPool_->submitGPU(std::bind(lamda, std::placeholders::_1, std::placeholders::_2), pipelineState, 0);
     }
 
     void RendererImpl::compilePipelineStateObjects()

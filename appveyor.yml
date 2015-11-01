@@ -6,7 +6,6 @@ configuration:
 - Debug
 platform: x64
 environment:
-  BOOST_ROOT: $(APPVEYOR_BUILD_FOLDER)\boost_1_59_0
   CoverityToken:
     secure: OfUyk9tr3AlhoCMaSc9VGWvjDUXS1UDIkmtXN8gAuFA=
   CoverityMail:
@@ -19,13 +18,16 @@ before_build:
     $type = $Env:CONFIGURATION
     Write-Host "CONFIGURATION ="$type
     Write-Host "APPVEYOR_BUILD_FOLDER ="$path
-    Write-Host "Downloading boost.."
-    (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
-    Write-Host "Extracting archive.."
-    [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)
-    Set-Location "$path\boost_1_59_0"
     
     if ($type -eq "Debug") {
+        $Env:BOOST_ROOT = "$(APPVEYOR_BUILD_FOLDER)\boost_1_59_0"
+
+        Write-Host "Downloading boost.."
+        (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
+        Write-Host "Extracting archive.."
+        [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)
+        Set-Location "$path\boost_1_59_0"
+
         Write-Host "Building boost.."
         .\bootstrap.bat
         $buildCmd = "./b2"
@@ -40,6 +42,8 @@ before_build:
         "runtime-link=shared",
         "--with-log")
         & $buildCmd $buildArgs
+    } else {
+        $Env:BOOST_ROOT = "C:\Libraries\boost_1_59_0"
     }
 build_script:
 - ps: |

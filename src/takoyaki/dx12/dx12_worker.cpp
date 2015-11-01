@@ -46,8 +46,7 @@ namespace Takoyaki
         LOG_IDENTIFY_THREAD;
 
         MoveOnlyFunc genericCmd;
-        MoveOnlyFuncParamTwoReturn gpuCmd;
-        ThreadPool::GPUDrawFunc drawCmd;
+        ThreadPool::GPUDrawFunc gpuCmd;
 
         auto prevFrame = device_->getCurrentFrame();
 
@@ -61,37 +60,26 @@ namespace Takoyaki
             }
 
             if (threadPool_->tryPopGPUTask(gpuCmd)) {
+                idle_.store(false);
+
                 TaskCommand cmd;
 
-                idle_.store(false);
                 cmd.priority = 0;
                 {
+                    ID3D12PipelineState* ps = nullptr;
+
+                    if (!gpuCmd.first.empty()) {
+                        auto psPair = context_->getPipelineState(gpuCmd.first);
+
+                        ps = psPair.first.getPipelineState();
+                    }
+
                     auto lock = device_->getDeviceLock();
 
-                    DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frame].Get(), nullptr, IID_PPV_ARGS(&cmd.commands)));
+                    DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frame].Get(), ps, IID_PPV_ARGS(&cmd.commands)));
                 }
 
-                if (gpuCmd(&cmd, device_.get())) {
-                    commandList_.push_back(std::move(cmd));
-                } else {
-                    // something went wrong, cancel current command creation
-                    cmd.commands->Close();
-                    cmd.commands->Reset(commandAllocators_[frame].Get(), nullptr);
-                }
-            } else if (threadPool_->tryPopGPUDrawTask(drawCmd)) {
-                // for this version we need to fetch the pipeline state
-                TaskCommand cmd;
-
-                idle_.store(false);
-                cmd.priority = 0;
-                {
-                    auto psPair = context_->getPipelineState(drawCmd.first);
-                    auto lock = device_->getDeviceLock();
-
-                    DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frame].Get(), psPair.first.getPipelineState(), IID_PPV_ARGS(&cmd.commands)));
-                }
-
-                if (drawCmd.second(&cmd, device_.get())) {
+                if (gpuCmd.second(&cmd, device_.get())) {
                     commandList_.push_back(std::move(cmd));
                 } else {
                     // something went wrong, cancel current command creation

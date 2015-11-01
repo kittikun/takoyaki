@@ -43,12 +43,10 @@ void App::initialize(Takoyaki::Framework* framework)
     shDescs[0].path = "data/SimpleVS.hlsl";
     shDescs[0].type = Takoyaki::EShaderType::VERTEX;
     shDescs[0].entry = "main";
-    shDescs[0].debug = true;
     shDescs[1].name = "SimplePS";
     shDescs[1].path = "data/SimplePS.hlsl";
     shDescs[1].type = Takoyaki::EShaderType::PIXEL;
     shDescs[1].entry = "main";
-    shDescs[1].debug = true;
 
     for (auto& shDesc : shDescs)
         framework->compileShader(shDesc);

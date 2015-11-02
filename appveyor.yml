@@ -13,24 +13,25 @@ environment:
 before_build:
 - ps: |
     $path = $Env:APPVEYOR_BUILD_FOLDER
-    $type = $Env:CONFIGURATION
-    Write-Host "CONFIGURATION ="$type
+    Write-Host "CONFIGURATION ="$Env:CONFIGURATION
     Write-Host "APPVEYOR_BUILD_FOLDER ="$path
+
+    Write-Host "Updating submodules.."
+    git submodule update
+
+    Write-Host "Bootstrapping boost.."
+    Set-Location "$Env:APPVEYOR_BUILD_FOLDER\src\external\boost"
+    .\bootstrap.bat
+
+    $buildCmd = "./b2"
+
+    Write-Host "Generating boost headers"
+    $buildArgs = @("headers" "-d0")
+    & $buildCmd $buildArgs
     
-    if ($type -eq "Debug") {
-        Write-Host "Pre-build step starting.."
-        $Env:BOOST_ROOT = "$Env:APPVEYOR_BUILD_FOLDER\boost_1_59_0"
-
-        Write-Host "Downloading boost.."
-        Add-Type -assembly "System.IO.Compression.Filesystem"
-        (new-object net.webclient).DownloadFile("http://bit.ly/1JPHkL3", "$path\boost_1_59_0.zip")
-        Write-Host "Extracting archive.."
-        [io.compression.zipfile]::ExtractToDirectory("$path\boost_1_59_0.zip", $path)
-        Set-Location "$path\boost_1_59_0"
-
+    if ($Env:CONFIGURATION -eq "Debug") {
         Write-Host "Building boost.."
-        .\bootstrap.bat
-        $buildCmd = "./b2"
+        
         $buildArgs = @(
         "-d0",
         "address-model=64",
@@ -42,8 +43,6 @@ before_build:
         "runtime-link=shared",
         "--with-log")
         & $buildCmd $buildArgs
-    } else {
-        $Env:BOOST_ROOT = "C:\Libraries\boost_1_59_0"
     }
 build_script:
 - ps: |

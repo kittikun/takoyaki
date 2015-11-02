@@ -26,7 +26,7 @@ before_build:
     $buildCmd = "./b2"
 
     Write-Host "Generating boost headers"
-    $buildArgs = @("headers" "-d0")
+    $buildArgs = @("headers", "-d0")
     & $buildCmd $buildArgs
     
     if ($Env:CONFIGURATION -eq "Debug") {

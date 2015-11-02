@@ -6,18 +6,23 @@ configuration:
 - Debug
 platform: x64
 environment:
+  Github:
+    secure: 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
   CoverityToken:
     secure: OfUyk9tr3AlhoCMaSc9VGWvjDUXS1UDIkmtXN8gAuFA=
   CoverityMail:
     secure: fsImKF76tplc9AeyOQTMYA==    
+install:
+  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
+  - ps: $fileContent += $env:Github.Replace(' ', "`n")
+  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
+  - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
+  - git submodule update --init --recursive
 before_build:
 - ps: |
     $path = $Env:APPVEYOR_BUILD_FOLDER
     Write-Host "CONFIGURATION ="$Env:CONFIGURATION
     Write-Host "APPVEYOR_BUILD_FOLDER ="$path
-
-    Write-Host "Updating submodules.."
-    git submodule update --init --recursive
 
     Write-Host "Bootstrapping boost.."
     Set-Location "$Env:APPVEYOR_BUILD_FOLDER\src\external\boost"

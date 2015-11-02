@@ -17,20 +17,19 @@ before_build:
     Write-Host "APPVEYOR_BUILD_FOLDER ="$path
 
     Write-Host "Updating submodules.."
-    git submodule update
+    git submodule update --recursive
 
     Write-Host "Bootstrapping boost.."
     Set-Location "$Env:APPVEYOR_BUILD_FOLDER\src\external\boost"
     .\bootstrap.bat
 
-    $buildCmd = "./b2"
-
     Write-Host "Generating boost headers"
-    $buildArgs = @("headers", "-d0")
-    & $buildCmd $buildArgs
+    .\b2 headers -d0
     
     if ($Env:CONFIGURATION -eq "Debug") {
         Write-Host "Building boost.."
+
+        $buildCmd = "./b2"
         
         $buildArgs = @(
         "-d0",

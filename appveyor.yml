@@ -17,7 +17,8 @@ before_build:
     Write-Host "APPVEYOR_BUILD_FOLDER ="$path
 
     Write-Host "Updating submodules.."
-    git submodule update --recursive
+    git submodule init
+    git submodule update
 
     Write-Host "Bootstrapping boost.."
     Set-Location "$Env:APPVEYOR_BUILD_FOLDER\src\external\boost"

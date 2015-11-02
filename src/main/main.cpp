@@ -92,7 +92,7 @@ void Main::Load(Platform::String^ entryPoint)
     auto window = CoreWindow::GetForCurrentThread();
     DisplayInformation^ disp = DisplayInformation::GetForCurrentView();
 
-    Takoyaki::FrameworkDesc desc = { 0 };
+    Takoyaki::FrameworkDesc desc = {};
 
     desc.bufferCount = 3;
     desc.nativeOrientation = DisplayOrientationsToTakoyaki(disp->NativeOrientation);

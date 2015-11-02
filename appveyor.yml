@@ -34,19 +34,8 @@ before_build:
     if ($Env:CONFIGURATION -eq "Debug") {
         Write-Host "Building boost.."
 
-        $buildCmd = "./b2"
-        
-        $buildArgs = @(
-        "-d0",
-        "address-model=64",
-        "toolset=msvc-14.0",
-        "windows-api=desktop",
-        "variant=debug",
-        "link=static",
-        "threading=multi",
-        "runtime-link=shared",
-        "--with-log")
-        & $buildCmd $buildArgs
+        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --with-log  --stagedir=winrt
+        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared --with-log  --stagedir=win  
     }
 build_script:
 - ps: |

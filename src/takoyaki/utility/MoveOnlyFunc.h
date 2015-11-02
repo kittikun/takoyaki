@@ -49,6 +49,7 @@ namespace Takoyaki
 
     public:
         MoveOnlyFunc() = default;
+        ~MoveOnlyFunc() = default;
 
         MoveOnlyFunc(MoveOnlyFunc&& other) :
             impl(std::move(other.impl))
@@ -98,6 +99,7 @@ namespace Takoyaki
 
     public:
         MoveOnlyFuncParam() = default;
+        ~MoveOnlyFuncParam() = default;
 
         MoveOnlyFuncParam(MoveOnlyFuncParam&& other) :
             impl(std::move(other.impl))
@@ -149,6 +151,7 @@ namespace Takoyaki
 
     public:
         MoveOnlyFuncParamTwo() = default;
+        ~MoveOnlyFuncParamTwo() = default;
 
         MoveOnlyFuncParamTwo(MoveOnlyFuncParamTwo&& other) :
             impl(std::move(other.impl))
@@ -200,6 +203,7 @@ namespace Takoyaki
 
     public:
         MoveOnlyFuncParamTwoReturn() = default;
+        ~MoveOnlyFuncParamTwoReturn() = default;
 
         MoveOnlyFuncParamTwoReturn(MoveOnlyFuncParamTwoReturn&& other) :
             impl(std::move(other.impl))

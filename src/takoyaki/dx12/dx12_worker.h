@@ -49,7 +49,8 @@ namespace Takoyaki
     public:
         DX12Worker(const DX12WorkerDesc&);
 
-        inline bool isIdle() { return idle_.load(); }
+        void clear() override;
+        inline bool isIdle() override { return idle_.load(); }
         void main() override;
         void submitCommandList() override;
 

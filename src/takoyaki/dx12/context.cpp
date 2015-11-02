@@ -60,15 +60,10 @@ namespace Takoyaki
     bool DX12Context::buildCommand(const CommandDesc& desc, TaskCommand* cmd)
     {
         // at this stage shouldn't need to lock to access resources anymore
-
-        //auto frame = (device_->getCurrentFrame() + 1) % 3;
         auto frame = device_->getCurrentFrame();
         auto defaultRT = false;
 
-        //LOGC << "frame " << frame;
-
         for (auto descCmd : desc.commands) {
-            //LOGC << (int)descCmd.first;
 
             switch (descCmd.first) {
                 case ECommandType::CLEAR_COLOR:
@@ -217,7 +212,6 @@ namespace Takoyaki
 
         // we need to transition back the render target
         if (defaultRT) {
-            //LOGC << "defaultRT";
             D3D12_RESOURCE_BARRIER barrier;
 
             barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

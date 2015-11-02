@@ -56,7 +56,7 @@ namespace Takoyaki
 
         inline const glm::vec2& getWindowSize() const { return device_->getWindowSize(); }
 
-        inline void setWindowSize(const glm::vec2& size) { device_->setWindowSize(size); }
+        void setWindowSize(const glm::vec2& size);
         inline void setWindowOrientation(EDisplayOrientation value) { device_->setWindowOrientation(value); }
         inline void setWindowDpi(float value) { device_->setWindowDpi(value); }
 
@@ -66,6 +66,7 @@ namespace Takoyaki
         std::shared_ptr<DX12Context> context_;
         std::shared_ptr<RendererImpl> renderer_;
         std::shared_ptr<ThreadPool> threadPool_;
+        bool resetDevice_;
     };
 
 } // namespace Takoyaki

@@ -36,6 +36,43 @@ namespace Takoyaki
         done_ = true;
     }
 
+    void ThreadPool::barrier()
+    {
+        bool done = false;
+
+        while (!done) {
+            bool queueDone = genericWorkQueues_[0].empty() && gpuQueues_[0].empty();
+            bool workerDone = false;
+
+            if (queueDone) {
+                workerDone = true;
+
+                for (auto& worker : workers_)
+                    workerDone &= worker->isIdle();
+            }
+
+            done = queueDone & workerDone;
+
+            // yield while we wait for the workers to finish working
+            if (!done)
+                std::this_thread::yield();
+        }
+    }
+
+    void ThreadPool::clear()
+    {
+        barrier();
+
+        for (auto& queue : genericWorkQueues_)
+            queue.clear();
+
+        for (auto& queue : gpuQueues_)
+            queue.clear();
+
+        for (auto& worker : workers_)
+            worker->clear();
+    }
+
     void ThreadPool::submitGPUCommandLists()
     {
         for (auto& worker : workers_)
@@ -44,26 +81,7 @@ namespace Takoyaki
 
     void ThreadPool::swapQueues()
     {
-        //LOGC << "ThreadPool::swapQueues";
-
-        // Barrier
-        {
-            bool done = false;
-
-            while (!done) {
-                bool queueDone = genericWorkQueues_[0].empty() && gpuQueues_[0].empty();
-                bool workerDone = true;
-
-                for (auto& worker : workers_)
-                    workerDone &= worker->isIdle();
-
-                done = queueDone & workerDone;
-
-                // yield while we wait for the workers to finish working
-                if (!done)
-                    std::this_thread::yield();
-            }
-        }
+        barrier();
 
         genericWorkQueues_[0].swap(genericWorkQueues_[1]);
         genericWorkQueues_[1].swap(genericWorkQueues_[2]);

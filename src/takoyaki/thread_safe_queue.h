@@ -35,6 +35,11 @@ namespace Takoyaki
 
         ThreadSafeQueue() = default;
 
+        void clear()
+        {
+            queue_ = {};
+        }
+
         bool empty() const
         {
             std::lock_guard<std::mutex> lock{ mutex_ };

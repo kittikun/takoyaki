@@ -35,7 +35,7 @@ namespace Takoyaki
         DX12Texture(DX12Texture&&) noexcept;
         ~DX12Texture();
 
-        inline Microsoft::WRL::ComPtr<ID3D12Resource>& getCOMObj() { return resource_; }
+        inline Microsoft::WRL::ComPtr<ID3D12Resource>& getCOM() { return resource_; }
         inline ID3D12Resource* getResource() { return resource_.Get(); }
         const D3D12_CPU_DESCRIPTOR_HANDLE& getRenderTargetView();
         inline bool isReady() const { return resource_.Get() != nullptr; }

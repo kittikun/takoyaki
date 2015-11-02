@@ -45,6 +45,7 @@ namespace Takoyaki
         using CommandListReturn = std::pair<std::vector<TaskCommand>&, std::unique_lock<std::mutex>>;
 
         void create(const FrameworkDesc& desc, std::weak_ptr<DX12Context>);
+        void createSwapChain();
         void present();
         void validate();
 
@@ -67,7 +68,6 @@ namespace Takoyaki
 
     private:
         void createDevice(uint_fast32_t);
-        void createSwapChain();
         DXGI_MODE_ROTATION getDXGIOrientation() const;
         void waitForGpu();
 

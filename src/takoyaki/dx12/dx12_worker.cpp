@@ -41,6 +41,15 @@ namespace Takoyaki
             DXCheckThrow(desc.device->getDXDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
     }
 
+    void DX12Worker::clear()
+    {
+        commandList_.clear();
+
+        // also reset any memory that might have been used by the allocators
+        for (auto& alloc : commandAllocators_)
+            alloc->Reset();
+    }
+
     void DX12Worker::main()
     {
         LOG_IDENTIFY_THREAD;

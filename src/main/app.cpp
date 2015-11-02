@@ -122,8 +122,8 @@ void App::initialize(Takoyaki::Framework* framework)
         1, 7, 5,
     };
 
-    vertexBuffer_ = std::move(renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices.front()), sizeof(Vertex), static_cast<uint_fast32_t>(cubeVertices.size() * sizeof(Vertex))));
-    indexBuffer_ = std::move(renderer->createIndexBuffer(reinterpret_cast<uint8_t*>(&cubeIndices.front()), Takoyaki::EFormat::R16_UINT, static_cast<uint_fast32_t>(cubeIndices.size() * sizeof(uint16_t))));
+    vertexBuffer_ = renderer->createVertexBuffer(reinterpret_cast<uint8_t*>(&cubeVertices.front()), sizeof(Vertex), static_cast<uint_fast32_t>(cubeVertices.size() * sizeof(Vertex)));
+    indexBuffer_ = renderer->createIndexBuffer(reinterpret_cast<uint8_t*>(&cubeIndices.front()), Takoyaki::EFormat::R16_UINT, static_cast<uint_fast32_t>(cubeIndices.size() * sizeof(uint16_t)));
 
     auto size = framework->getWindowSize();
     viewport_ = { 0, 0, size.x, size.y };

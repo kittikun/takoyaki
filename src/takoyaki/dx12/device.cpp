@@ -49,7 +49,6 @@ namespace Takoyaki
         windowSize_ = desc.windowSize;
 
         createDevice(bufferCount_);
-        createSwapChain();
     }
 
     void DX12Device::createDevice(uint_fast32_t bufferCount)
@@ -103,6 +102,10 @@ namespace Takoyaki
         LOGC << "Creating swap chain...";
 
         waitForGpu();
+
+        // discard any previously created rendertargets
+        for (auto tex : renderTargets_)
+            tex->getCOM().Reset();
 
         // Calculate the necessary render target size in pixels.
         glm::vec2 outSize;
@@ -182,10 +185,12 @@ namespace Takoyaki
         auto context = context_.lock();
 
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
-            context->createTexture(i);
+            // check if we are re-creating because of a window property change
+            if (renderTargets_.size() < bufferCount_)
+                context->createTexture(i);
 
             auto& tex = context->getTexture(i);
-            auto& com = tex.getCOMObj();
+            auto& com = tex.getCOM();
 
             DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&com)));
             D3DDevice_->CreateRenderTargetView(tex.getResource(), nullptr, tex.getRenderTargetView());
@@ -199,7 +204,6 @@ namespace Takoyaki
 
     void DX12Device::executeCommandList()
     {
-        //LOGC << "DX12Device::executeCommandList";
         auto& cmdList = commandLists_[currentFrame_];
         auto& dxList = dxCommandLists_[currentFrame_];
 
@@ -224,8 +228,7 @@ namespace Takoyaki
     {
         DXGI_MODE_ROTATION rotation = DXGI_MODE_ROTATION_UNSPECIFIED;
 
-        // Note: NativeOrientation can only be Landscape or Portrait even though
-        // the DisplayOrientations enum has other values.
+        // Note: NativeOrientation can only be Landscape or Portrait even though the DisplayOrientations enum has other values.
         switch (nativeOrientation_) {
             case EDisplayOrientation::LANDSCAPE:
                 switch (currentOrientation_) {
@@ -313,6 +316,7 @@ namespace Takoyaki
 
     void DX12Device::setWindowSize(const glm::vec2& value)
     {
+
         windowSize_ = value;
         createSwapChain();
     }

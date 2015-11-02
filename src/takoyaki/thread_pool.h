@@ -65,16 +65,20 @@ namespace Takoyaki
         class IWorker
         {
         public:
+            virtual void clear() = 0;
             virtual bool isIdle() = 0;
             virtual void main() = 0;
             virtual void submitCommandList() = 0;
         };
 
+        using GPUDrawFunc = std::pair<std::string, MoveOnlyFuncParamTwoReturn>;
+        using CreateWorkerFunc = std::function<std::unique_ptr<IWorker>()>;
+
         ThreadPool() noexcept;
         ~ThreadPool() noexcept;
 
-        using GPUDrawFunc = std::pair<std::string, MoveOnlyFuncParamTwoReturn>;
-        using CreateWorkerFunc = std::function<std::unique_ptr<IWorker>()>;
+        // clear all pending tasks and also clear workers gpu command queue
+        void clear();
 
         template<typename WorkerType, typename DescType>
         void initialize(uint_fast32_t threadCount, const DescType& desc)
@@ -116,17 +120,6 @@ namespace Takoyaki
             gpuQueues_[target].push(std::make_pair(pipelineState, std::move(f)));
         }
 
-
-        //template<typename Func>
-        //std::future<std::result_of_t<Func()>> submitGPUWithResult(Func f)
-        //{
-        //    std::packaged_task<std::result_of_t<Func()>> task(std::move(f));
-        //    std::future<std::result_of_t<Func()>> res(task.get_future());
-
-        //    gpuWorkQueue_.push(std::move(task));
-        //    return res;
-        //}
-
         void submitGPUCommandLists();
         void swapQueues();
 
@@ -134,6 +127,7 @@ namespace Takoyaki
         inline bool tryPopGPUTask(GPUDrawFunc& task) { return gpuQueues_[0].tryPop(task); }
 
     private:
+        void barrier();
         void workerMain();
 
     private:

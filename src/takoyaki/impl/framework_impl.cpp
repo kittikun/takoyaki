@@ -36,6 +36,7 @@ namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
         : threadPool_{ std::make_shared<ThreadPool>() }
+        , resetDevice_{ false }
     {
 #ifdef _DEBUG
         Log::Initialize();
@@ -57,6 +58,7 @@ namespace Takoyaki
             context_ = std::make_shared<DX12Context>(device_, threadPool_);
 
             device_->create(desc, context_);
+            device_->createSwapChain();
 
             DX12WorkerDesc workerDesc;
 
@@ -94,12 +96,18 @@ namespace Takoyaki
         threadPool_->submitGPUCommandLists();
         device_->executeCommandList();
         device_->present();
-        //threadPool_->resetWorkers();
     }
 
     void FrameworkImpl::terminate()
     {
 
+    }
+
+    void FrameworkImpl::setWindowSize(const glm::vec2& size)
+    {
+        threadPool_->clear();
+        device_->setWindowSize(size);
+        device_->createSwapChain();
     }
 
     void FrameworkImpl::validateDevice() const

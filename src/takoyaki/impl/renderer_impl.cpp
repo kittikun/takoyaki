@@ -36,7 +36,7 @@ namespace Takoyaki
         : context_{ context }
         , device_{ device }
         , threadPool_{ threadPool }
-        , uidGenerator_{ device->getFrameCount() }
+        , uidGenerator_{ device->getFrameCount() } // the first numbers are always reserved for the swap chain
     {
 
     }

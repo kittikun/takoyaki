@@ -124,11 +124,11 @@ namespace Takoyaki
         return static_cast<uint_fast32_t>(res);
     }
 
-    void DX12RootSignature::addDescriptorRange(uint_fast32_t index, D3D12_DESCRIPTOR_RANGE_TYPE type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister)
+    void DX12RootSignature::addDescriptorRange(uint_fast32_t index, EDescriptorType type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister)
     {
         auto& range = intermediate_->ranges[index];
 
-        range.add(type, numDescriptors, baseShaderRegister);
+        range.add(DescriptorTypeToDX(type), numDescriptors, baseShaderRegister);
     }
 
     bool DX12RootSignature::create(const std::shared_ptr<DX12Device>& device)

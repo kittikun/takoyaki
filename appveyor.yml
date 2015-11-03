@@ -33,10 +33,13 @@ before_build:
     
         Write-Host "Building boost.."
     if ($Env:CONFIGURATION -eq "Debug") {
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --with-log --stagedir=winrt
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared --with-log --with-program_options --stagedir=win
+        # for app
+        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --stagedir=winrt --with-log
+        # for unit tests
+        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared --stagedir=win --with-log --with-program_options --with-filesystem
     } elseif ($Env:CONFIGURATION -eq "Release") {
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=shared --with-program_options --stagedir=win
+        # only required for unit tests
+        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=shared --stagedir=win --with-program_options --with-filesystem
     }
 build_script:
 - ps: |

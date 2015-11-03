@@ -18,6 +18,15 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\unittest\main.cpp" />
+    <ClCompile Include="..\src\unittest\tests\01_simple_cube.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\unittest\i_test.h" />
+    <ClInclude Include="..\src\unittest\main.h" />
+    <ClInclude Include="..\src\unittest\tests\01_simple_cube.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{62386B6B-9066-4373-BF3F-4FCFC7D95F8A}</ProjectGuid>
     <RootNamespace>UnitTest</RootNamespace>
@@ -150,12 +159,6 @@
       </SubSystem>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\tests\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\tests\main.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

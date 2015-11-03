@@ -24,6 +24,8 @@
 #include <string>
 #include <d3d12.h>
 
+#include "definitions.h"
+
 namespace Takoyaki
 {
     class RootSignatureImpl;
@@ -48,9 +50,9 @@ namespace Takoyaki
         uint_fast32_t addDescriptorTable();
 
         // only when using descriptor tables
-        void addDescriptorRange(uint_fast32_t index, D3D12_DESCRIPTOR_RANGE_TYPE type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister);
+        void addDescriptorRange(uint_fast32_t index, EDescriptorType type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister);
 
-        void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags);
+        void setFlags(uint_fast32_t flags);
 
 
     private:

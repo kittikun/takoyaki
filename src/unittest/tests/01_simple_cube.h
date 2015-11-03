@@ -20,34 +20,30 @@
 
 #pragma once
 
-#include "../public/definitions.h"
+#include "../i_test.h"
 
-namespace Takoyaki
+#include <memory>
+#include <glm/glm.hpp>
+
+class Test01 : public ITest
 {
-    class DX12RootSignature;
+    Test01(const Test01&) = delete;
+    Test01& operator=(const Test01&) = delete;
+    Test01(Test01&&) = delete;
+    Test01& operator=(Test01&&) = delete;
 
-    class RootSignatureImpl
-    {
-        RootSignatureImpl(const RootSignatureImpl&) = delete;
-        RootSignatureImpl& operator=(const RootSignatureImpl&) = delete;
-        RootSignatureImpl(RootSignatureImpl&&) = delete;
-        RootSignatureImpl& operator=(RootSignatureImpl&&) = delete;
+public:
+    Test01() = default;
+    ~Test01() = default;
 
-    public:
-        RootSignatureImpl(DX12RootSignature&, std::shared_lock<std::shared_timed_mutex>) noexcept;
-        ~RootSignatureImpl() = default;
+    void initialize(Takoyaki::Framework*) override;
+    void render(Takoyaki::Renderer*) override;
+    void update(Takoyaki::Renderer*) override;
 
-        void addConstant(uint_fast32_t, uint_fast32_t);
-        void addDescriptorConstantBuffer(uint_fast32_t);
-        void addDescriptorUnorderedAccess(uint_fast32_t);
-        void addDescriptorShaderResource(uint_fast32_t);
-        uint_fast32_t addDescriptorTable();
-        void addDescriptorRange(uint_fast32_t, EDescriptorType, uint_fast32_t, uint_fast32_t);
-        void setFlags(uint_fast32_t);
-
-    private:
-        DX12RootSignature& rs_;
-        std::shared_lock<std::shared_timed_mutex> bufferLock_;    // to avoid removal while user is still using it
-    };
-}
-// namespace Takoyaki
+private:
+    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
+    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
+    uint_fast32_t rsCBIndex_;
+    glm::vec4 viewport_;
+    glm::uvec4 scissor_;
+};

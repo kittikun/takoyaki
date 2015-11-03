@@ -32,6 +32,7 @@ namespace Takoyaki
     D3D12_BLEND_OP BlendOpToDX(EBlendOp);
     D3D12_COMPARISON_FUNC CompFuncToDX(ECompFunc);
     D3D12_CULL_MODE CullModeToDX(ECullMode);
+    D3D12_DESCRIPTOR_RANGE_TYPE DescriptorTypeToDX(EDescriptorType);
     DXGI_FORMAT FormatToDX(EFormat);
     D3D12_FILL_MODE FillModeToDX(EFillMode);
     std::string GetDXError(HRESULT);

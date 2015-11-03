@@ -23,7 +23,11 @@
 #include <iostream>
 #include <memory>
 #include <takoyaki.h>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/program_options.hpp>
+
+#include "tests/01_simple_cube.h"
 
 int main(int ac, char** av)
 {
@@ -50,8 +54,34 @@ int main(int ac, char** av)
     desc.windowHandle = hWnd;
     desc.windowSize.x = (float)ret.second.width;
     desc.windowSize.y = (float)ret.second.height;
-    desc.loadAsyncFunc = std::bind<void>([](const std::wstring& filename) {
-        int i = 0;
+    desc.loadAsyncFunc = std::bind<void>([&framework](const std::wstring& filename) {
+        // read file lambda
+        auto basePath(boost::filesystem::current_path());
+
+        if (IsDebuggerPresent())
+            basePath = boost::filesystem::system_complete("..");
+
+        auto path = basePath / filename;
+        boost::filesystem::ifstream stream;
+        std::vector<uint8_t> res;
+
+        stream.open(path);
+        
+        if (stream) {
+            // get length of file
+            stream.seekg(0, stream.end);
+
+            int length = (int)stream.tellg();
+
+            stream.seekg(0, stream.beg);
+            res.resize(length);
+            stream.read(reinterpret_cast<char*>(&res.front()), length);
+            stream.close();
+
+            framework->loadAsyncFileResult(filename, res);
+        } else {
+            throw new std::runtime_error("Could not open file");
+        }
     }, std::placeholders::_1);
 
 
@@ -59,13 +89,35 @@ int main(int ac, char** av)
 
     // main loop
     MSG msg;
+    auto tests = GetTests();
+    auto renderer = framework->getRenderer();
 
-    while (GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    for (auto& test : tests)
+        test->initialize(framework.get());
+
+    while (true) {
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+        if (msg.message == WM_QUIT)
+            break;
+
+        tests[0]->update(renderer.get());
+        tests[0]->render(renderer.get());
+        framework->present();
     }
-
     return 0;
+}
+
+std::vector<std::unique_ptr<ITest>> GetTests()
+{
+    std::vector<std::unique_ptr<ITest>> list;
+
+    list.push_back(std::make_unique<Test01>());
+
+    return list;
 }
 
 HWND MakeWindow(const Options& options)

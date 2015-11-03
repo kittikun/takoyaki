@@ -54,9 +54,9 @@ namespace Takoyaki
         uint_fast32_t addDescriptorTable();
 
         // only when using descriptor tables
-        void addDescriptorRange(uint_fast32_t, D3D12_DESCRIPTOR_RANGE_TYPE, uint_fast32_t, uint_fast32_t);
+        void addDescriptorRange(uint_fast32_t, EDescriptorType, uint_fast32_t, uint_fast32_t);
 
-        inline void setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags) { intermediate_->flags = flags; }
+        inline void setFlags(uint_fast32_t flags) { intermediate_->flags = static_cast<D3D12_ROOT_SIGNATURE_FLAGS>(flags); }
 
     private:
         struct Intermediate

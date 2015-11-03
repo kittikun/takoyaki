@@ -109,7 +109,7 @@ void Main::Load(Platform::String^ entryPoint)
 
     framework_->initialize(desc);
 
-    // initalize app
+    // initialize app
     app_->initialize(framework_.get());
 }
 

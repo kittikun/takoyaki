@@ -81,6 +81,14 @@ namespace Takoyaki
         NONE
     };
 
+    enum class EDescriptorType
+    {
+        CONSTANT_BUFFER,
+        SAMPLER,
+        SHADER_RESOURCE,
+        UNORDERED_ACCESS,
+    };
+
     enum class EDeviceType
     {
         UNKNOWN,
@@ -129,6 +137,19 @@ namespace Takoyaki
         AND_INVERTED,
         OR_REVERSE,
         OR_INVERTED
+    };
+
+    // just mirror dx12 for now
+    enum ERootSignatureFlag
+    {
+        NONE                                = 0,
+        ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT  = 0x1,
+        DENY_VERTEX_SHADER_ROOT_ACCESS      = 0x2,
+        DENY_HULL_SHADER_ROOT_ACCESS        = 0x4,
+        DENY_DOMAIN_SHADER_ROOT_ACCESS      = 0x8,
+        DENY_GEOMETRY_SHADER_ROOT_ACCESS    = 0x10,
+        DENY_PIXEL_SHADER_ROOT_ACCESS       = 0x20,
+        ALLOW_STREAM_OUTPUT                 = 0x40
     };
 
 // undef the one from math.h

@@ -125,6 +125,21 @@ namespace Takoyaki
         return D3D12_CULL_MODE_NONE;
     }
 
+    D3D12_DESCRIPTOR_RANGE_TYPE DescriptorTypeToDX(EDescriptorType type)
+    {
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/dn859381(v=vs.85).aspx
+        switch (type) {
+            case EDescriptorType::CONSTANT_BUFFER:
+                return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+            case EDescriptorType::UNORDERED_ACCESS:
+                return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+            case EDescriptorType::SAMPLER:
+                return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+        }
+
+        return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    }
+
     D3D12_FILL_MODE FillModeToDX(EFillMode mode)
     {
         // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770366(v=vs.85).aspx

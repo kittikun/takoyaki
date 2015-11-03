@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "app.h"
+#include "01_simple_cube.h"
 
 #include <array>
 #include <takoyaki.h>
@@ -31,7 +31,7 @@ struct Vertex
     glm::vec3 color;
 };
 
-void App::initialize(Takoyaki::Framework* framework)
+void Test01::initialize(Takoyaki::Framework* framework)
 {
     auto renderer = framework->getRenderer();
 
@@ -128,9 +128,9 @@ void App::initialize(Takoyaki::Framework* framework)
     scissor_ = { 0, 0, static_cast<uint_fast32_t>(size.x), static_cast<uint_fast32_t>(size.y) };
 }
 
-void App::render(Takoyaki::Renderer* renderer)
+void Test01::render(Takoyaki::Renderer* renderer)
 {
-    // Work sent to GPU actually happens here
+    // Work sent to GPU actually hTest01ens here
     auto cmd = renderer->createCommand("SimpleState");
 
     cmd->setRootSignature("SimpleSignature");
@@ -150,7 +150,7 @@ void App::render(Takoyaki::Renderer* renderer)
     cmd->drawIndexed(36, 0, 0);
 }
 
-void App::update(Takoyaki::Renderer* renderer, Takoyaki::Framework* framework)
+void Test01::update(Takoyaki::Renderer* renderer)
 {
     // perspective matrix
     float fov = glm::radians(70.0f);

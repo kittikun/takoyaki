@@ -4,14 +4,26 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{d0484cd4-dbee-4bf5-ae4e-720ddc3dd334}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\tests">
+      <UniqueIdentifier>{cb292f2d-3ec9-4d83-8069-dbfa38316e17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\tests\main.cpp">
+    <ClCompile Include="..\src\unittest\main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\unittest\tests\01_simple_cube.cpp">
+      <Filter>Source Files\tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\tests\main.h">
+    <ClInclude Include="..\src\unittest\i_test.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\unittest\tests\01_simple_cube.h">
+      <Filter>Source Files\tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\unittest\main.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

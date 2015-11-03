@@ -57,12 +57,12 @@ namespace Takoyaki
         return rs_.addDescriptorTable();
     }
 
-    void RootSignatureImpl::addDescriptorRange(uint_fast32_t index, D3D12_DESCRIPTOR_RANGE_TYPE type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister)
+    void RootSignatureImpl::addDescriptorRange(uint_fast32_t index, EDescriptorType type, uint_fast32_t numDescriptors, uint_fast32_t baseShaderRegister)
     {
         rs_.addDescriptorRange(index, type, numDescriptors, baseShaderRegister);
     }
 
-    void RootSignatureImpl::setFlags(D3D12_ROOT_SIGNATURE_FLAGS flags)
+    void RootSignatureImpl::setFlags(uint_fast32_t flags)
     {
         rs_.setFlags(flags);
     }

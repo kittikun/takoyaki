@@ -20,34 +20,13 @@
 
 #pragma once
 
-#include "../public/definitions.h"
+#include <fwd.h>
 
-namespace Takoyaki
+class ITest
 {
-    class DX12RootSignature;
+public:
+    virtual void initialize(Takoyaki::Framework*) = 0;
+    virtual void render(Takoyaki::Renderer*) = 0;
+    virtual void update(Takoyaki::Renderer*) = 0;
 
-    class RootSignatureImpl
-    {
-        RootSignatureImpl(const RootSignatureImpl&) = delete;
-        RootSignatureImpl& operator=(const RootSignatureImpl&) = delete;
-        RootSignatureImpl(RootSignatureImpl&&) = delete;
-        RootSignatureImpl& operator=(RootSignatureImpl&&) = delete;
-
-    public:
-        RootSignatureImpl(DX12RootSignature&, std::shared_lock<std::shared_timed_mutex>) noexcept;
-        ~RootSignatureImpl() = default;
-
-        void addConstant(uint_fast32_t, uint_fast32_t);
-        void addDescriptorConstantBuffer(uint_fast32_t);
-        void addDescriptorUnorderedAccess(uint_fast32_t);
-        void addDescriptorShaderResource(uint_fast32_t);
-        uint_fast32_t addDescriptorTable();
-        void addDescriptorRange(uint_fast32_t, EDescriptorType, uint_fast32_t, uint_fast32_t);
-        void setFlags(uint_fast32_t);
-
-    private:
-        DX12RootSignature& rs_;
-        std::shared_lock<std::shared_timed_mutex> bufferLock_;    // to avoid removal while user is still using it
-    };
-}
-// namespace Takoyaki
+};

@@ -13,12 +13,11 @@ environment:
   CoverityMail:
     secure: fsImKF76tplc9AeyOQTMYA==    
 install:
- - ps: |
-    $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
-    $fileContent += $env:Github.Replace(' ', "`n")
-    $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
-    Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
-    git submodule update --init --recursive
+  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
+  - ps: $fileContent += $env:Github.Replace(' ', "`n")
+  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
+  - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
+  - git submodule update --init --recursive
 before_build:
 - ps: |
     $path = $Env:APPVEYOR_BUILD_FOLDER

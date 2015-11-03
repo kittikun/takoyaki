@@ -56,6 +56,7 @@ int main(int ac, char** av)
     desc.windowSize.y = (float)ret.second.height;
     desc.loadAsyncFunc = std::bind<void>([&framework](const std::wstring& filename) {
         // read file lambda
+        // TODO: make async for real
         auto basePath(boost::filesystem::current_path());
 
         if (IsDebuggerPresent())
@@ -84,7 +85,6 @@ int main(int ac, char** av)
         }
     }, std::placeholders::_1);
 
-
     framework->initialize(desc);
 
     // main loop
@@ -92,6 +92,7 @@ int main(int ac, char** av)
     auto tests = GetTests();
     auto renderer = framework->getRenderer();
 
+    // test need to load various resources so better start tasks before main loop
     for (auto& test : tests)
         test->initialize(framework.get());
 

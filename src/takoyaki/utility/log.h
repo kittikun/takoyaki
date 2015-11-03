@@ -22,10 +22,13 @@
 
 #ifdef _DEBUG
 
+#include "../public/definitions.h"
+
 #define LOG_IDENTIFY_THREAD BOOST_LOG_SCOPED_THREAD_TAG("ThreadID", std::this_thread::get_id());
 
 #define LOGC BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Core) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Core) 
 #define LOGE BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Error)
+#define LOGI BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Info)
 #define LOGS BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Shader) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Shader) 
 #define LOGW BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Warning)
 
@@ -43,6 +46,7 @@ namespace Takoyaki
         {
             Log_Core,
             Log_Error,
+            Log_Info,
             Log_Shader,
             Log_Warning,
             Log_Level_Count
@@ -50,7 +54,7 @@ namespace Takoyaki
 
         BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(boost_log, boost::log::sources::severity_logger_mt<ELogLevel>);
 
-        void Initialize();
+        void Initialize(const FrameworkDesc&);
         void StartIndent(ELogLevel);
         void EndIndent(ELogLevel);
         std::string GetIndent(ELogLevel);
@@ -63,6 +67,7 @@ namespace Takoyaki
 #define LOG_IDENTIFY_THREAD
 #define LOGC std::cout
 #define LOGE std::cout
+#define LOGI std::cout
 #define LOGS std::cout
 #define LOGW std::cout
 #define LOGC_INDENT_START std::cout 

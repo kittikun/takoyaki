@@ -78,6 +78,7 @@ namespace Takoyaki
 			{
 				"Core",
                 "ERROR",
+                "Info",
                 "Shader",
                 "WARNING",
 			};
@@ -90,13 +91,15 @@ namespace Takoyaki
 			return strm;
 		}
 
-		void Initialize()
+		void Initialize(const FrameworkDesc& desc)
 		{
             // No console for windows app
-			//logging::add_console_log(std::cout, keywords::format = expr::format("%1%: [%2%] %3%")
-   //             % expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
-   //             % severity
-   //             % expr::message);
+            if (desc.type == EDeviceType::DX12_WIN_32) {
+                logging::add_console_log(std::cout, keywords::format = expr::format("%1%: [%2%] %3%")
+                    % expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
+                    % severity
+                    % expr::message);
+            }
 
 			logging::add_common_attributes();
 

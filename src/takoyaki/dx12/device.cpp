@@ -42,23 +42,28 @@ namespace Takoyaki
     {
         context_ = context;
         bufferCount_ = desc.bufferCount;
-
-        if (desc.type == EDeviceType::DX12_WIN_RT)
-            window_ = reinterpret_cast<IUnknown*>(desc.windowHandle);
-        else if (desc.type == EDeviceType::DX12_WIN_32)
-            window_ = reinterpret_cast<HWND>(desc.windowHandle);
-
         currentOrientation_ = desc.currentOrientation;
         nativeOrientation_ = desc.nativeOrientation;
         dpi_ = desc.windowDpi;
         windowSize_ = desc.windowSize;
+
+        if (desc.type == EDeviceType::DX12_WIN_RT) {
+            LOGI << "Device type: DX12 WinRT";
+            window_ = reinterpret_cast<IUnknown*>(desc.windowHandle);
+        } else if (desc.type == EDeviceType::DX12_WIN_32) {
+            LOGI << "Device type: DX12 Win32";
+            window_ = reinterpret_cast<HWND>(desc.windowHandle);
+        }
+
+        LOGI << "Swap chain buffers: " << bufferCount_;
+        LOGI << "Window size: " << glm::to_string(windowSize_);
 
         createDevice(bufferCount_);
     }
 
     void DX12Device::createDevice(uint_fast32_t bufferCount)
     {
-        LOGC << "Creating D3D Device...";
+        LOGC << "Creating D3D device...";
 
 #if defined(_DEBUG)
         Microsoft::WRL::ComPtr<ID3D12Debug> debugController;

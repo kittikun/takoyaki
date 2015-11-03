@@ -38,9 +38,6 @@ namespace Takoyaki
         : threadPool_{ std::make_shared<ThreadPool>() }
         , resetDevice_{ false }
     {
-#ifdef _DEBUG
-        Log::Initialize();
-#endif
     }
 
     void FrameworkImpl::compileShader(const ShaderDesc& desc)
@@ -50,6 +47,10 @@ namespace Takoyaki
 
     void FrameworkImpl::initialize(const FrameworkDesc& desc)
     {
+#ifdef _DEBUG
+        Log::Initialize(desc);
+#endif
+
         LOG_IDENTIFY_THREAD;
         LOGC_INDENT_START << "Initializing Takoyaki Framework..";
 

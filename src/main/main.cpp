@@ -45,20 +45,15 @@ Main::Main()
 Takoyaki::EDisplayOrientation Main::DisplayOrientationsToTakoyaki(Windows::Graphics::Display::DisplayOrientations orientation)
 {
     switch (orientation) {
-        case Windows::Graphics::Display::DisplayOrientations::Landscape:
-            return Takoyaki::EDisplayOrientation::LANDSCAPE;
         case Windows::Graphics::Display::DisplayOrientations::Portrait:
             return Takoyaki::EDisplayOrientation::PORTRAIT;
         case Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped:
             return Takoyaki::EDisplayOrientation::LANDSCAPE_FLIPPED;
         case Windows::Graphics::Display::DisplayOrientations::PortraitFlipped:
             return Takoyaki::EDisplayOrientation::PORTRAIT_FLIPPED;
-        default:
-            throw std::runtime_error{ "DisplayOrientationsToTakoyaki" };
-            break;
     }
 
-    return Takoyaki::EDisplayOrientation::UNKNOWN;
+    return Takoyaki::EDisplayOrientation::LANDSCAPE;
 }
 
 // The first method called when the IFrameworkView is being created.
@@ -98,7 +93,7 @@ void Main::Load(Platform::String^ entryPoint)
     desc.nativeOrientation = DisplayOrientationsToTakoyaki(disp->NativeOrientation);
     desc.currentOrientation = DisplayOrientationsToTakoyaki(disp->CurrentOrientation);
     desc.numWorkerThreads = 4; // std::thread::hardware_concurrency();
-    desc.type = Takoyaki::EDeviceType::DX12;
+    desc.type = Takoyaki::EDeviceType::DX12_WIN_RT;
     desc.windowHandle = reinterpret_cast<void*>(window);
     desc.windowSize.x = window->Bounds.Width;
     desc.windowSize.y = window->Bounds.Height;

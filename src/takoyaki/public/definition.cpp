@@ -45,6 +45,16 @@ namespace Takoyaki
 
     }
 
+    FrameworkDesc::FrameworkDesc() noexcept
+        : bufferCount{ 3 }
+        , currentOrientation{ EDisplayOrientation::LANDSCAPE }
+        , nativeOrientation{ EDisplayOrientation::LANDSCAPE }
+        , numWorkerThreads{ 4 }
+        , windowHandle{ nullptr }
+        , windowDpi{ 96.f }
+    {
+    }
+
     MultiSampleDesc::MultiSampleDesc() noexcept
         : count{ 1 }
         , quality{ 0 }

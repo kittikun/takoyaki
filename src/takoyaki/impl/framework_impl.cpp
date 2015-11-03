@@ -53,7 +53,7 @@ namespace Takoyaki
         LOG_IDENTIFY_THREAD;
         LOGC_INDENT_START << "Initializing Takoyaki Framework..";
 
-        if (desc.type == EDeviceType::DX12) {
+        if ((desc.type == EDeviceType::DX12_WIN_32) || (desc.type == EDeviceType::DX12_WIN_RT)) {
             device_.reset(new DX12Device());
             context_ = std::make_shared<DX12Context>(device_, threadPool_);
 

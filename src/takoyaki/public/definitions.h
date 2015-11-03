@@ -83,12 +83,13 @@ namespace Takoyaki
 
     enum class EDeviceType
     {
-        DX12
+        UNKNOWN,
+        DX12_WIN_RT,
+        DX12_WIN_32,
     };
 
     enum class EDisplayOrientation
     {
-        UNKNOWN,
         LANDSCAPE,
         PORTRAIT,
         LANDSCAPE_FLIPPED,
@@ -224,6 +225,8 @@ namespace Takoyaki
 
     struct FrameworkDesc
     {
+        FrameworkDesc() noexcept;
+
         uint_fast32_t           bufferCount;
         EDisplayOrientation     currentOrientation;
         EDisplayOrientation     nativeOrientation;

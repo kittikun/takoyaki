@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <boost/any.hpp>
+
 #include "dx12_texture.h"
 #include "dxcommon.h"
 #include "../thread_safe_stack.h"
@@ -93,7 +95,7 @@ namespace Takoyaki
         HANDLE fenceEvent_;
 
         // windows related
-        IUnknown* window_;
+        boost::any window_;
         glm::vec2 windowSize_;
         D3D12_VIEWPORT viewport_;
         EDisplayOrientation currentOrientation_;

@@ -13,11 +13,12 @@ environment:
   CoverityMail:
     secure: fsImKF76tplc9AeyOQTMYA==    
 install:
-  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
-  - ps: $fileContent += $env:Github.Replace(' ', "`n")
-  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
-  - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
-  - git submodule update --init --recursive
+ - ps: |
+    $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
+    $fileContent += $env:Github.Replace(' ', "`n")
+    $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
+    Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
+    git submodule update --init --recursive
 before_build:
 - ps: |
     $path = $Env:APPVEYOR_BUILD_FOLDER
@@ -31,11 +32,12 @@ before_build:
     Write-Host "Generating boost headers"
     .\b2 headers -d0
     
-    if ($Env:CONFIGURATION -eq "Debug") {
         Write-Host "Building boost.."
-
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --with-log  --stagedir=winrt
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared --with-log  --stagedir=win  
+    if ($Env:CONFIGURATION -eq "Debug") {
+        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --with-log --stagedir=winrt
+        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared --with-log --with-program_options --stagedir=win
+    } elif ($Env:CONFIGURATION -eq "Release") {
+        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=shared --with-program_options --stagedir=win
     }
 build_script:
 - ps: |

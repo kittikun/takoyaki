@@ -42,7 +42,12 @@ namespace Takoyaki
     {
         context_ = context;
         bufferCount_ = desc.bufferCount;
-        window_ = reinterpret_cast<IUnknown*>(desc.windowHandle);
+
+        if (desc.type == EDeviceType::DX12_WIN_RT)
+            window_ = reinterpret_cast<IUnknown*>(desc.windowHandle);
+        else if (desc.type == EDeviceType::DX12_WIN_32)
+            window_ = reinterpret_cast<HWND>(desc.windowHandle);
+
         currentOrientation_ = desc.currentOrientation;
         nativeOrientation_ = desc.nativeOrientation;
         dpi_ = desc.windowDpi;
@@ -165,7 +170,12 @@ namespace Takoyaki
 
             Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
 
-            DXCheckThrow(DXGIFactory_->CreateSwapChainForCoreWindow(commandQueue_.Get(), window_, &swapChainDesc, nullptr, &swapChain));
+            // winRT or win32
+            if (window_.type() == typeid(HWND))
+                DXCheckThrow(DXGIFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), boost::any_cast<HWND>(window_), &swapChainDesc, nullptr, nullptr, &swapChain));
+            else
+                DXCheckThrow(DXGIFactory_->CreateSwapChainForCoreWindow(commandQueue_.Get(), boost::any_cast<IUnknown*>(window_), &swapChainDesc, nullptr, &swapChain));
+
             DXCheckThrow(swapChain.As(&swapChain_));
         }
 

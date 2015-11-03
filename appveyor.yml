@@ -35,7 +35,7 @@ before_build:
     if ($Env:CONFIGURATION -eq "Debug") {
         ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --with-log --stagedir=winrt
         ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared --with-log --with-program_options --stagedir=win
-    } elif ($Env:CONFIGURATION -eq "Release") {
+    } elseif ($Env:CONFIGURATION -eq "Release") {
         ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=shared --with-program_options --stagedir=win
     }
 build_script:

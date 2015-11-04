@@ -13,11 +13,11 @@ environment:
   CoverityMail:
     secure: fsImKF76tplc9AeyOQTMYA==    
 install:
-  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
-  - ps: $fileContent += $env:Github.Replace(' ', "`n")
-  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
-  - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
-  - git submodule update --init --recursive
+- ps: |
+    $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n" + $env:Github.Replace(' ', "`n") + "`n-----END RSA PRIVATE KEY-----`n"
+    Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
+    Write-Host "Updating submodules.."
+    git submodule update --init --recursive --quiet
 before_build:
 - ps: |
     $path = $Env:APPVEYOR_BUILD_FOLDER
@@ -28,10 +28,10 @@ before_build:
     Set-Location "$Env:APPVEYOR_BUILD_FOLDER\src\external\boost"
     .\bootstrap.bat
 
-    Write-Host "Generating boost headers"
+    Write-Host "Generating boost headers.."
     .\b2 headers -d0
     
-        Write-Host "Building boost.."
+    Write-Host "Building required boost libraries.."
     if ($Env:CONFIGURATION -eq "Debug") {
         # for app
         ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --stagedir=winrt --with-log

@@ -15,15 +15,21 @@
     <ClCompile Include="..\src\unittest\tests\01_simple_cube.cpp">
       <Filter>Source Files\tests</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\unittest\test_framework.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\unittest\i_test.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\unittest\tests\01_simple_cube.h">
       <Filter>Source Files\tests</Filter>
     </ClInclude>
     <ClInclude Include="..\src\unittest\main.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\unittest\test_framework.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\unittest\test.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

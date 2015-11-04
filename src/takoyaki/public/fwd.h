@@ -25,4 +25,5 @@ namespace Takoyaki
     class IndexBuffer;
     class Renderer;
     class VertexBuffer;
+    struct FrameworkDesc;
 }

@@ -239,7 +239,7 @@ namespace Takoyaki
             auto lock = rootSignatures_.getReadLock();
 
             for (auto& rs : rootSignatures_) {
-                auto res = rs.second.create(device_);
+                auto res = rs.second.create(device_.get());
 
                 if (!res) {
                     auto fmt = boost::format{ "RootSignature contains no parameters: %1%" } % rs.first;
@@ -252,9 +252,10 @@ namespace Takoyaki
         // create all pipeline state
         {
             auto lock = pipelineStates_.getReadLock();
+            auto threadPool = threadPool_.lock();
 
             for (auto& state : pipelineStates_)
-                threadPool_->submitGeneric(std::bind(&DX12Context::compileMain, this, state.first), 0);
+                threadPool->submitGeneric(std::bind(&DX12Context::compileMain, this, state.first), 0);
         }
     }
 
@@ -316,6 +317,8 @@ namespace Takoyaki
 
     void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast32_t sizeByte)
     {
+        auto threadPool = threadPool_.lock();
+
         switch (type) {
             case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
             {
@@ -323,9 +326,9 @@ namespace Takoyaki
                 auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, sizeByte, id }));
 
                 // then build a command to build underlaying resources
-                threadPool_->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
-                threadPool_->submitGPU(std::bind(&DX12IndexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
-                threadPool_->submitGeneric(std::bind(&DX12IndexBuffer::cleanupIntermediate, &pair.first->second), 2);
+                threadPool->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
+                threadPool->submitGPU(std::bind(&DX12IndexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
+                threadPool->submitGeneric(std::bind(&DX12IndexBuffer::cleanupIntermediate, &pair.first->second), 2);
             }
             break;
 
@@ -335,9 +338,9 @@ namespace Takoyaki
                 auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, stride, sizeByte, id }));
 
                 // then build a command to build underlaying resources
-                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
-                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
-                threadPool_->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
+                threadPool->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
+                threadPool->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
+                threadPool->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
             }
             break;
         }
@@ -407,10 +410,11 @@ namespace Takoyaki
     void DX12Context::destroyResource(EResourceType type, uint_fast32_t id)
     {
         // destruction is deferred so add to destroy queue and submit a job request
+        auto threadPool = threadPool_.lock();
 
         destroyQueue_.push(std::make_pair(type, id));
-        threadPool_->submitGPU(std::bind(&DX12Context::destroyMain, this, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
-        threadPool_->submitGeneric(std::bind(&DX12Context::destroyDone, this), 1);
+        threadPool->submitGPU(std::bind(&DX12Context::destroyMain, this, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
+        threadPool->submitGeneric(std::bind(&DX12Context::destroyDone, this), 1);
     }
 
     auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn

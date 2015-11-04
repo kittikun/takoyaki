@@ -65,6 +65,7 @@ namespace Takoyaki
         class IWorker
         {
         public:
+            virtual ~IWorker() = default;
             virtual void clear() = 0;
             virtual bool isIdle() = 0;
             virtual void main() = 0;
@@ -97,7 +98,7 @@ namespace Takoyaki
                     fmt = boost::format{ "Takoyaki Worker %1%" } % i;
 
                     setThreadName(thread.native_handle(), boost::str(fmt));
-                    threads.push_back(std::move(thread));
+                    threads_.push_back(std::move(thread));
                 }
             } catch (...) {
                 done_ = true;
@@ -135,7 +136,7 @@ namespace Takoyaki
         std::vector<std::unique_ptr<IWorker>> workers_;
         std::array<ThreadSafeQueue<MoveOnlyFunc>, 3> genericWorkQueues_;
         std::array<ThreadSafeQueue<GPUDrawFunc>, 3> gpuQueues_;
-        std::vector<std::thread> threads;
+        std::vector<std::thread> threads_;
         JoinThreads joiner;
     };
 } // namespace Takoyaki

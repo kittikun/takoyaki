@@ -31,7 +31,21 @@ namespace Takoyaki
         ThreadSafeStack& operator=(ThreadSafeStack&&) = delete;
 
     public:
+        using ValueType = typename std::vector<T>::value_type;
+
         ThreadSafeStack() = default;
+
+        std::unique_lock<std::mutex> back(T& value) const
+        {
+            std::unique_lock<std::mutex> lock{ mutex_ };
+
+            if (stack_.empty())
+                throw std::runtime_error{ "Trying to get front while ThreadSafeStack is empty" };
+
+            value = stack_.back();
+
+            return lock;
+        }
 
         // not thread-safe
         void clear() { stack_.clear(); }
@@ -67,6 +81,17 @@ namespace Takoyaki
 
         // not thread-safe
         size_t size() const { return stack_.size(); }
+
+        bool tryPop(T& value)
+        {
+            std::lock_guard<std::mutex> lock{ mutex_ };
+
+            if (stack_.empty())
+                return false;
+
+            value = std::move(stack_.back());
+            stack_.pop_back();
+        }
 
         void unlock() { mutex_.unlock(); }
 

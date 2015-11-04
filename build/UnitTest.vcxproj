@@ -21,11 +21,13 @@
   <ItemGroup>
     <ClCompile Include="..\src\unittest\main.cpp" />
     <ClCompile Include="..\src\unittest\tests\01_simple_cube.cpp" />
+    <ClCompile Include="..\src\unittest\test_framework.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\unittest\i_test.h" />
     <ClInclude Include="..\src\unittest\main.h" />
+    <ClInclude Include="..\src\unittest\test.h" />
     <ClInclude Include="..\src\unittest\tests\01_simple_cube.h" />
+    <ClInclude Include="..\src\unittest\test_framework.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{62386B6B-9066-4373-BF3F-4FCFC7D95F8A}</ProjectGuid>
@@ -113,6 +115,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\src\takoyaki\public;$(SolutionDir)..\src\external\glm;$(SolutionDir)..\src\external\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

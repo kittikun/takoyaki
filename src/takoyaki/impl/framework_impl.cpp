@@ -63,8 +63,8 @@ namespace Takoyaki
 
             DX12WorkerDesc workerDesc;
 
-            workerDesc.context = context_;
-            workerDesc.device = device_;
+            workerDesc.context = context_.get();
+            workerDesc.device = device_.get();
             workerDesc.threadPool = threadPool_.get();
             workerDesc.numFrames = desc.bufferCount;
 

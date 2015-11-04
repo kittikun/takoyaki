@@ -33,8 +33,8 @@ namespace Takoyaki
 
     struct DX12WorkerDesc
     {
-        std::shared_ptr<DX12Context> context;
-        std::shared_ptr<DX12Device> device;
+        DX12Context* context;
+        DX12Device* device;
         ThreadPool* threadPool;
         uint_fast32_t numFrames;
     };
@@ -48,6 +48,7 @@ namespace Takoyaki
 
     public:
         DX12Worker(const DX12WorkerDesc&);
+        ~DX12Worker() = default;
 
         void clear() override;
         inline bool isIdle() override { return idle_.load(); }
@@ -56,8 +57,8 @@ namespace Takoyaki
 
     private:
         ThreadPool* threadPool_;
-        std::shared_ptr<DX12Context> context_;
-        std::shared_ptr<DX12Device> device_;
+        DX12Context* context_;
+        DX12Device* device_;
         std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
         std::vector<TaskCommand> commandList_;
         std::atomic<bool> idle_;

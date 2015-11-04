@@ -41,7 +41,7 @@ namespace Takoyaki
         //////////////////////////////////////////////////////////////////////////
         // Internal usage:
 
-        bool create(const std::shared_ptr<DX12Device>&);
+        bool create(DX12Device*);
         inline ID3D12RootSignature* getRootSignature() { return rootSignature_.Get(); }
 
         //////////////////////////////////////////////////////////////////////////

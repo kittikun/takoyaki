@@ -65,6 +65,7 @@ namespace Takoyaki
         class IWorker
         {
         public:
+            virtual ~IWorker() = default;
             virtual void clear() = 0;
             virtual bool isIdle() = 0;
             virtual void main() = 0;

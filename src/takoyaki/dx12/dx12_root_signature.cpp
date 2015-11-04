@@ -131,7 +131,7 @@ namespace Takoyaki
         range.add(DescriptorTypeToDX(type), numDescriptors, baseShaderRegister);
     }
 
-    bool DX12RootSignature::create(const std::shared_ptr<DX12Device>& device)
+    bool DX12RootSignature::create(DX12Device* device)
     {
         if ((intermediate_) && (intermediate_->params.size() > 0)) {
             if (intermediate_->size > 64) {

@@ -239,7 +239,7 @@ namespace Takoyaki
             auto lock = rootSignatures_.getReadLock();
 
             for (auto& rs : rootSignatures_) {
-                auto res = rs.second.create(device_);
+                auto res = rs.second.create(device_.get());
 
                 if (!res) {
                     auto fmt = boost::format{ "RootSignature contains no parameters: %1%" } % rs.first;

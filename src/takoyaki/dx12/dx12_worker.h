@@ -33,7 +33,7 @@ namespace Takoyaki
 
     struct DX12WorkerDesc
     {
-        DX12Context* context;
+        std::shared_ptr<DX12Context> context;
         DX12Device* device;
         ThreadPool* threadPool;
         uint_fast32_t numFrames;
@@ -57,7 +57,7 @@ namespace Takoyaki
 
     private:
         ThreadPool* threadPool_;
-        DX12Context* context_;
+        std::shared_ptr<DX12Context> context_;
         DX12Device* device_;
         std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
         std::vector<TaskCommand> commandList_;

@@ -113,7 +113,7 @@ namespace Takoyaki
 
     private:
         std::shared_ptr<DX12Device> device_;
-        std::shared_ptr<ThreadPool> threadPool_;
+        std::weak_ptr<ThreadPool> threadPool_;
 
         DescriptorHeapRTV descHeapRTV_;
         DescriptorHeapSRV descHeapSRV_;

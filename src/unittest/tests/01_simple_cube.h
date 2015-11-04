@@ -20,12 +20,12 @@
 
 #pragma once
 
-#include "../i_test.h"
+#include "../test.h"
 
 #include <memory>
 #include <glm/glm.hpp>
 
-class Test01 : public ITest
+class Test01 : public Test
 {
     Test01(const Test01&) = delete;
     Test01& operator=(const Test01&) = delete;
@@ -34,7 +34,7 @@ class Test01 : public ITest
 
 public:
     Test01() = default;
-    ~Test01() = default;
+    ~Test01() override = default;
 
     void initialize(Takoyaki::Framework*) override;
     void render(Takoyaki::Renderer*) override;

@@ -21,12 +21,29 @@
 #pragma once
 
 #include <fwd.h>
+#include <memory>
+#include <string>
+#include <vector>
 
-class ITest
+#include "test.h"
+
+class TestFramework
 {
+    TestFramework(const TestFramework&) = delete;
+    TestFramework& operator=(const TestFramework&) = delete;
+    TestFramework(TestFramework&&) = delete;
+    TestFramework& operator=(TestFramework&&) = delete;
 public:
-    virtual void initialize(Takoyaki::Framework*) = 0;
-    virtual void render(Takoyaki::Renderer*) = 0;
-    virtual void update(Takoyaki::Renderer*) = 0;
+    TestFramework() noexcept;
 
+    void loadAsync(const std::wstring&);
+    void initialize(Takoyaki::FrameworkDesc&);
+    void process();
+
+    inline void setTests(std::vector<std::shared_ptr<Test>>& tests) { std::swap(tests_, tests); }
+
+private:
+    std::unique_ptr<Takoyaki::Framework> takoyaki_;
+    std::unique_ptr<Takoyaki::Renderer> renderer_;
+    std::vector<std::shared_ptr<Test>> tests_;
 };

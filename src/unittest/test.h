@@ -20,17 +20,13 @@
 
 #pragma once
 
-#include <cstdint>
-#include <windows.h>
-#include <utility>
+#include <fwd.h>
 
-struct Options
+class Test
 {
-    uint_fast32_t width;
-    uint_fast32_t height;
-    uint_fast32_t numThreads;
+public:
+    virtual ~Test() = default;
+    virtual void initialize(Takoyaki::Framework*) = 0;
+    virtual void render(Takoyaki::Renderer*) = 0;
+    virtual void update(Takoyaki::Renderer*) = 0;
 };
-
-HWND MakeWindow(const Options& options);
-std::pair<bool, Options> ParseOptions(int, char**);
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

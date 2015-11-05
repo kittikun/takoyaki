@@ -24,6 +24,7 @@
 #include <intsafe.h>
 
 #include "context.h"
+#include "../public/definitions.h"
 
 namespace Takoyaki
 {
@@ -33,8 +34,18 @@ namespace Takoyaki
         cpuHandle_.ptr = ULONG_PTR_MAX;
     }
 
+
+    DX12Texture::DX12Texture(DX12Context* owner, const TextureDesc& desc, D3D12_RESOURCE_STATES initialState) noexcept
+        : DX12Texture(owner)
+    {
+        intermediate_.reset(new Intermediate{});
+        intermediate_->desc = desc;
+        intermediate_->initialState = initialState;
+    }
+
     DX12Texture::DX12Texture(DX12Texture&& other) noexcept
         : owner_{ other.owner_ }
+        , intermediate_{ std::move(other.intermediate_) }
         , resource_{ std::move(other.resource_) }
         , cpuHandle_{ std::move(other.cpuHandle_) }
     {
@@ -46,6 +57,69 @@ namespace Takoyaki
         if (cpuHandle_.ptr != ULONG_PTR_MAX) {
             owner_->getRTVDescHeapCollection().releaseOne(cpuHandle_);
         }
+    }
+
+    void DX12Texture::create(DX12Device* device)
+    {
+        D3D12_HEAP_PROPERTIES prop;
+        const TextureDesc& texDesc = intermediate_->desc;
+
+        prop.Type = UsageTypeToDX(texDesc.usage);
+
+        // let the driver decide about those properties
+        prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+        prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+
+        // no multi-gpu support for now
+        prop.CreationNodeMask = 1;
+        prop.VisibleNodeMask = 1;
+
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/dn903813(v=vs.85).aspx
+        D3D12_RESOURCE_DESC desc;
+
+        desc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+        desc.Flags = ResourceFlagsToDX(texDesc.flags);
+        desc.Format = FormatToDX(texDesc.format);
+        desc.MipLevels = texDesc.mipmaps;
+
+        // let the drive choose the best layout
+        desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+
+        // no MSAA for now
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0;
+
+        if (texDesc.height == 1) {
+            desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+            desc.DepthOrArraySize = texDesc.arraySize;
+            desc.Height = 1;
+            desc.Width = texDesc.width;
+        } else if (texDesc.depth > 1) {
+            desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+            desc.DepthOrArraySize = texDesc.depth;
+            desc.Height = texDesc.height;
+            desc.Width = texDesc.width;
+        } else {
+            desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+            desc.DepthOrArraySize = texDesc.arraySize;
+            desc.Height = texDesc.height;
+            desc.Width = texDesc.width;
+        }
+
+        // multi-thread safe, no need to lock
+        device->getDXDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_NONE, &desc, intermediate_->initialState, nullptr, IID_PPV_ARGS(&resource_));
+
+        intermediate_.reset();
+    }
+
+    bool DX12Texture::destroy(void* command, void*)
+    {
+        auto cmd = static_cast<TaskCommand*>(command);
+
+        cmd->commands->DiscardResource(resource_.Get(), nullptr);
+        DXCheckThrow(cmd->commands->Close());
+
+        return true;
     }
 
     const D3D12_CPU_DESCRIPTOR_HANDLE& DX12Texture::getRenderTargetView()

@@ -63,7 +63,6 @@ namespace Takoyaki
     {
         auto device = static_cast<DX12Device*>(dev);
         auto cmd = static_cast<TaskCommand*>(command);
-        //auto res = static_cast<CopyWorker::Result*>(r);
 
         vertexBuffer_->create(device);
         uploadBuffer_->create(device);
@@ -103,8 +102,7 @@ namespace Takoyaki
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
         cmd->commands->ResourceBarrier(1, &barrier);
-        DXCheckThrow(cmd->commands->Close());
-        
+        DXCheckThrow(cmd->commands->Close());        
 
         return true;
     }

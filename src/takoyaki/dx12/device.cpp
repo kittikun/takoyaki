@@ -202,7 +202,7 @@ namespace Takoyaki
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
             // check if we are re-creating because of a window property change
             if (renderTargets_.size() < bufferCount_)
-                context->createTexture(i);
+                context->createSwapchainTexture(i);
 
             auto& tex = context->getTexture(i);
             auto& com = tex.getCOM();

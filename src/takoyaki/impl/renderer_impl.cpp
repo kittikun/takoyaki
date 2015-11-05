@@ -25,6 +25,7 @@
 #include "index_buffer_impl.h"
 #include "input_layout_impl.h"
 #include "root_signature_impl.h"
+#include "texture_impl.h"
 #include "vertex_buffer_impl.h"
 #include "../thread_pool.h"
 #include "../dx12/context.h"
@@ -97,6 +98,16 @@ namespace Takoyaki
         auto pair = context_->getRootSignature(name);
 
         return std::make_unique<RootSignatureImpl>(pair.first, std::move(pair.second));
+    }
+
+    std::unique_ptr<TextureImpl> RendererImpl::createTexture(const TextureDesc& desc)
+    {
+        auto id = uidGenerator_.fetch_add(1);
+        std::shared_lock<std::shared_timed_mutex> readLock{ rwMutex_ };
+
+        context_->createTexture(id, desc);
+
+        return std::make_unique<TextureImpl>(context_, context_->getTexture(id), id);
     }
 
     std::unique_ptr<VertexBufferImpl> RendererImpl::createVertexBuffer(uint8_t* data, uint_fast32_t stride, uint_fast32_t sizeByte)

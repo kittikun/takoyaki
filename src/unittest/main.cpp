@@ -58,7 +58,7 @@ int main(int ac, char** av)
     desc.windowHandle = hWnd;
     desc.windowSize.x = (float)ret.second.width;
     desc.windowSize.y = (float)ret.second.height;
-    desc.numWorkerThreads = 1;//ret.second.numThreads;
+    desc.numWorkerThreads = ret.second.numThreads;
     
     framework.initialize(desc);
 

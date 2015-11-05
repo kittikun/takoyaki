@@ -21,10 +21,27 @@
 
 namespace Takoyaki
 {
-    class Framework;
-    class IndexBuffer;
-    class Renderer;
-    class VertexBuffer;
-    class Texture;
-    struct FrameworkDesc;
+    class DX12Context;
+    class DX12Texture;
+
+    class TextureImpl
+    {
+        TextureImpl(const TextureImpl&) = delete;
+        TextureImpl& operator=(const TextureImpl&) = delete;
+        TextureImpl(TextureImpl&&) = delete;
+        TextureImpl& operator=(TextureImpl&&) = delete;
+
+    public:
+        explicit TextureImpl(const std::shared_ptr<DX12Context>&, const DX12Texture&, uint_fast32_t) noexcept;
+        ~TextureImpl();
+
+        inline uint_fast32_t getHandle() const { return handle_; }
+
+    private:
+        // must own pointer to context for destruction
+        std::weak_ptr<DX12Context> context_;
+        const DX12Texture& texture_;
+        uint_fast32_t handle_;
+    };
 }
+// namespace Takoyaki

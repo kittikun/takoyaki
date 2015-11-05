@@ -248,6 +248,11 @@ namespace Takoyaki
         return D3D12_LOGIC_OP_CLEAR;
     }
 
+    D3D12_RESOURCE_FLAGS ResourceFlagsToDX(EResourceFlags)
+    {
+        return D3D12_RESOURCE_FLAG_NONE;
+    }
+
     D3D12_STENCIL_OP StencilOpToDX(EStencilOp op)
     {
         // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770409(v=vs.85).aspx
@@ -297,6 +302,19 @@ namespace Takoyaki
         }
 
         return D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED;
+    }
+
+    D3D12_HEAP_TYPE UsageTypeToDX(EUsageType type)
+    {
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770374(v=vs.85).aspx
+        switch (type) {
+            case EUsageType::CPU_READ:
+                return D3D12_HEAP_TYPE_READBACK;
+            case EUsageType::CPU_WRITE:
+                return D3D12_HEAP_TYPE_UPLOAD;
+        }
+
+        return D3D12_HEAP_TYPE_DEFAULT;
     }
 
     //////////////////////////////////////////////////////////////////////////

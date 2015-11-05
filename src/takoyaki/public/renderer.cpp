@@ -26,6 +26,7 @@
 #include "index_buffer.h"
 #include "input_layout.h"
 #include "root_signature.h"
+#include "texture.h"
 #include "vertex_buffer.h"
 
 #include "../impl/command_impl.h"
@@ -35,6 +36,7 @@
 #include "../impl/pipeline_state_impl.h"
 #include "../impl/renderer_impl.h"
 #include "../impl/root_signature_impl.h"
+#include "../impl/texture_impl.h"
 #include "../impl/vertex_buffer_impl.h"
 
 namespace Takoyaki
@@ -74,6 +76,17 @@ namespace Takoyaki
     std::unique_ptr<RootSignature> Renderer::createRootSignature(const std::string& name)
     {
         return std::make_unique<RootSignature>(impl_->createRootSignature(name));
+    }
+
+    std::unique_ptr<Texture> Renderer::createTexture(const TextureDesc& desc)
+    {
+        // let's do some checks here
+        // TODO: more checks are obviously needed
+
+        if ((desc.arraySize > 1) && (desc.depth > 1))
+            throw new std::runtime_error("TextureDesc arraySize and depth cannot both be > 1");
+
+        return std::make_unique<Texture>(impl_->createTexture(desc));
     }
 
     std::unique_ptr<VertexBuffer> Renderer::createVertexBuffer(uint8_t* vertices, uint_fast32_t stride, uint_fast32_t sizeByte)

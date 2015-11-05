@@ -99,11 +99,26 @@ namespace Takoyaki
 
     }
 
+    ShaderDesc::ShaderDesc() noexcept
+        : debug{ false }
+    {
+
+    }
+
     StencilOpDesc::StencilOpDesc() noexcept
         : fail{ EStencilOp::KEEP }
         , depthFail{ EStencilOp::KEEP }
         , pass{ EStencilOp::KEEP }
         , func{ ECompFunc::ALWAYS }
+    {
+
+    }
+
+    TextureDesc::TextureDesc() noexcept
+        : flags{ RF_NONE }
+        , arraySize{ 1 }
+        , depth{ 1 }
+        , mipmaps{ 1 }
     {
 
     }

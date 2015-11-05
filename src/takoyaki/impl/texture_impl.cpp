@@ -17,14 +17,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 
-#pragma once
+#include "pch.h"
+#include "texture_impl.h"
+
+#include "../dx12/context.h"
 
 namespace Takoyaki
 {
-    class Framework;
-    class IndexBuffer;
-    class Renderer;
-    class VertexBuffer;
-    class Texture;
-    struct FrameworkDesc;
+    TextureImpl::TextureImpl(const std::shared_ptr<DX12Context>& context, const DX12Texture& texture, uint_fast32_t handle) noexcept
+        : context_{ context }
+        , texture_{ texture }
+        , handle_{ handle }
+    {
+
+    }
+
+    TextureImpl::~TextureImpl()
+    {
+        auto context = context_.lock();
+
+        context->destroyResource(DX12Context::EResourceType::TEXTURE, handle_);
+    }
 }
+// namespace Takoyaki

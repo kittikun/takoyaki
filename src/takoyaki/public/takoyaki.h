@@ -28,4 +28,5 @@
 #include <pipeline_state.h>
 #include <renderer.h>
 #include <root_signature.h>
+#include <texture.h>
 #include <vertex_buffer.h>

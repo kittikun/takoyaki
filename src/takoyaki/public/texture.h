@@ -19,12 +19,27 @@
 
 #pragma once
 
+#include <memory>
+
 namespace Takoyaki
 {
-    class Framework;
-    class IndexBuffer;
-    class Renderer;
-    class VertexBuffer;
-    class Texture;
-    struct FrameworkDesc;
+    class TextureImpl;
+
+    class Texture
+    {
+        Texture(const Texture&) = delete;
+        Texture& operator=(const Texture&) = delete;
+        Texture(Texture&&) = delete;
+        Texture& operator=(Texture&&) = delete;
+
+    public:
+        explicit Texture(std::unique_ptr<TextureImpl>) noexcept;
+        ~Texture() noexcept;
+
+        uint_fast32_t getHandle() const;
+
+    private:
+        std::unique_ptr<TextureImpl> impl_;
+    };
 }
+// namespace Takoyaki

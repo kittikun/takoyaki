@@ -17,14 +17,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 
-#pragma once
+#include "pch.h"
+#include "texture.h"
+
+#include "../impl/texture_impl.h"
 
 namespace Takoyaki
 {
-    class Framework;
-    class IndexBuffer;
-    class Renderer;
-    class VertexBuffer;
-    class Texture;
-    struct FrameworkDesc;
+    Texture::Texture(std::unique_ptr<TextureImpl> impl) noexcept
+        : impl_{ std::move(impl) }
+    {
+    }
+
+    Texture::~Texture() noexcept = default;
+
+    uint_fast32_t Texture::getHandle() const
+    {
+        return impl_->getHandle();
+    }
+
 }
+// namespace Takoyaki

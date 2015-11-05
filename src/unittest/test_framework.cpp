@@ -42,6 +42,17 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
 
     renderer_ = takoyaki_->getRenderer();
 
+    // texture used to copy the render target to make a checksum
+    Takoyaki::TextureDesc texDesc;
+
+    texDesc.format = Takoyaki::EFormat::B8G8R8A8_UNORM;
+    texDesc.width = (uint_fast32_t)desc.windowSize.x;
+    texDesc.height = (uint_fast32_t)desc.windowSize.y;
+    texDesc.usage = Takoyaki::EUsageType::CPU_READ;
+
+    texture_ = renderer_->createTexture(texDesc);
+
+
     // test need to load various resources so better start tasks before main loop
     for (auto& test : tests_)
         test->initialize(takoyaki_.get());

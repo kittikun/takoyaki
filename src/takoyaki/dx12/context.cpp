@@ -266,6 +266,37 @@ namespace Takoyaki
         pair.first.create(device_.get(), this);
     }
 
+    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast32_t sizeByte)
+    {
+        auto threadPool = threadPool_.lock();
+
+        switch (type) {
+            case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
+            {
+                auto lock = indexBuffers_.getWriteLock();
+                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, sizeByte, id }));
+
+                // then build a command to build underlaying resources
+                threadPool->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
+                threadPool->submitGPU(std::bind(&DX12IndexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
+                threadPool->submitGeneric(std::bind(&DX12IndexBuffer::cleanupIntermediate, &pair.first->second), 2);
+            }
+            break;
+
+            case Takoyaki::DX12Context::EResourceType::VERTEX_BUFFER:
+            {
+                auto lock = vertexBuffers_.getWriteLock();
+                auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, stride, sizeByte, id }));
+
+                // then build a command to build underlaying resources
+                threadPool->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
+                threadPool->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
+                threadPool->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
+            }
+            break;
+        }
+    }
+
     DX12ConstantBuffer& DX12Context::createConstanBuffer(const std::string& name, uint_fast32_t size)
     {
         auto lock = constantBuffers_.getWriteLock();
@@ -308,42 +339,21 @@ namespace Takoyaki
         rootSignatures_.insert(std::make_pair(name, DX12RootSignature{}));
     }
 
-    void DX12Context::createTexture(uint_fast32_t id)
+    void DX12Context::createSwapchainTexture(uint_fast32_t id)
     {
         auto lock = textures_.getWriteLock();
 
         textures_.insert(std::make_pair(id, DX12Texture{ this }));
     }
 
-    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast32_t sizeByte)
+    void DX12Context::createTexture(uint_fast32_t id, const TextureDesc& desc)
     {
         auto threadPool = threadPool_.lock();
+        auto lock = textures_.getWriteLock();
+        auto pair = textures_.insert(std::make_pair(id, DX12Texture{ this, desc, D3D12_RESOURCE_STATE_COMMON }));
 
-        switch (type) {
-            case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
-            {
-                auto lock = indexBuffers_.getWriteLock();
-                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, sizeByte, id }));
-
-                // then build a command to build underlaying resources
-                threadPool->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
-                threadPool->submitGPU(std::bind(&DX12IndexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
-                threadPool->submitGeneric(std::bind(&DX12IndexBuffer::cleanupIntermediate, &pair.first->second), 2);
-            }
-            break;
-
-            case Takoyaki::DX12Context::EResourceType::VERTEX_BUFFER:
-            {
-                auto lock = vertexBuffers_.getWriteLock();
-                auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, stride, sizeByte, id }));
-
-                // then build a command to build underlaying resources
-                threadPool->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
-                threadPool->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
-                threadPool->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
-            }
-            break;
-        }
+        // then build a command to build underlaying resources
+        //threadPool->submitGPU(std::bind(&DX12Texture::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
     }
 
     void DX12Context::destroyDone()
@@ -357,6 +367,14 @@ namespace Takoyaki
                     auto lock = indexBuffers_.getWriteLock();
 
                     indexBuffers_.erase(pair.second);
+                }
+                break;
+
+                case EResourceType::TEXTURE:
+                {
+                    auto lock = textures_.getWriteLock();
+
+                    textures_.erase(pair.second);
                 }
                 break;
 
@@ -387,6 +405,17 @@ namespace Takoyaki
                 auto found = indexBuffers_.find(pair.second);
 
                 if (found != indexBuffers_.end()) {
+                    found->second.destroy(cmd, dev);
+                }
+            }
+            break;
+
+            case EResourceType::TEXTURE:
+            {
+                auto lock = textures_.getReadLock();
+                auto found = textures_.find(pair.second);
+
+                if (found != textures_.end()) {
                     found->second.destroy(cmd, dev);
                 }
             }

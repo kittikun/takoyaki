@@ -20,22 +20,22 @@ install:
 - ps: |
     $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n" + $env:Github.Replace(' ', "`n") + "`n-----END RSA PRIVATE KEY-----`n"
     Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
-    Write-Host "Updating submodules.."
+    Write-Host -foregroundcolor "Yellow" "Updating submodules.."
     git submodule update --init --recursive --quiet
 before_build:
 - ps: |
     $path = $Env:APPVEYOR_BUILD_FOLDER
-    Write-Host "CONFIGURATION ="$Env:CONFIGURATION
-    Write-Host "APPVEYOR_BUILD_FOLDER ="$path
+    Write-Host -foregroundcolor "Yellow" "CONFIGURATION ="$Env:CONFIGURATION
+    Write-Host -foregroundcolor "Yellow" "APPVEYOR_BUILD_FOLDER ="$path
 
-    Write-Host "Bootstrapping boost.."
+    Write-Host -foregroundcolor "Yellow" "Bootstrapping boost.."
     Set-Location "$Env:APPVEYOR_BUILD_FOLDER\src\external\boost"
     .\bootstrap.bat
 
-    Write-Host "Generating boost headers.."
+    Write-Host -foregroundcolor "Yellow" "Generating boost headers.."
     .\b2 headers -d0
     
-    Write-Host "Building required boost libraries.."
+    Write-Host -foregroundcolor "Yellow" "Building required boost libraries.."
     if ($Env:CONFIGURATION -eq "Debug") {
         # for app
         ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --stagedir=winrt --with-log
@@ -47,7 +47,7 @@ before_build:
     }
 build_script:
 - ps: |
-    Write-Host "Build step starting.."
+    Write-Host -foregroundcolor "Yellow" "Build step starting.."
     $buildCmd = "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe"
     $buildArgs = @(
           "$Env:APPVEYOR_BUILD_FOLDER\build\Takoyaki.sln",

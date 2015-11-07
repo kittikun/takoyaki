@@ -145,7 +145,7 @@ namespace Takoyaki
         // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770366(v=vs.85).aspx
         if (mode == EFillMode::SOLID)
             return D3D12_FILL_MODE_SOLID;
-         
+
         return D3D12_FILL_MODE_WIREFRAME;
     }
 
@@ -248,9 +248,14 @@ namespace Takoyaki
         return D3D12_LOGIC_OP_CLEAR;
     }
 
-    D3D12_RESOURCE_FLAGS ResourceFlagsToDX(EResourceFlags)
+    D3D12_RESOURCE_FLAGS ResourceFlagsToDX(uint_fast32_t flag)
     {
-        return D3D12_RESOURCE_FLAG_NONE;
+        D3D12_RESOURCE_FLAGS res = D3D12_RESOURCE_FLAG_NONE;
+
+        if (flag & RF_RENDERTARGET)
+            res |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+        return res;
     }
 
     D3D12_STENCIL_OP StencilOpToDX(EStencilOp op)

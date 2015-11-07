@@ -34,9 +34,11 @@ namespace Takoyaki
 
     TextureImpl::~TextureImpl()
     {
-        auto context = context_.lock();
+        if (handle_ != UINT_FAST32_MAX) {
+            auto context = context_.lock();
 
-        context->destroyResource(DX12Context::EResourceType::TEXTURE, handle_);
+            context->destroyResource(DX12Context::EResourceType::TEXTURE, handle_);
+        }
     }
 }
 // namespace Takoyaki

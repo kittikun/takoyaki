@@ -52,7 +52,7 @@ int main(int ac, char** av)
     // we need to add tests before we initialize the framework since they will be initialized at the same time
     framework.setTests(tests);
 
-    Takoyaki::FrameworkDesc desc = {};
+    Takoyaki::FrameworkDesc desc;
 
     desc.type = Takoyaki::EDeviceType::DX12_WIN_32;
     desc.windowHandle = hWnd;

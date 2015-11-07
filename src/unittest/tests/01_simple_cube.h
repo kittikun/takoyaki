@@ -37,7 +37,7 @@ public:
     ~Test01() override = default;
 
     void initialize(Takoyaki::Framework*) override;
-    void render(Takoyaki::Renderer*) override;
+    void render(Takoyaki::Renderer*, uint_fast32_t) override;
     void update(Takoyaki::Renderer*) override;
 
 private:

@@ -42,11 +42,6 @@ namespace Takoyaki
         impl_->drawIndexed(indexCount, startIndex, baseVertex);
     }
 
-    void Command::setDefaultRenderTarget()
-    {
-        impl_->setDefaultRenderTarget();
-    }
-
     void Command::setIndexBuffer(uint_fast32_t handle)
     {
         impl_->setIndexBuffer(handle);
@@ -55,6 +50,11 @@ namespace Takoyaki
     void Command::setPriority(uint_fast32_t priority)
     {
         impl_->setPriority(priority);
+    }
+
+    void Command::setRenderTarget(uint_fast32_t handle)
+    {
+        impl_->setRenderTarget(handle);
     }
 
     void Command::setRootSignature(const std::string& name)

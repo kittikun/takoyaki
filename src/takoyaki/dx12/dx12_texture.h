@@ -47,6 +47,7 @@ namespace Takoyaki
 
         inline bool isReady() const { return resource_.Get() != nullptr; }
         inline Microsoft::WRL::ComPtr<ID3D12Resource>& getCOM() { return resource_; } // for swap chain creation
+        inline D3D12_RESOURCE_STATES getInitialStates() const { return initialState_; }
         inline ID3D12Resource* getResource() { return resource_.Get(); }
 
         //////////////////////////////////////////////////////////////////////////
@@ -58,12 +59,12 @@ namespace Takoyaki
         struct Intermediate
         {
             TextureDesc desc;
-            D3D12_RESOURCE_STATES initialState;
         };
 
         DX12Context* owner_;
         std::unique_ptr<Intermediate> intermediate_;
         Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
         D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle_;
+        D3D12_RESOURCE_STATES initialState_;
     };
 } // namespace Takoyaki

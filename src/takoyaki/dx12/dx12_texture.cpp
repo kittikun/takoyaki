@@ -30,17 +30,18 @@ namespace Takoyaki
 {
     DX12Texture::DX12Texture(DX12Context* owner) noexcept
         : owner_{ owner }
+        , initialState_{ D3D12_RESOURCE_STATE_PRESENT }
     {
+        // for swap chain creation
         cpuHandle_.ptr = ULONG_PTR_MAX;
     }
 
-
     DX12Texture::DX12Texture(DX12Context* owner, const TextureDesc& desc, D3D12_RESOURCE_STATES initialState) noexcept
-        : DX12Texture(owner)
+        : owner_{ owner }
+        , initialState_{ initialState }
     {
         intermediate_.reset(new Intermediate{});
         intermediate_->desc = desc;
-        intermediate_->initialState = initialState;
     }
 
     DX12Texture::DX12Texture(DX12Texture&& other) noexcept
@@ -48,8 +49,9 @@ namespace Takoyaki
         , intermediate_{ std::move(other.intermediate_) }
         , resource_{ std::move(other.resource_) }
         , cpuHandle_{ std::move(other.cpuHandle_) }
+        , initialState_{ other.initialState_ }
     {
-        other.cpuHandle_.ptr =  ULONG_PTR_MAX;
+        other.cpuHandle_.ptr = ULONG_PTR_MAX;
     }
 
     DX12Texture::~DX12Texture()
@@ -107,7 +109,7 @@ namespace Takoyaki
         }
 
         // multi-thread safe, no need to lock
-        device->getDXDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_NONE, &desc, intermediate_->initialState, nullptr, IID_PPV_ARGS(&resource_));
+        device->getDXDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_NONE, &desc, initialState_, nullptr, IID_PPV_ARGS(&resource_));
 
         intermediate_.reset();
     }
@@ -132,5 +134,4 @@ namespace Takoyaki
 
         return cpuHandle_;
     }
-
 } // namespace Takoyaki

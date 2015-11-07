@@ -33,6 +33,7 @@ namespace Takoyaki
 
     ThreadPool::~ThreadPool() noexcept
     {
+        barrier();
         done_ = true;
     }
 

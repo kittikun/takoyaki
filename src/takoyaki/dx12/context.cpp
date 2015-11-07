@@ -34,7 +34,7 @@ namespace Takoyaki
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
 
     DX12Context::DX12Context(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<ThreadPool>& threadPool)
-        : device_ { device }
+        : device_{ device }
         , threadPool_{ threadPool }
         , descHeapRTV_{ device }
         , descHeapSRV_{ device }
@@ -61,10 +61,37 @@ namespace Takoyaki
     {
         // at this stage shouldn't need to lock to access resources anymore
         auto frame = device_->getCurrentFrame();
-        auto defaultRT = false;
+        DX12Texture* rt = nullptr;
+
+        // set a render target
+        if (desc.renderTarget == UINT_FAST32_MAX) {
+            // default one
+            rt = device_->getRenderTarget(frame);
+        } else {
+            // user specified
+            auto found = textures_.find(desc.renderTarget);
+
+            if (found == textures_.end()) {
+                auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find rendertarget \"%1%\"" } % desc.renderTarget;
+
+                throw new std::runtime_error{ boost::str(fmt) };
+            }
+
+            rt = &found->second;
+        }
+
+        D3D12_RESOURCE_BARRIER beforeBarrier;
+
+        beforeBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        beforeBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        beforeBarrier.Transition.pResource = rt->getResource();
+        beforeBarrier.Transition.StateBefore = rt->getInitialStates();
+        beforeBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        beforeBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+        cmd->commands->ResourceBarrier(1, &beforeBarrier);
 
         for (auto descCmd : desc.commands) {
-
             switch (descCmd.first) {
                 case ECommandType::CLEAR_COLOR:
                 {
@@ -72,7 +99,6 @@ namespace Takoyaki
 
                     cmd->commands->ClearRenderTargetView(device_->getRenderTarget(frame)->getRenderTargetView(), glm::value_ptr(color), 0, nullptr);
                     cmd->commands->OMSetRenderTargets(1, &device_->getRenderTarget(frame)->getRenderTargetView(), false, nullptr);
-
                 }
                 break;
 
@@ -102,39 +128,14 @@ namespace Takoyaki
                 case ECommandType::PRIMITIVE_TOPOLOGY:
                 {
                     auto topology = boost::any_cast<ETopology>(descCmd.second);
-                    
+
                     cmd->commands->IASetPrimitiveTopology(TopologyToDX(topology));
-                }
-                break;
-
-                case ECommandType::RENDERTARGET_DEFAULT:
-                {
-                    auto tex = device_->getRenderTarget(frame);
-
-                    if (!tex->isReady()) {
-                        LOGW << "DX12DeviceContext::buildCommand, rendertarget not ready";
-                        return false;
-                    }
-
-                    D3D12_RESOURCE_BARRIER barrier;
-
-                    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-                    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-                    barrier.Transition.pResource = tex->getResource();
-                    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-                    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-                    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-
-                    cmd->commands->ResourceBarrier(1, &barrier);
-
-                    // flag so we transition it back at the end
-                    defaultRT = true;
                 }
                 break;
 
                 case ECommandType::ROOT_SIGNATURE:
                 {
-                    auto name = boost::any_cast<std::string>(descCmd.second);                    
+                    auto name = boost::any_cast<std::string>(descCmd.second);
                     auto found = rootSignatures_.find(name);
 
                     if (found == rootSignatures_.end()) {
@@ -176,7 +177,7 @@ namespace Takoyaki
                 case ECommandType::SCISSOR:
                 {
                     auto scissor = boost::any_cast<glm::uvec4>(descCmd.second);
-                    
+
                     D3D12_RECT rect = { static_cast<LONG>(scissor.x), static_cast<LONG>(scissor.y), static_cast<LONG>(scissor.z), static_cast<LONG>(scissor.w) };
 
                     cmd->commands->RSSetScissorRects(1, &rect);
@@ -211,18 +212,16 @@ namespace Takoyaki
         }
 
         // we need to transition back the render target
-        if (defaultRT) {
-            D3D12_RESOURCE_BARRIER barrier;
+        D3D12_RESOURCE_BARRIER afterBarrier;
 
-            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            barrier.Transition.pResource = device_->getRenderTarget(frame)->getResource();
-            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-            barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+        afterBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        afterBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        afterBarrier.Transition.pResource = rt->getResource();;
+        afterBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        afterBarrier.Transition.StateAfter = rt->getInitialStates();
+        afterBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-            cmd->commands->ResourceBarrier(1, &barrier);
-        }
+        cmd->commands->ResourceBarrier(1, &afterBarrier);
 
         cmd->priority = desc.priority;
         DXCheckThrow(cmd->commands->Close());
@@ -303,7 +302,7 @@ namespace Takoyaki
         auto found = constantBuffers_.find(name);
 
         if (found != constantBuffers_.end())
-            throw new std::runtime_error{"Constant buffers names must be unique"};
+            throw new std::runtime_error{ "Constant buffers names must be unique" };
 
         // Constant buffers must be 256-byte aligned.
         size = (size + 255) & ~255;
@@ -560,7 +559,7 @@ namespace Takoyaki
 
             throw new std::runtime_error{ boost::str(fmt) };
         }
-        
+
         return found->second;
     }
 } // namespace Takoyaki

@@ -27,6 +27,7 @@ namespace Takoyaki
 {
     CommandDesc::CommandDesc()
         : priority{ 0 }
+        , renderTarget{ UINT_FAST32_MAX }
     {
         commands.reserve(16);
     }
@@ -52,19 +53,19 @@ namespace Takoyaki
         renderer->buildCommand(desc_, pipelineState_);
     }
 
-    void CommandImpl::setDefaultRenderTarget()
-    {
-        desc_.commands.push_back(std::make_pair(ECommandType::RENDERTARGET_DEFAULT, boost::any()));
-    }
-
     void CommandImpl::setIndexBuffer(uint_fast32_t handle)
     {
         desc_.commands.push_back(std::make_pair(ECommandType::INDEX_BUFFER, handle));
     }
 
+    void CommandImpl::setRenderTarget(uint_fast32_t handle)
+    {
+        desc_.renderTarget = handle;
+    }
+
     void CommandImpl::setRootSignature(const std::string& name)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE, name)); 
+        desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE, name));
     }
 
     void CommandImpl::setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name)

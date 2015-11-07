@@ -31,7 +31,6 @@
 TestFramework::TestFramework() noexcept
     : takoyaki_{ std::make_unique<Takoyaki::Framework>() }
 {
-
 }
 
 void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
@@ -48,14 +47,17 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
     texDesc.format = Takoyaki::EFormat::B8G8R8A8_UNORM;
     texDesc.width = (uint_fast32_t)desc.windowSize.x;
     texDesc.height = (uint_fast32_t)desc.windowSize.y;
+    texDesc.flags = Takoyaki::RF_RENDERTARGET;
     texDesc.usage = Takoyaki::EUsageType::CPU_READ;
 
     texture_ = renderer_->createTexture(texDesc);
 
-
     // test need to load various resources so better start tasks before main loop
     for (auto& test : tests_)
         test->initialize(takoyaki_.get());
+
+    // make sure initialization commands are done
+    takoyaki_->present();
 }
 
 void TestFramework::loadAsync(const std::wstring& filename)
@@ -106,6 +108,6 @@ void TestFramework::loadAsync(const std::wstring& filename)
 void TestFramework::process()
 {
     tests_[0]->update(renderer_.get());
-    tests_[0]->render(renderer_.get());
+    tests_[0]->render(renderer_.get(), texture_->getHandle());
     takoyaki_->present();
 }

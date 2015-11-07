@@ -55,15 +55,15 @@ void App::initialize(Takoyaki::Framework* framework)
     layout->addInput("POSITION", Takoyaki::EFormat::R32G32B32_FLOAT, 0, 0);
     layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 12, 0);
 
-    // create root signature that will be using the input assembler 
+    // create root signature that will be using the input assembler
     // and only allow the constant buffer to be accessed from the vertex shader
     auto rs = renderer->createRootSignature("SimpleSignature");
     auto rsFlags =
-        Takoyaki::ERootSignatureFlag::RS_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-        Takoyaki::ERootSignatureFlag::RS_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-        Takoyaki::ERootSignatureFlag::RS_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-        Takoyaki::ERootSignatureFlag::RS_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-        Takoyaki::ERootSignatureFlag::RS_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+        Takoyaki::RS_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+        Takoyaki::RS_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+        Takoyaki::RS_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+        Takoyaki::RS_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+        Takoyaki::RS_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
 
     rsCBIndex_ = rs->addDescriptorTable();
     rs->addDescriptorRange(rsCBIndex_, Takoyaki::EDescriptorType::CONSTANT_BUFFER, 1, 0);
@@ -139,7 +139,6 @@ void App::render(Takoyaki::Renderer* renderer)
     cmd->setViewport(viewport_);
     cmd->setScissor(scissor_);
 
-    cmd->setDefaultRenderTarget();
     cmd->clearRenderTarget(glm::vec4{ 0.f, 0.f, 1.f, 1.f });
 
     cmd->setTopology(Takoyaki::ETopology::TRIANGLELIST);

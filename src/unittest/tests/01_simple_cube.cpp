@@ -59,18 +59,18 @@ void Test01::initialize(Takoyaki::Framework* framework)
     // and only allow the constant buffer to be accessed from the vertex shader
     auto rs = renderer->createRootSignature("SimpleSignature");
     auto rsFlags =
-        Takoyaki::ERootSignatureFlag::RS_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-        Takoyaki::ERootSignatureFlag::RS_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-        Takoyaki::ERootSignatureFlag::RS_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-        Takoyaki::ERootSignatureFlag::RS_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-        Takoyaki::ERootSignatureFlag::RS_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+        Takoyaki::RS_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+        Takoyaki::RS_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+        Takoyaki::RS_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+        Takoyaki::RS_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+        Takoyaki::RS_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
 
     rsCBIndex_ = rs->addDescriptorTable();
     rs->addDescriptorRange(rsCBIndex_, Takoyaki::EDescriptorType::CONSTANT_BUFFER, 1, 0);
     rs->setFlags(rsFlags);
 
     // one pipeline state object using the previously created data
-    Takoyaki::PipelineStateDesc psDesc = {};
+    Takoyaki::PipelineStateDesc psDesc;
 
     psDesc.inputLayout = "SimpleVertex";
     psDesc.rootSignature = "SimpleSignature";
@@ -128,7 +128,7 @@ void Test01::initialize(Takoyaki::Framework* framework)
     scissor_ = { 0, 0, static_cast<uint_fast32_t>(size.x), static_cast<uint_fast32_t>(size.y) };
 }
 
-void Test01::render(Takoyaki::Renderer* renderer)
+void Test01::render(Takoyaki::Renderer* renderer, uint_fast32_t rt)
 {
     // Work sent to GPU actually hTest01ens here
     auto cmd = renderer->createCommand("SimpleState");
@@ -139,7 +139,7 @@ void Test01::render(Takoyaki::Renderer* renderer)
     cmd->setViewport(viewport_);
     cmd->setScissor(scissor_);
 
-    cmd->setDefaultRenderTarget();
+    cmd->setRenderTarget(rt);
     cmd->clearRenderTarget(glm::vec4{ 0.f, 0.f, 1.f, 1.f });
 
     cmd->setTopology(Takoyaki::ETopology::TRIANGLELIST);

@@ -58,9 +58,8 @@ namespace Takoyaki
         void setViewport(const glm::vec4& viewport);
 
         // render target related
-        void setDefaultRenderTarget();
+        void setRenderTarget(uint_fast32_t handle);
         void clearRenderTarget(const glm::vec4& color);
-        
 
     private:
         std::unique_ptr<CommandImpl> impl_;

@@ -142,23 +142,24 @@ namespace Takoyaki
     // will add as needed
     enum EResourceFlags
     {
-        RF_NONE = 0
+        RF_NONE = 0,
+        RF_RENDERTARGET = 0x1
     };
 
     // just mirror dx12 for now
     enum ERootSignatureFlag
     {
-        RS_FLAG_NONE                                = 0,
-        RS_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT  = 0x1,
-        RS_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS      = 0x2,
-        RS_FLAG_DENY_HULL_SHADER_ROOT_ACCESS        = 0x4,
-        RS_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS      = 0x8,
-        RS_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS    = 0x10,
-        RS_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS       = 0x20,
-        RS_FLAG_ALLOW_STREAM_OUTPUT                 = 0x40
+        RS_FLAG_NONE = 0,
+        RS_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT = 0x1,
+        RS_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS = 0x2,
+        RS_FLAG_DENY_HULL_SHADER_ROOT_ACCESS = 0x4,
+        RS_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS = 0x8,
+        RS_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS = 0x10,
+        RS_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS = 0x20,
+        RS_FLAG_ALLOW_STREAM_OUTPUT = 0x40
     };
 
-// undef the one from math.h
+    // undef the one from math.h
 #undef DOMAIN
 
     enum class EShaderType
@@ -334,7 +335,7 @@ namespace Takoyaki
         TextureDesc() noexcept;
 
         EFormat format;
-        EResourceFlags flags;
+        uint_fast32_t flags;
         EUsageType usage;
         uint_fast32_t arraySize;
         uint_fast32_t depth;

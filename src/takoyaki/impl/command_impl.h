@@ -37,7 +37,6 @@ namespace Takoyaki
         CLEAR_COLOR,
         DRAW_INDEXED,
         INDEX_BUFFER,
-        RENDERTARGET_DEFAULT,
         ROOT_SIGNATURE,
         ROOT_SIGNATURE_CONSTANT_BUFFER,
         PRIMITIVE_TOPOLOGY,
@@ -53,6 +52,7 @@ namespace Takoyaki
 
         CommandDesc();
         uint_fast32_t priority;
+        uint_fast32_t renderTarget;
         std::vector<std::pair<ECommandType, boost::any>> commands;
     };
 
@@ -69,9 +69,9 @@ namespace Takoyaki
 
         void clearRenderTarget(const glm::vec4&);
         void drawIndexed(uint_fast32_t, uint_fast32_t, int_fast32_t);
-        void setDefaultRenderTarget();
         void setIndexBuffer(uint_fast32_t);
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }
+        void setRenderTarget(uint_fast32_t);
         void setRootSignature(const std::string&);
         void setRootSignatureConstantBuffer(uint_fast32_t, const std::string&);
         void setScissor(const glm::uvec4&);

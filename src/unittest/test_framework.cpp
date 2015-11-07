@@ -21,6 +21,7 @@
 #include "test_framework.h"
 
 #include <takoyaki.h>
+#include <boost/crc.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
@@ -47,10 +48,11 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
     texDesc.format = Takoyaki::EFormat::B8G8R8A8_UNORM;
     texDesc.width = (uint_fast32_t)desc.windowSize.x;
     texDesc.height = (uint_fast32_t)desc.windowSize.y;
-    texDesc.flags = Takoyaki::RF_RENDERTARGET;
     texDesc.usage = Takoyaki::EUsageType::CPU_READ;
 
-    texture_ = renderer_->createTexture(texDesc);
+    tex_ = renderer_->createTexture(texDesc);
+
+    texCopy_.resize(tex_->getSizeByte());
 
     // test need to load various resources so better start tasks before main loop
     for (auto& test : tests_)
@@ -108,6 +110,14 @@ void TestFramework::loadAsync(const std::wstring& filename)
 void TestFramework::process()
 {
     tests_[0]->update(renderer_.get());
-    tests_[0]->render(renderer_.get(), texture_->getHandle());
+    tests_[0]->render(renderer_.get(), tex_->getHandle());
     takoyaki_->present();
+
+    tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
+
+    boost::crc_32_type result;
+    result.process_bytes(&texCopy_.front(), texCopy_.size());
+    auto res = result.checksum();
+
+    int i = 0;
 }

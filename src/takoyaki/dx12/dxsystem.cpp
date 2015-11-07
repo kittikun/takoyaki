@@ -51,22 +51,22 @@ namespace Takoyaki
             throw new std::runtime_error{ "UpdateSubresources, destination description invalid" };
 
         uint8_t* data;
-        HRESULT hr = params.intermediate->Map(0, NULL, reinterpret_cast<void**>(&data));
+        HRESULT hr = params.intermediate->Map(0, nullptr, reinterpret_cast<void**>(&data));
 
         if (FAILED(hr))
             throw new std::runtime_error{ "Failed to map intermediate resource" };
 
         for (uint_fast32_t i = 0; i < params.numSubResource; ++i) {
             D3D12_MEMCPY_DEST dstData;
-            
+
             dstData.pData = data + layouts[i].Offset;
             dstData.RowPitch = layouts[i].Footprint.RowPitch;
             dstData.SlicePitch = layouts[i].Footprint.RowPitch * numRows[i];
-            
+
             MemcpySubresource(&dstData, &params.srcData[i], numRows[i], rowSizesInBytes[i], layouts[i].Footprint.Depth);
         }
 
-        params.intermediate->Unmap(0, NULL);
+        params.intermediate->Unmap(0, nullptr);
 
         if (destinationDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER) {
             params.cmdList->CopyBufferRegion(params.destinationResource, 0, params.intermediate, layouts[0].Offset, layouts[0].Footprint.Width);

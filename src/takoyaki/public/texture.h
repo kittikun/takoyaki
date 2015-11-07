@@ -37,6 +37,9 @@ namespace Takoyaki
         ~Texture() noexcept;
 
         uint_fast32_t getHandle() const;
+        uint_fast64_t getSizeByte() const;
+
+        void read(uint8_t* dst, uint_fast32_t size) const;
 
     private:
         std::unique_ptr<TextureImpl> impl_;

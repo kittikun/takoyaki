@@ -66,10 +66,17 @@ namespace Takoyaki
         D3D12_HEAP_PROPERTIES prop;
         const TextureDesc& texDesc = intermediate_->desc;
 
-        prop.Type = UsageTypeToDX(texDesc.usage);
+        // default values let the drivers decided what is best
+        D3D12_CPU_PAGE_PROPERTY cpu = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+        D3D12_TEXTURE_LAYOUT layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
-        // let the driver decide about those properties
-        prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+        if (texDesc.usage == EUsageType::CPU_READ) {
+            //cpu = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
+            //layout = D3D12_TEXTURE_LAYOUT_64KB_STANDARD_SWIZZLE;
+        }
+
+        prop.Type = UsageTypeToDX(texDesc.usage);
+        prop.CPUPageProperty = cpu;
         prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
 
         // no multi-gpu support for now
@@ -83,9 +90,7 @@ namespace Takoyaki
         desc.Flags = ResourceFlagsToDX(texDesc.flags);
         desc.Format = FormatToDX(texDesc.format);
         desc.MipLevels = texDesc.mipmaps;
-
-        // let the drive choose the best layout
-        desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+        desc.Layout = layout;
 
         // no MSAA for now
         desc.SampleDesc.Count = 1;
@@ -133,5 +138,31 @@ namespace Takoyaki
         }
 
         return cpuHandle_;
+    }
+
+    uint_fast64_t DX12Texture::getSizeByte() const
+    {
+        auto desc = resource_->GetDesc();
+        uint_fast64_t size = 0;
+        ID3D12Device* pDevice;
+
+        resource_->GetDevice(__uuidof(*pDevice), reinterpret_cast<void**>(&pDevice));
+        pDevice->GetCopyableFootprints(&desc, 0, 1, 0, nullptr, nullptr, nullptr, &size);
+        pDevice->Release();
+
+        return size;
+    }
+
+    void DX12Texture::read(uint8_t* dest, uint_fast32_t size) const
+    {
+        auto desc = resource_->GetDesc();
+        uint_fast64_t rowSize = 0;
+        ID3D12Device* pDevice;
+
+        resource_->GetDevice(__uuidof(*pDevice), reinterpret_cast<void**>(&pDevice));
+        pDevice->GetCopyableFootprints(&desc, 0, 1, 0, nullptr, nullptr, &rowSize, nullptr);
+        pDevice->Release();
+
+        resource_->ReadFromSubresource(dest, rowSize, size, 0, nullptr);
     }
 } // namespace Takoyaki

@@ -29,7 +29,6 @@ namespace Takoyaki
         , texture_{ texture }
         , handle_{ handle }
     {
-
     }
 
     TextureImpl::~TextureImpl()
@@ -39,6 +38,16 @@ namespace Takoyaki
 
             context->destroyResource(DX12Context::EResourceType::TEXTURE, handle_);
         }
+    }
+
+    uint_fast64_t TextureImpl::getSizeByte() const
+    {
+        return texture_.getSizeByte();
+    }
+
+    void TextureImpl::read(uint8_t* dst, uint_fast32_t size) const
+    {
+        texture_.read(dst, size);
     }
 }
 // namespace Takoyaki

@@ -36,5 +36,14 @@ namespace Takoyaki
         return impl_->getHandle();
     }
 
+    uint_fast64_t Texture::getSizeByte() const
+    {
+        return impl_->getSizeByte();
+    }
+
+    void Texture::read(uint8_t* dst, uint_fast32_t size) const
+    {
+        impl_->read(dst, size);
+    }
 }
 // namespace Takoyaki

@@ -45,6 +45,8 @@ public:
 private:
     std::unique_ptr<Takoyaki::Framework> takoyaki_;
     std::unique_ptr<Takoyaki::Renderer> renderer_;
-    std::unique_ptr<Takoyaki::Texture> texture_;
     std::vector<std::shared_ptr<Test>> tests_;
+
+    std::vector<uint8_t> texCopy_;
+    std::unique_ptr<Takoyaki::Texture> tex_;
 };

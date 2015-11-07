@@ -51,9 +51,15 @@ namespace Takoyaki
         inline ID3D12Resource* getResource() { return resource_.Get(); }
 
         //////////////////////////////////////////////////////////////////////////
-        // Internal & External
+        // Internal & External:
 
         const D3D12_CPU_DESCRIPTOR_HANDLE& getRenderTargetView();
+
+        //////////////////////////////////////////////////////////////////////////
+        // External:
+        void read(uint8_t*, uint_fast32_t size) const;
+
+        uint_fast64_t getSizeByte() const;
 
     private:
         struct Intermediate

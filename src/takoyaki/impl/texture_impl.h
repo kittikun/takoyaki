@@ -36,6 +36,9 @@ namespace Takoyaki
         ~TextureImpl();
 
         inline uint_fast32_t getHandle() const { return handle_; }
+        uint_fast64_t getSizeByte() const;
+
+        void read(uint8_t*, uint_fast32_t) const;
 
     private:
         // must own pointer to context for destruction

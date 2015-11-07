@@ -64,7 +64,7 @@ namespace Takoyaki
             DX12WorkerDesc workerDesc;
 
             workerDesc.context = context_;
-            workerDesc.device = device_;
+            workerDesc.device = device_.get();
             workerDesc.threadPool = threadPool_.get();
             workerDesc.numFrames = desc.bufferCount;
 
@@ -87,6 +87,9 @@ namespace Takoyaki
 
     void FrameworkImpl::present()
     {
+        // TODO: this design is preventing the creation of multiples frame before they can me rendered
+        // there is not point in having a multi-thread command generation otherwise.
+
         // prevent new tasks from being created while swapping queues
         {
             auto rendererLock = renderer_->getLock();
@@ -97,11 +100,6 @@ namespace Takoyaki
         threadPool_->submitGPUCommandLists();
         device_->executeCommandList();
         device_->present();
-    }
-
-    void FrameworkImpl::terminate()
-    {
-
     }
 
     void FrameworkImpl::setWindowSize(const glm::vec2& size)

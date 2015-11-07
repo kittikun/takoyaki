@@ -34,7 +34,9 @@ namespace Takoyaki
     class InputLayoutImpl;
     class DX12Context;
     class DX12Device;
+    class DX12Texture;
     class RootSignatureImpl;
+    class TextureImpl;
     class ThreadPool;
     class VertexBufferImpl;
     struct PipelineStateDesc;
@@ -61,6 +63,7 @@ namespace Takoyaki
         std::unique_ptr<IndexBufferImpl> createIndexBuffer(uint8_t*, EFormat, uint_fast32_t);
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
         std::unique_ptr<RootSignatureImpl> createRootSignature(const std::string&);
+        std::unique_ptr<TextureImpl> createTexture(const TextureDesc&);
         std::unique_ptr<VertexBufferImpl> createVertexBuffer(uint8_t*, uint_fast32_t, uint_fast32_t);
 
         void createPipelineState(const std::string&, const PipelineStateDesc&);

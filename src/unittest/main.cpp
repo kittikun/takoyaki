@@ -21,12 +21,10 @@
 #include "main.h"
 
 #include <iostream>
-#include <memory>
 #include <takoyaki.h>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/program_options.hpp>
 
+#include "test_framework.h"
 #include "tests/01_simple_cube.h"
 
 int main(int ac, char** av)
@@ -46,55 +44,26 @@ int main(int ac, char** av)
     // create window
     auto hWnd = MakeWindow(ret.second);
 
-    // takoyaki
-    std::unique_ptr<Takoyaki::Framework> framework = std::make_unique<Takoyaki::Framework>();
-    Takoyaki::FrameworkDesc desc = {};
+    TestFramework framework;
+    std::vector<std::shared_ptr<Test>> tests {
+        std::make_shared<Test01>()
+    };
+
+    // we need to add tests before we initialize the framework since they will be initialized at the same time
+    framework.setTests(tests);
+
+    Takoyaki::FrameworkDesc desc;
 
     desc.type = Takoyaki::EDeviceType::DX12_WIN_32;
     desc.windowHandle = hWnd;
     desc.windowSize.x = (float)ret.second.width;
     desc.windowSize.y = (float)ret.second.height;
-    desc.loadAsyncFunc = std::bind<void>([&framework](const std::wstring& filename) {
-        // read file lambda
-        // TODO: make async for real
-        auto basePath(boost::filesystem::current_path());
-
-        if (IsDebuggerPresent())
-            basePath = boost::filesystem::system_complete("..");
-
-        auto path = basePath / filename;
-        boost::filesystem::ifstream stream;
-        std::vector<uint8_t> res;
-
-        stream.open(path);
-        
-        if (stream) {
-            // get length of file
-            stream.seekg(0, stream.end);
-
-            int length = (int)stream.tellg();
-
-            stream.seekg(0, stream.beg);
-            res.resize(length);
-            stream.read(reinterpret_cast<char*>(&res.front()), length);
-            stream.close();
-
-            framework->loadAsyncFileResult(filename, res);
-        } else {
-            throw new std::runtime_error("Could not open file");
-        }
-    }, std::placeholders::_1);
-
-    framework->initialize(desc);
+    desc.numWorkerThreads = ret.second.numThreads;
+    
+    framework.initialize(desc);
 
     // main loop
     MSG msg;
-    auto tests = GetTests();
-    auto renderer = framework->getRenderer();
-
-    // test need to load various resources so better start tasks before main loop
-    for (auto& test : tests)
-        test->initialize(framework.get());
 
     while (true) {
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -105,20 +74,10 @@ int main(int ac, char** av)
         if (msg.message == WM_QUIT)
             break;
 
-        tests[0]->update(renderer.get());
-        tests[0]->render(renderer.get());
-        framework->present();
+        framework.process();
     }
+
     return 0;
-}
-
-std::vector<std::unique_ptr<ITest>> GetTests()
-{
-    std::vector<std::unique_ptr<ITest>> list;
-
-    list.push_back(std::make_unique<Test01>());
-
-    return list;
 }
 
 HWND MakeWindow(const Options& options)
@@ -151,6 +110,11 @@ HWND MakeWindow(const Options& options)
     ShowWindow(hWnd, SW_SHOWDEFAULT);
 
     return hWnd;
+}
+
+void LoadAsync(const std::wstring& filename)
+{
+
 }
 
 std::pair<bool, Options> ParseOptions(int ac, char** av)

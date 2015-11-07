@@ -55,7 +55,6 @@ namespace Takoyaki
         , intermediate_{ std::move(other.intermediate_) }
         , view_{ std::move(other.view_) }
     {
-
     }
 
     bool DX12IndexBuffer::create(void* command, void* dev)
@@ -92,14 +91,7 @@ namespace Takoyaki
         UpdateSubresourcesHeapAlloc(desc);
 
         // on the gpu, copy data from upload buffer to vertex buffer
-        D3D12_RESOURCE_BARRIER barrier;
-
-        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        barrier.Transition.pResource = indexBuffer_->getResource();
-        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+        D3D12_RESOURCE_BARRIER barrier = TransitionBarrier(indexBuffer_->getResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
         cmd->commands->ResourceBarrier(1, &barrier);
         DXCheckThrow(cmd->commands->Close());

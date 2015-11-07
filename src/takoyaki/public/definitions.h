@@ -139,20 +139,27 @@ namespace Takoyaki
         OR_INVERTED
     };
 
+    // will add as needed
+    enum EResourceFlags
+    {
+        RF_NONE = 0,
+        RF_RENDERTARGET = 0x1
+    };
+
     // just mirror dx12 for now
     enum ERootSignatureFlag
     {
-        NONE                                = 0,
-        ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT  = 0x1,
-        DENY_VERTEX_SHADER_ROOT_ACCESS      = 0x2,
-        DENY_HULL_SHADER_ROOT_ACCESS        = 0x4,
-        DENY_DOMAIN_SHADER_ROOT_ACCESS      = 0x8,
-        DENY_GEOMETRY_SHADER_ROOT_ACCESS    = 0x10,
-        DENY_PIXEL_SHADER_ROOT_ACCESS       = 0x20,
-        ALLOW_STREAM_OUTPUT                 = 0x40
+        RS_FLAG_NONE = 0,
+        RS_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT = 0x1,
+        RS_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS = 0x2,
+        RS_FLAG_DENY_HULL_SHADER_ROOT_ACCESS = 0x4,
+        RS_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS = 0x8,
+        RS_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS = 0x10,
+        RS_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS = 0x20,
+        RS_FLAG_ALLOW_STREAM_OUTPUT = 0x40
     };
 
-// undef the one from math.h
+    // undef the one from math.h
 #undef DOMAIN
 
     enum class EShaderType
@@ -189,6 +196,13 @@ namespace Takoyaki
         LINE,
         TRIANGLE,
         PATCH
+    };
+
+    enum class EUsageType
+    {
+        GPU_ONLY,   // Best performance but cannot be accessed from cpu
+        CPU_WRITE,  // Optimized for cpu write once, gpu read once operations
+        CPU_READ    // Optimized for repeated reads from the cpu
     };
 
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770338(v=vs.85).aspx
@@ -307,10 +321,26 @@ namespace Takoyaki
 
     struct ShaderDesc
     {
+        ShaderDesc() noexcept;
+
         std::string name;
         EShaderType type;
         std::string path;
         std::string entry;
         bool debug;
+    };
+
+    struct TextureDesc
+    {
+        TextureDesc() noexcept;
+
+        EFormat format;
+        uint_fast32_t flags;
+        EUsageType usage;
+        uint_fast32_t arraySize;
+        uint_fast32_t depth;
+        uint_fast32_t height;
+        uint_fast32_t mipmaps;
+        uint_fast32_t width;
     };
 } // namespace Takoyaki

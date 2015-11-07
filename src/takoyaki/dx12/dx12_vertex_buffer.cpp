@@ -36,7 +36,7 @@ namespace Takoyaki
         , intermediate_{ std::make_unique<Intermediate>() }
     {
         // we cannot guarantee that data will still be valid so make a copy of data
-        // TODO: UpdateSubresourcesHeapAlloc will also make a copy, so merge them 
+        // TODO: UpdateSubresourcesHeapAlloc will also make a copy, so merge them
         intermediate_->data.resize(sizeByte);
 
         memcpy_s(&intermediate_->data.front(), intermediate_->data.size(), vertices, sizeByte);
@@ -45,7 +45,7 @@ namespace Takoyaki
         intermediate_->dataDesc.RowPitch = sizeByte;
         intermediate_->dataDesc.SlicePitch = sizeByte;
         intermediate_->id = id;
-       
+
         view_.StrideInBytes = stride;
         view_.SizeInBytes = sizeByte;
     }
@@ -56,14 +56,12 @@ namespace Takoyaki
         , intermediate_{ std::move(other.intermediate_) }
         , view_{ std::move(other.view_) }
     {
-
     }
 
     bool DX12VertexBuffer::create(void* command, void* dev)
     {
         auto device = static_cast<DX12Device*>(dev);
         auto cmd = static_cast<TaskCommand*>(command);
-        //auto res = static_cast<CopyWorker::Result*>(r);
 
         vertexBuffer_->create(device);
         uploadBuffer_->create(device);
@@ -73,7 +71,7 @@ namespace Takoyaki
 
         // set a name for debug purposes
         auto fmt = boost::wformat{ L"Vertex Buffer %1%" } % intermediate_->id;
-        
+
         vertexBuffer_->getResource()->SetName(boost::str(fmt).c_str());
         fmt = boost::wformat{ L"Vertex Buffer %1% Intermediate" } % intermediate_->id;
         uploadBuffer_->getResource()->SetName(boost::str(fmt).c_str());
@@ -93,18 +91,10 @@ namespace Takoyaki
         UpdateSubresourcesHeapAlloc(desc);
 
         // on the gpu, copy data from upload buffer to vertex buffer
-        D3D12_RESOURCE_BARRIER barrier;
-
-        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        barrier.Transition.pResource = vertexBuffer_->getResource();
-        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+        D3D12_RESOURCE_BARRIER barrier = TransitionBarrier(vertexBuffer_->getResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
         cmd->commands->ResourceBarrier(1, &barrier);
         DXCheckThrow(cmd->commands->Close());
-        
 
         return true;
     }

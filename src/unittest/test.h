@@ -20,30 +20,14 @@
 
 #pragma once
 
-#include "../test.h"
+#include <fwd.h>
+#include <stdint.h>
 
-#include <memory>
-#include <glm/glm.hpp>
-
-class Test01 : public Test
+class Test
 {
-    Test01(const Test01&) = delete;
-    Test01& operator=(const Test01&) = delete;
-    Test01(Test01&&) = delete;
-    Test01& operator=(Test01&&) = delete;
-
 public:
-    Test01() = default;
-    ~Test01() override = default;
-
-    void initialize(Takoyaki::Framework*) override;
-    void render(Takoyaki::Renderer*, uint_fast32_t) override;
-    void update(Takoyaki::Renderer*) override;
-
-private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-    uint_fast32_t rsCBIndex_;
-    glm::vec4 viewport_;
-    glm::uvec4 scissor_;
+    virtual ~Test() = default;
+    virtual void initialize(Takoyaki::Framework*) = 0;
+    virtual void render(Takoyaki::Renderer*, uint_fast32_t) = 0;
+    virtual void update(Takoyaki::Renderer*) = 0;
 };

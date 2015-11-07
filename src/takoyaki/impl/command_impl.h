@@ -35,15 +35,15 @@ namespace Takoyaki
     enum class ECommandType
     {
         CLEAR_COLOR,
+        COPY_RENDERTARGET,
         DRAW_INDEXED,
-        INDEX_BUFFER,
-        RENDERTARGET_DEFAULT,
-        ROOT_SIGNATURE,
-        ROOT_SIGNATURE_CONSTANT_BUFFER,
-        PRIMITIVE_TOPOLOGY,
-        SCISSOR,
-        VERTEX_BUFFER,
-        VIEWPORT
+        SET_INDEX_BUFFER,
+        SET_ROOT_SIGNATURE,
+        SET_ROOT_SIGNATURE_CONSTANT_BUFFER,
+        SET_PRIMITIVE_TOPOLOGY,
+        SET_SCISSOR,
+        SET_VERTEX_BUFFER,
+        SET_VIEWPORT
     };
 
     struct CommandDesc
@@ -53,6 +53,7 @@ namespace Takoyaki
 
         CommandDesc();
         uint_fast32_t priority;
+        uint_fast32_t renderTarget;
         std::vector<std::pair<ECommandType, boost::any>> commands;
     };
 
@@ -65,13 +66,14 @@ namespace Takoyaki
 
     public:
         CommandImpl(const std::shared_ptr<RendererImpl>&, const std::string&) noexcept;
-        ~CommandImpl() = default;
+        ~CommandImpl();
 
         void clearRenderTarget(const glm::vec4&);
+        void copyRenderTargetToTexture(uint_fast32_t);
         void drawIndexed(uint_fast32_t, uint_fast32_t, int_fast32_t);
-        void setDefaultRenderTarget();
         void setIndexBuffer(uint_fast32_t);
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }
+        void setRenderTarget(uint_fast32_t);
         void setRootSignature(const std::string&);
         void setRootSignatureConstantBuffer(uint_fast32_t, const std::string&);
         void setScissor(const glm::uvec4&);

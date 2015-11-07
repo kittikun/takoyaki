@@ -201,8 +201,9 @@ namespace Takoyaki
 
         for (uint_fast32_t i = 0; i < bufferCount_; ++i) {
             // check if we are re-creating because of a window property change
-            if (renderTargets_.size() < bufferCount_)
-                context->createTexture(i);
+            if (renderTargets_.size() < bufferCount_) {
+                context->createSwapchainTexture(i);
+            }
 
             auto& tex = context->getTexture(i);
             auto& com = tex.getCOM();
@@ -301,7 +302,7 @@ namespace Takoyaki
         // frames that will never be displayed to the screen.
         auto res = swapChain_->Present(1, 0);
 
-        // If the device was removed either by a disconnection or a driver upgrade, we 
+        // If the device was removed either by a disconnection or a driver upgrade, we
         // must recreate all device resources.
         if (res == DXGI_ERROR_DEVICE_REMOVED || res == DXGI_ERROR_DEVICE_RESET) {
             // TODO: Apparently this can only happen for on mobile devices
@@ -331,7 +332,6 @@ namespace Takoyaki
 
     void DX12Device::setWindowSize(const glm::vec2& value)
     {
-
         windowSize_ = value;
         createSwapChain();
     }
@@ -377,7 +377,6 @@ namespace Takoyaki
         if ((previousAdapterLuid.LowPart != currentDesc.AdapterLuid.LowPart) ||
             (previousAdapterLuid.HighPart != currentDesc.AdapterLuid.HighPart) ||
             (D3DDevice_->GetDeviceRemovedReason() < 0)) {
-            
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
             D3DDevice_.Reset();

@@ -42,6 +42,20 @@ namespace Takoyaki
         }
     }
 
+    D3D12_RESOURCE_BARRIER TransitionBarrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+    {
+        D3D12_RESOURCE_BARRIER res;
+
+        res.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        res.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        res.Transition.pResource = resource;
+        res.Transition.StateBefore = before;
+        res.Transition.StateAfter = after;
+        res.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+        return res;
+    }
+
     //////////////////////////////////////////////////////////////////////////
     // Enum conversions
     //////////////////////////////////////////////////////////////////////////
@@ -145,7 +159,7 @@ namespace Takoyaki
         // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770366(v=vs.85).aspx
         if (mode == EFillMode::SOLID)
             return D3D12_FILL_MODE_SOLID;
-         
+
         return D3D12_FILL_MODE_WIREFRAME;
     }
 
@@ -248,6 +262,16 @@ namespace Takoyaki
         return D3D12_LOGIC_OP_CLEAR;
     }
 
+    D3D12_RESOURCE_FLAGS ResourceFlagsToDX(uint_fast32_t flag)
+    {
+        D3D12_RESOURCE_FLAGS res = D3D12_RESOURCE_FLAG_NONE;
+
+        if (flag & RF_RENDERTARGET)
+            res |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+        return res;
+    }
+
     D3D12_STENCIL_OP StencilOpToDX(EStencilOp op)
     {
         // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770409(v=vs.85).aspx
@@ -297,6 +321,19 @@ namespace Takoyaki
         }
 
         return D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED;
+    }
+
+    D3D12_HEAP_TYPE UsageTypeToDX(EUsageType type)
+    {
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770374(v=vs.85).aspx
+        switch (type) {
+            case EUsageType::CPU_READ:
+                return D3D12_HEAP_TYPE_READBACK;
+            case EUsageType::CPU_WRITE:
+                return D3D12_HEAP_TYPE_UPLOAD;
+        }
+
+        return D3D12_HEAP_TYPE_DEFAULT;
     }
 
     //////////////////////////////////////////////////////////////////////////

@@ -28,8 +28,8 @@
 namespace Takoyaki
 {
     DX12Worker::DX12Worker(const DX12WorkerDesc& desc)
-        : context_(std::move(desc.context))
-        , device_(std::move(desc.device))
+        : context_(desc.context)
+        , device_(desc.device)
         , threadPool_{ desc.threadPool }
         , idle_{ false }
     {
@@ -88,7 +88,7 @@ namespace Takoyaki
                     DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frame].Get(), ps, IID_PPV_ARGS(&cmd.commands)));
                 }
 
-                if (gpuCmd.second(&cmd, device_.get())) {
+                if (gpuCmd.second(&cmd, device_)) {
                     commandList_.push_back(std::move(cmd));
                 } else {
                     // something went wrong, cancel current command creation

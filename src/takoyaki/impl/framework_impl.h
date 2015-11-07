@@ -46,7 +46,6 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc&);
         void present();
-        void terminate();
         void validateDevice() const;
 
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
@@ -62,12 +61,10 @@ namespace Takoyaki
 
     private:
         IO io_;
-        std::shared_ptr<DX12Device> device_;
+        std::shared_ptr<ThreadPool> threadPool_;
         std::shared_ptr<DX12Context> context_;
         std::shared_ptr<RendererImpl> renderer_;
-        std::shared_ptr<ThreadPool> threadPool_;
+        std::shared_ptr<DX12Device> device_;
         bool resetDevice_;
     };
-
 } // namespace Takoyaki
-

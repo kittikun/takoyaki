@@ -52,6 +52,7 @@
     <ClCompile Include="..\src\takoyaki\impl\pipeline_state_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\renderer_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\root_signature_impl.cpp" />
+    <ClCompile Include="..\src\takoyaki\impl\texture_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\vertex_buffer_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\io.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">
@@ -68,6 +69,7 @@
     <ClCompile Include="..\src\takoyaki\public\pipeline_state.cpp" />
     <ClCompile Include="..\src\takoyaki\public\renderer.cpp" />
     <ClCompile Include="..\src\takoyaki\public\root_signature.cpp" />
+    <ClCompile Include="..\src\takoyaki\public\texture.cpp" />
     <ClCompile Include="..\src\takoyaki\public\vertex_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\thread_pool.cpp" />
     <ClCompile Include="..\src\takoyaki\utility\log.cpp" />
@@ -99,6 +101,7 @@
     <ClInclude Include="..\src\takoyaki\impl\pipeline_state_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\renderer_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\root_signature_impl.h" />
+    <ClInclude Include="..\src\takoyaki\impl\texture_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\vertex_buffer_impl.h" />
     <ClInclude Include="..\src\takoyaki\io.h" />
     <ClInclude Include="..\src\takoyaki\pch.h" />
@@ -114,6 +117,7 @@
     <ClInclude Include="..\src\takoyaki\public\renderer.h" />
     <ClInclude Include="..\src\takoyaki\public\root_signature.h" />
     <ClInclude Include="..\src\takoyaki\public\takoyaki.h" />
+    <ClInclude Include="..\src\takoyaki\public\texture.h" />
     <ClInclude Include="..\src\takoyaki\public\vertex_buffer.h" />
     <ClInclude Include="..\src\takoyaki\rwlock_map.h" />
     <ClInclude Include="..\src\takoyaki\thread_pool.h" />

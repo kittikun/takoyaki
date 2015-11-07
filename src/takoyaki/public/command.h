@@ -41,6 +41,9 @@ namespace Takoyaki
 
         void setPriority(uint_fast32_t priority);
 
+        // copy
+        void copyRenderTargetToTexture(uint_fast32_t destTex);
+
         // draw commands
         void drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex);
 
@@ -58,9 +61,8 @@ namespace Takoyaki
         void setViewport(const glm::vec4& viewport);
 
         // render target related
-        void setDefaultRenderTarget();
+        void setRenderTarget(uint_fast32_t handle);
         void clearRenderTarget(const glm::vec4& color);
-        
 
     private:
         std::unique_ptr<CommandImpl> impl_;

@@ -16,51 +16,33 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
 #pragma once
 
 #include <memory>
 
-#include "dxcommon.h"
-#include "../thread_pool.h"
-
 namespace Takoyaki
 {
-    class DX12Context;
-    class DX12Device;
-    class ThreadPool;
+    class TextureImpl;
 
-    struct DX12WorkerDesc
+    class Texture
     {
-        std::shared_ptr<DX12Context> context;
-        DX12Device* device;
-        ThreadPool* threadPool;
-        uint_fast32_t numFrames;
-    };
-
-    class DX12Worker : public ThreadPool::IWorker
-    {
-        DX12Worker(const DX12Worker&) = delete;
-        DX12Worker& operator=(const DX12Worker&) = delete;
-        DX12Worker(DX12Worker&&) noexcept;
-        DX12Worker& operator=(DX12Worker&&) = delete;
+        Texture(const Texture&) = delete;
+        Texture& operator=(const Texture&) = delete;
+        Texture(Texture&&) = delete;
+        Texture& operator=(Texture&&) = delete;
 
     public:
-        DX12Worker(const DX12WorkerDesc&);
-        ~DX12Worker() = default;
+        explicit Texture(std::unique_ptr<TextureImpl>) noexcept;
+        ~Texture() noexcept;
 
-        void clear() override;
-        inline bool isIdle() override { return idle_.load(); }
-        void main() override;
-        void submitCommandList() override;
+        uint_fast32_t getHandle() const;
+        uint_fast64_t getSizeByte() const;
+
+        void read(uint8_t* dst, uint_fast32_t size) const;
 
     private:
-        ThreadPool* threadPool_;
-        std::shared_ptr<DX12Context> context_;
-        DX12Device* device_;
-        std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
-        std::vector<TaskCommand> commandList_;
-        std::atomic<bool> idle_;
+        std::unique_ptr<TextureImpl> impl_;
     };
-} // namespace Takoyaki
+}
+// namespace Takoyaki

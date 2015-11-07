@@ -27,6 +27,7 @@ namespace Takoyaki
 {
     CommandDesc::CommandDesc()
         : priority{ 0 }
+        , renderTarget{ UINT_FAST32_MAX }
     {
         commands.reserve(16);
     }
@@ -37,59 +38,66 @@ namespace Takoyaki
     {
     }
 
+    CommandImpl::~CommandImpl()
+    {
+        auto renderer = renderer_.lock();
+
+        renderer->buildCommand(desc_, pipelineState_);
+    }
+
     void CommandImpl::clearRenderTarget(const glm::vec4& color)
     {
         desc_.commands.push_back(std::make_pair(ECommandType::CLEAR_COLOR, color));
     }
 
-    void CommandImpl::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)
+    void CommandImpl::copyRenderTargetToTexture(uint_fast32_t destTex)
     {
-        // TODO: move this lock to present
-        auto renderer = renderer_.lock();
-
-        desc_.commands.push_back(std::make_pair(ECommandType::DRAW_INDEXED, std::make_tuple(indexCount, startIndex, baseVertex)));
-
-        renderer->buildCommand(desc_, pipelineState_);
+        desc_.commands.push_back(std::make_pair(ECommandType::COPY_RENDERTARGET, destTex));
     }
 
-    void CommandImpl::setDefaultRenderTarget()
+    void CommandImpl::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::RENDERTARGET_DEFAULT, boost::any()));
+        desc_.commands.push_back(std::make_pair(ECommandType::DRAW_INDEXED, std::make_tuple(indexCount, startIndex, baseVertex)));
     }
 
     void CommandImpl::setIndexBuffer(uint_fast32_t handle)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::INDEX_BUFFER, handle));
+        desc_.commands.push_back(std::make_pair(ECommandType::SET_INDEX_BUFFER, handle));
+    }
+
+    void CommandImpl::setRenderTarget(uint_fast32_t handle)
+    {
+        desc_.renderTarget = handle;
     }
 
     void CommandImpl::setRootSignature(const std::string& name)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE, name)); 
+        desc_.commands.push_back(std::make_pair(ECommandType::SET_ROOT_SIGNATURE, name));
     }
 
     void CommandImpl::setRootSignatureConstantBuffer(uint_fast32_t index, const std::string& name)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::ROOT_SIGNATURE_CONSTANT_BUFFER, std::make_pair(index, name)));
+        desc_.commands.push_back(std::make_pair(ECommandType::SET_ROOT_SIGNATURE_CONSTANT_BUFFER, std::make_pair(index, name)));
     }
 
     void CommandImpl::setScissor(const glm::uvec4& scissor)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::SCISSOR, scissor));
+        desc_.commands.push_back(std::make_pair(ECommandType::SET_SCISSOR, scissor));
     }
 
     void CommandImpl::setTopology(ETopology topology)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::PRIMITIVE_TOPOLOGY, topology));
+        desc_.commands.push_back(std::make_pair(ECommandType::SET_PRIMITIVE_TOPOLOGY, topology));
     }
 
     void CommandImpl::setVertexBuffer(uint_fast32_t handle)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::VERTEX_BUFFER, handle));
+        desc_.commands.push_back(std::make_pair(ECommandType::SET_VERTEX_BUFFER, handle));
     }
 
     void CommandImpl::setViewport(const glm::vec4& viewport)
     {
-        desc_.commands.push_back(std::make_pair(ECommandType::VIEWPORT, viewport));
+        desc_.commands.push_back(std::make_pair(ECommandType::SET_VIEWPORT, viewport));
     }
 }
 // namespace Takoyaki

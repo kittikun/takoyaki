@@ -16,17 +16,35 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
 #pragma once
 
-#include <fwd.h>
-
-class ITest
+namespace Takoyaki
 {
-public:
-    virtual void initialize(Takoyaki::Framework*) = 0;
-    virtual void render(Takoyaki::Renderer*) = 0;
-    virtual void update(Takoyaki::Renderer*) = 0;
+    class DX12Context;
+    class DX12Texture;
 
-};
+    class TextureImpl
+    {
+        TextureImpl(const TextureImpl&) = delete;
+        TextureImpl& operator=(const TextureImpl&) = delete;
+        TextureImpl(TextureImpl&&) = delete;
+        TextureImpl& operator=(TextureImpl&&) = delete;
+
+    public:
+        explicit TextureImpl(const std::shared_ptr<DX12Context>&, const DX12Texture&, uint_fast32_t) noexcept;
+        ~TextureImpl();
+
+        inline uint_fast32_t getHandle() const { return handle_; }
+        uint_fast64_t getSizeByte() const;
+
+        void read(uint8_t*, uint_fast32_t) const;
+
+    private:
+        // must own pointer to context for destruction
+        std::weak_ptr<DX12Context> context_;
+        const DX12Texture& texture_;
+        uint_fast32_t handle_;
+    };
+}
+// namespace Takoyaki

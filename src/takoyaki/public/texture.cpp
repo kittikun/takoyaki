@@ -16,34 +16,34 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "texture.h"
 
-#include "../test.h"
+#include "../impl/texture_impl.h"
 
-#include <memory>
-#include <glm/glm.hpp>
-
-class Test01 : public Test
+namespace Takoyaki
 {
-    Test01(const Test01&) = delete;
-    Test01& operator=(const Test01&) = delete;
-    Test01(Test01&&) = delete;
-    Test01& operator=(Test01&&) = delete;
+    Texture::Texture(std::unique_ptr<TextureImpl> impl) noexcept
+        : impl_{ std::move(impl) }
+    {
+    }
 
-public:
-    Test01() = default;
-    ~Test01() override = default;
+    Texture::~Texture() noexcept = default;
 
-    void initialize(Takoyaki::Framework*) override;
-    void render(Takoyaki::Renderer*, uint_fast32_t) override;
-    void update(Takoyaki::Renderer*) override;
+    uint_fast32_t Texture::getHandle() const
+    {
+        return impl_->getHandle();
+    }
 
-private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-    uint_fast32_t rsCBIndex_;
-    glm::vec4 viewport_;
-    glm::uvec4 scissor_;
-};
+    uint_fast64_t Texture::getSizeByte() const
+    {
+        return impl_->getSizeByte();
+    }
+
+    void Texture::read(uint8_t* dst, uint_fast32_t size) const
+    {
+        impl_->read(dst, size);
+    }
+}
+// namespace Takoyaki

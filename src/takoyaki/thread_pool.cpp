@@ -27,12 +27,13 @@ namespace Takoyaki
 {
     ThreadPool::ThreadPool() noexcept
         : done_{ false }
-        , joiner{ threads }
+        , joiner{ threads_ }
     {
     }
 
     ThreadPool::~ThreadPool() noexcept
     {
+        barrier();
         done_ = true;
     }
 

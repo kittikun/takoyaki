@@ -51,7 +51,8 @@ namespace Takoyaki
         enum class EResourceType
         {
             INDEX_BUFFER,
-            VERTEX_BUFFER
+            VERTEX_BUFFER,
+            TEXTURE
         };
 
         using DescriptorHeapRTV = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
@@ -73,7 +74,8 @@ namespace Takoyaki
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
         DX12ConstantBuffer& createConstanBuffer(const std::string&, uint_fast32_t);
-        void createTexture(uint_fast32_t);
+        void createSwapchainTexture(uint_fast32_t);
+        void createTexture(uint_fast32_t, const TextureDesc&);
 
         // Get
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
@@ -113,7 +115,7 @@ namespace Takoyaki
 
     private:
         std::shared_ptr<DX12Device> device_;
-        std::shared_ptr<ThreadPool> threadPool_;
+        std::weak_ptr<ThreadPool> threadPool_;
 
         DescriptorHeapRTV descHeapRTV_;
         DescriptorHeapSRV descHeapSRV_;

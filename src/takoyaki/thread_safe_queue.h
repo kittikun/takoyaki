@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <boost/lockfree/queue.hpp>
+
 namespace Takoyaki
 {
     template<typename T>
@@ -69,7 +71,7 @@ namespace Takoyaki
             std::lock_guard<std::mutex> lock{ mutex_ };
 
             queue_.push(std::move(value));
-            cond_.notify_one();
+            //cond_.notify_one();
         }
 
         // not thread-safe
@@ -90,18 +92,18 @@ namespace Takoyaki
             return true;
         }
 
-        void waitPop(T& value)
-        {
-            std::unique_lock<std::mutex> lock{ mutex_ };
+        //void waitPop(T& value)
+        //{
+        //    std::unique_lock<std::mutex> lock{ mutex_ };
 
-            cond_.wait(lock, [this] { return !queue_.empty(); });
-            value = std::move(queue_.front());
-            queue_.pop();
-        }
+        //    cond_.wait(lock, [this] { return !queue_.empty(); });
+        //    value = std::move(queue_.front());
+        //    queue_.pop();
+        //}
 
     private:
         mutable std::mutex mutex_;
         std::queue<T> queue_;
-        std::condition_variable cond_;
+        //std::condition_variable cond_;
     };
 } // namespace Takoyaki

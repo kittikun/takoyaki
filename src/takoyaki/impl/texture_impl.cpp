@@ -16,34 +16,38 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
-#pragma once
+#include "pch.h"
+#include "texture_impl.h"
 
-#include "../test.h"
+#include "../dx12/context.h"
 
-#include <memory>
-#include <glm/glm.hpp>
-
-class Test01 : public Test
+namespace Takoyaki
 {
-    Test01(const Test01&) = delete;
-    Test01& operator=(const Test01&) = delete;
-    Test01(Test01&&) = delete;
-    Test01& operator=(Test01&&) = delete;
+    TextureImpl::TextureImpl(const std::shared_ptr<DX12Context>& context, const DX12Texture& texture, uint_fast32_t handle) noexcept
+        : context_{ context }
+        , texture_{ texture }
+        , handle_{ handle }
+    {
+    }
 
-public:
-    Test01() = default;
-    ~Test01() override = default;
+    TextureImpl::~TextureImpl()
+    {
+        if (handle_ != UINT_FAST32_MAX) {
+            auto context = context_.lock();
 
-    void initialize(Takoyaki::Framework*) override;
-    void render(Takoyaki::Renderer*, uint_fast32_t) override;
-    void update(Takoyaki::Renderer*) override;
+            context->destroyResource(DX12Context::EResourceType::TEXTURE, handle_);
+        }
+    }
 
-private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-    uint_fast32_t rsCBIndex_;
-    glm::vec4 viewport_;
-    glm::uvec4 scissor_;
-};
+    uint_fast64_t TextureImpl::getSizeByte() const
+    {
+        return texture_.getSizeByte();
+    }
+
+    void TextureImpl::read(uint8_t* dst, uint_fast32_t size) const
+    {
+        texture_.read(dst, size);
+    }
+}
+// namespace Takoyaki

@@ -34,7 +34,7 @@ namespace Takoyaki
     extern template DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
 
     DX12Context::DX12Context(const std::shared_ptr<DX12Device>& device, const std::shared_ptr<ThreadPool>& threadPool)
-        : device_ { device }
+        : device_{ device }
         , threadPool_{ threadPool }
         , descHeapRTV_{ device }
         , descHeapSRV_{ device }
@@ -61,10 +61,34 @@ namespace Takoyaki
     {
         // at this stage shouldn't need to lock to access resources anymore
         auto frame = device_->getCurrentFrame();
-        auto defaultRT = false;
+        DX12Texture* rt = nullptr;
+
+        // set a render target
+        if (desc.renderTarget == UINT_FAST32_MAX) {
+            // default one
+            rt = device_->getRenderTarget(frame);
+        } else {
+            // user specified
+            auto found = textures_.find(desc.renderTarget);
+
+            if (found == textures_.end()) {
+                auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find rendertarget \"%1%\"" } % desc.renderTarget;
+
+                throw new std::runtime_error{ boost::str(fmt) };
+            }
+
+            rt = &found->second;
+        }
+
+        D3D12_RESOURCE_STATES rtState = rt->getInitialState();
+
+        // prepare the render target to be used
+        D3D12_RESOURCE_BARRIER beforeBarrier = TransitionBarrier(rt->getResource(), rt->getInitialState(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+        cmd->commands->ResourceBarrier(1, &beforeBarrier);
+        rtState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
         for (auto descCmd : desc.commands) {
-
             switch (descCmd.first) {
                 case ECommandType::CLEAR_COLOR:
                 {
@@ -72,7 +96,26 @@ namespace Takoyaki
 
                     cmd->commands->ClearRenderTargetView(device_->getRenderTarget(frame)->getRenderTargetView(), glm::value_ptr(color), 0, nullptr);
                     cmd->commands->OMSetRenderTargets(1, &device_->getRenderTarget(frame)->getRenderTargetView(), false, nullptr);
+                }
+                break;
 
+                case ECommandType::COPY_RENDERTARGET:
+                {
+                    auto handle = boost::any_cast<uint_fast32_t>(descCmd.second);
+                    auto found = textures_.find(handle);
+
+                    if (found == textures_.end()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find destination texture \"%1%\" for copy operation" } % handle;
+
+                        throw new std::runtime_error{ boost::str(fmt) };
+                    }
+
+                    D3D12_RESOURCE_BARRIER sourceBefore = TransitionBarrier(rt->getResource(), rtState, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+                    cmd->commands->ResourceBarrier(1, &sourceBefore);
+                    rtState = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+                    cmd->commands->CopyResource(found->second.getResource(), rt->getResource());
                 }
                 break;
 
@@ -84,7 +127,7 @@ namespace Takoyaki
                 }
                 break;
 
-                case ECommandType::INDEX_BUFFER:
+                case ECommandType::SET_INDEX_BUFFER:
                 {
                     auto handle = boost::any_cast<uint_fast32_t>(descCmd.second);
                     auto found = indexBuffers_.find(handle);
@@ -99,42 +142,17 @@ namespace Takoyaki
                 }
                 break;
 
-                case ECommandType::PRIMITIVE_TOPOLOGY:
+                case ECommandType::SET_PRIMITIVE_TOPOLOGY:
                 {
                     auto topology = boost::any_cast<ETopology>(descCmd.second);
-                    
+
                     cmd->commands->IASetPrimitiveTopology(TopologyToDX(topology));
                 }
                 break;
 
-                case ECommandType::RENDERTARGET_DEFAULT:
+                case ECommandType::SET_ROOT_SIGNATURE:
                 {
-                    auto tex = device_->getRenderTarget(frame);
-
-                    if (!tex->isReady()) {
-                        LOGW << "DX12DeviceContext::buildCommand, rendertarget not ready";
-                        return false;
-                    }
-
-                    D3D12_RESOURCE_BARRIER barrier;
-
-                    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-                    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-                    barrier.Transition.pResource = tex->getResource();
-                    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-                    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-                    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-
-                    cmd->commands->ResourceBarrier(1, &barrier);
-
-                    // flag so we transition it back at the end
-                    defaultRT = true;
-                }
-                break;
-
-                case ECommandType::ROOT_SIGNATURE:
-                {
-                    auto name = boost::any_cast<std::string>(descCmd.second);                    
+                    auto name = boost::any_cast<std::string>(descCmd.second);
                     auto found = rootSignatures_.find(name);
 
                     if (found == rootSignatures_.end()) {
@@ -147,7 +165,7 @@ namespace Takoyaki
                 }
                 break;
 
-                case ECommandType::ROOT_SIGNATURE_CONSTANT_BUFFER:
+                case ECommandType::SET_ROOT_SIGNATURE_CONSTANT_BUFFER:
                 {
                     auto pair = boost::any_cast<CommandDesc::RSCBParams>(descCmd.second);
                     auto found = constantBuffers_.find(pair.second);
@@ -173,17 +191,17 @@ namespace Takoyaki
                 }
                 break;
 
-                case ECommandType::SCISSOR:
+                case ECommandType::SET_SCISSOR:
                 {
                     auto scissor = boost::any_cast<glm::uvec4>(descCmd.second);
-                    
+
                     D3D12_RECT rect = { static_cast<LONG>(scissor.x), static_cast<LONG>(scissor.y), static_cast<LONG>(scissor.z), static_cast<LONG>(scissor.w) };
 
                     cmd->commands->RSSetScissorRects(1, &rect);
                 }
                 break;
 
-                case ECommandType::VERTEX_BUFFER:
+                case ECommandType::SET_VERTEX_BUFFER:
                 {
                     auto handle = boost::any_cast<uint_fast32_t>(descCmd.second);
                     auto found = vertexBuffers_.find(handle);
@@ -198,7 +216,7 @@ namespace Takoyaki
                 }
                 break;
 
-                case ECommandType::VIEWPORT:
+                case ECommandType::SET_VIEWPORT:
                 {
                     auto vp = boost::any_cast<glm::vec4>(descCmd.second);
 
@@ -210,19 +228,10 @@ namespace Takoyaki
             }
         }
 
-        // we need to transition back the render target
-        if (defaultRT) {
-            D3D12_RESOURCE_BARRIER barrier;
+        // transition back the render target to its initial state
+        D3D12_RESOURCE_BARRIER afterBarrier = TransitionBarrier(rt->getResource(), rtState, rt->getInitialState());
 
-            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            barrier.Transition.pResource = device_->getRenderTarget(frame)->getResource();
-            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-            barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-
-            cmd->commands->ResourceBarrier(1, &barrier);
-        }
+        cmd->commands->ResourceBarrier(1, &afterBarrier);
 
         cmd->priority = desc.priority;
         DXCheckThrow(cmd->commands->Close());
@@ -239,7 +248,7 @@ namespace Takoyaki
             auto lock = rootSignatures_.getReadLock();
 
             for (auto& rs : rootSignatures_) {
-                auto res = rs.second.create(device_);
+                auto res = rs.second.create(device_.get());
 
                 if (!res) {
                     auto fmt = boost::format{ "RootSignature contains no parameters: %1%" } % rs.first;
@@ -252,9 +261,10 @@ namespace Takoyaki
         // create all pipeline state
         {
             auto lock = pipelineStates_.getReadLock();
+            auto threadPool = threadPool_.lock();
 
             for (auto& state : pipelineStates_)
-                threadPool_->submitGeneric(std::bind(&DX12Context::compileMain, this, state.first), 0);
+                threadPool->submitGeneric(std::bind(&DX12Context::compileMain, this, state.first), 0);
         }
     }
 
@@ -265,13 +275,44 @@ namespace Takoyaki
         pair.first.create(device_.get(), this);
     }
 
+    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast32_t sizeByte)
+    {
+        auto threadPool = threadPool_.lock();
+
+        switch (type) {
+            case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
+            {
+                auto lock = indexBuffers_.getWriteLock();
+                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, sizeByte, id }));
+
+                // then build a command to build underlaying resources
+                threadPool->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
+                threadPool->submitGPU(std::bind(&DX12IndexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
+                threadPool->submitGeneric(std::bind(&DX12IndexBuffer::cleanupIntermediate, &pair.first->second), 2);
+            }
+            break;
+
+            case Takoyaki::DX12Context::EResourceType::VERTEX_BUFFER:
+            {
+                auto lock = vertexBuffers_.getWriteLock();
+                auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, stride, sizeByte, id }));
+
+                // then build a command to build underlaying resources
+                threadPool->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
+                threadPool->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
+                threadPool->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
+            }
+            break;
+        }
+    }
+
     DX12ConstantBuffer& DX12Context::createConstanBuffer(const std::string& name, uint_fast32_t size)
     {
         auto lock = constantBuffers_.getWriteLock();
         auto found = constantBuffers_.find(name);
 
         if (found != constantBuffers_.end())
-            throw new std::runtime_error{"Constant buffers names must be unique"};
+            throw new std::runtime_error{ "Constant buffers names must be unique" };
 
         // Constant buffers must be 256-byte aligned.
         size = (size + 255) & ~255;
@@ -307,40 +348,29 @@ namespace Takoyaki
         rootSignatures_.insert(std::make_pair(name, DX12RootSignature{}));
     }
 
-    void DX12Context::createTexture(uint_fast32_t id)
+    void DX12Context::createSwapchainTexture(uint_fast32_t id)
     {
         auto lock = textures_.getWriteLock();
 
         textures_.insert(std::make_pair(id, DX12Texture{ this }));
     }
 
-    void DX12Context::createBuffer(EResourceType type, uint_fast32_t id, uint8_t* data, EFormat format, uint_fast32_t stride, uint_fast32_t sizeByte)
+    void DX12Context::createTexture(uint_fast32_t id, const TextureDesc& desc)
     {
-        switch (type) {
-            case Takoyaki::DX12Context::EResourceType::INDEX_BUFFER:
-            {
-                auto lock = indexBuffers_.getWriteLock();
-                auto pair = indexBuffers_.insert(std::make_pair(id, DX12IndexBuffer{ data, format, sizeByte, id }));
+        auto threadPool = threadPool_.lock();
+        auto lock = textures_.getWriteLock();
+        D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATE_COMMON;
 
-                // then build a command to build underlaying resources
-                threadPool_->submitGPU(std::bind(&DX12IndexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
-                threadPool_->submitGPU(std::bind(&DX12IndexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
-                threadPool_->submitGeneric(std::bind(&DX12IndexBuffer::cleanupIntermediate, &pair.first->second), 2);
-            }
-            break;
-
-            case Takoyaki::DX12Context::EResourceType::VERTEX_BUFFER:
-            {
-                auto lock = vertexBuffers_.getWriteLock();
-                auto pair = vertexBuffers_.insert(std::make_pair(id, DX12VertexBuffer{ data, stride, sizeByte, id }));
-
-                // then build a command to build underlaying resources
-                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
-                threadPool_->submitGPU(std::bind(&DX12VertexBuffer::cleanupCreate, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 1);
-                threadPool_->submitGeneric(std::bind(&DX12VertexBuffer::cleanupIntermediate, &pair.first->second), 2);
-            }
-            break;
+        if (desc.usage == EUsageType::CPU_READ) {
+            // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770374(v=vs.85).aspx
+            initialState = D3D12_RESOURCE_STATE_COPY_DEST;
         }
+
+        auto pair = textures_.insert(std::make_pair(id, DX12Texture{ this, desc, initialState }));
+
+        // then build a command to build underlaying resources
+        pair.first->second.create(device_.get());
+        //threadPool->submitGPU(std::bind(&DX12Texture::create, &pair.first->second, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
     }
 
     void DX12Context::destroyDone()
@@ -354,6 +384,14 @@ namespace Takoyaki
                     auto lock = indexBuffers_.getWriteLock();
 
                     indexBuffers_.erase(pair.second);
+                }
+                break;
+
+                case EResourceType::TEXTURE:
+                {
+                    auto lock = textures_.getWriteLock();
+
+                    textures_.erase(pair.second);
                 }
                 break;
 
@@ -389,6 +427,17 @@ namespace Takoyaki
             }
             break;
 
+            case EResourceType::TEXTURE:
+            {
+                auto lock = textures_.getReadLock();
+                auto found = textures_.find(pair.second);
+
+                if (found != textures_.end()) {
+                    found->second.destroy(cmd, dev);
+                }
+            }
+            break;
+
             case EResourceType::VERTEX_BUFFER:
             {
                 auto lock = vertexBuffers_.getReadLock();
@@ -407,10 +456,11 @@ namespace Takoyaki
     void DX12Context::destroyResource(EResourceType type, uint_fast32_t id)
     {
         // destruction is deferred so add to destroy queue and submit a job request
+        auto threadPool = threadPool_.lock();
 
         destroyQueue_.push(std::make_pair(type, id));
-        threadPool_->submitGPU(std::bind(&DX12Context::destroyMain, this, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
-        threadPool_->submitGeneric(std::bind(&DX12Context::destroyDone, this), 1);
+        threadPool->submitGPU(std::bind(&DX12Context::destroyMain, this, std::placeholders::_1, std::placeholders::_2), std::string(), 0);
+        threadPool->submitGeneric(std::bind(&DX12Context::destroyDone, this), 1);
     }
 
     auto DX12Context::getConstantBuffer(const std::string& name) -> ConstantBufferReturn
@@ -527,7 +577,7 @@ namespace Takoyaki
 
             throw new std::runtime_error{ boost::str(fmt) };
         }
-        
+
         return found->second;
     }
 } // namespace Takoyaki

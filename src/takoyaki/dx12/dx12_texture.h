@@ -20,8 +20,11 @@
 
 #pragma once
 
+#include "../public/definitions.h"
+
 namespace Takoyaki
 {
+    class DX12Device;
     class DX12Context;
 
     class DX12Texture
@@ -31,18 +34,43 @@ namespace Takoyaki
         DX12Texture& operator=(DX12Texture&&) = delete;
 
     public:
-        DX12Texture(DX12Context*) noexcept;
+        DX12Texture(DX12Context*) noexcept; // for swap chain creation
+        DX12Texture(DX12Context*, const TextureDesc&, D3D12_RESOURCE_STATES) noexcept;
         DX12Texture(DX12Texture&&) noexcept;
         ~DX12Texture();
 
-        inline Microsoft::WRL::ComPtr<ID3D12Resource>& getCOM() { return resource_; }
-        inline ID3D12Resource* getResource() { return resource_.Get(); }
-        const D3D12_CPU_DESCRIPTOR_HANDLE& getRenderTargetView();
+        //////////////////////////////////////////////////////////////////////////
+        // Internal usage:
+
+        void create(DX12Device*);
+        bool destroy(void*, void*);
+
         inline bool isReady() const { return resource_.Get() != nullptr; }
+        inline Microsoft::WRL::ComPtr<ID3D12Resource>& getCOM() { return resource_; } // for swap chain creation
+        inline D3D12_RESOURCE_STATES getInitialState() const { return initialState_; }
+        inline ID3D12Resource* getResource() { return resource_.Get(); }
+
+        //////////////////////////////////////////////////////////////////////////
+        // Internal & External:
+
+        const D3D12_CPU_DESCRIPTOR_HANDLE& getRenderTargetView();
+
+        //////////////////////////////////////////////////////////////////////////
+        // External:
+        void read(uint8_t*, uint_fast32_t size) const;
+
+        uint_fast64_t getSizeByte() const;
 
     private:
+        struct Intermediate
+        {
+            TextureDesc desc;
+        };
+
         DX12Context* owner_;
+        std::unique_ptr<Intermediate> intermediate_;
         Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
         D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle_;
+        D3D12_RESOURCE_STATES initialState_;
     };
 } // namespace Takoyaki

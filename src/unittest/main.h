@@ -21,11 +21,8 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
-#include <vector>
 #include <windows.h>
-
-#include "i_test.h"
+#include <utility>
 
 struct Options
 {
@@ -34,7 +31,6 @@ struct Options
     uint_fast32_t numThreads;
 };
 
-std::vector<std::unique_ptr<ITest>> GetTests();
 HWND MakeWindow(const Options& options);
 std::pair<bool, Options> ParseOptions(int, char**);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

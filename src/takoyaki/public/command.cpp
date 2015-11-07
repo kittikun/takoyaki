@@ -37,14 +37,14 @@ namespace Takoyaki
         impl_->clearRenderTarget(color);
     }
 
+    void Command::copyRenderTargetToTexture(uint_fast32_t destTex)
+    {
+        impl_->copyRenderTargetToTexture(destTex);
+    }
+
     void Command::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)
     {
         impl_->drawIndexed(indexCount, startIndex, baseVertex);
-    }
-
-    void Command::setDefaultRenderTarget()
-    {
-        impl_->setDefaultRenderTarget();
     }
 
     void Command::setIndexBuffer(uint_fast32_t handle)
@@ -55,6 +55,11 @@ namespace Takoyaki
     void Command::setPriority(uint_fast32_t priority)
     {
         impl_->setPriority(priority);
+    }
+
+    void Command::setRenderTarget(uint_fast32_t handle)
+    {
+        impl_->setRenderTarget(handle);
     }
 
     void Command::setRootSignature(const std::string& name)

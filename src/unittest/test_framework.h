@@ -20,30 +20,33 @@
 
 #pragma once
 
-#include "../test.h"
-
+#include <fwd.h>
 #include <memory>
-#include <glm/glm.hpp>
+#include <string>
+#include <vector>
 
-class Test01 : public Test
+#include "test.h"
+
+class TestFramework
 {
-    Test01(const Test01&) = delete;
-    Test01& operator=(const Test01&) = delete;
-    Test01(Test01&&) = delete;
-    Test01& operator=(Test01&&) = delete;
-
+    TestFramework(const TestFramework&) = delete;
+    TestFramework& operator=(const TestFramework&) = delete;
+    TestFramework(TestFramework&&) = delete;
+    TestFramework& operator=(TestFramework&&) = delete;
 public:
-    Test01() = default;
-    ~Test01() override = default;
+    TestFramework() noexcept;
 
-    void initialize(Takoyaki::Framework*) override;
-    void render(Takoyaki::Renderer*, uint_fast32_t) override;
-    void update(Takoyaki::Renderer*) override;
+    void loadAsync(const std::wstring&);
+    void initialize(Takoyaki::FrameworkDesc&);
+    void process();
+
+    inline void setTests(std::vector<std::shared_ptr<Test>>& tests) { std::swap(tests_, tests); }
 
 private:
-    std::unique_ptr<Takoyaki::VertexBuffer> vertexBuffer_;
-    std::unique_ptr<Takoyaki::IndexBuffer> indexBuffer_;
-    uint_fast32_t rsCBIndex_;
-    glm::vec4 viewport_;
-    glm::uvec4 scissor_;
+    std::unique_ptr<Takoyaki::Framework> takoyaki_;
+    std::unique_ptr<Takoyaki::Renderer> renderer_;
+    std::vector<std::shared_ptr<Test>> tests_;
+
+    std::vector<uint8_t> texCopy_;
+    std::unique_ptr<Takoyaki::Texture> tex_;
 };

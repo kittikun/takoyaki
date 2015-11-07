@@ -45,7 +45,6 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc& desc);
         void present();
-        void terminate();
         void validateDevice() const;
         void loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& result);
 
@@ -65,4 +64,4 @@ namespace Takoyaki
 }
 // namespace Takoyaki
 
-#pragma warning(pop) 
+#pragma warning(pop)

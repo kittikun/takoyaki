@@ -37,6 +37,11 @@ namespace Takoyaki
         impl_->clearRenderTarget(color);
     }
 
+    void Command::copyRenderTargetToTexture(uint_fast32_t destTex)
+    {
+        impl_->copyRenderTargetToTexture(destTex);
+    }
+
     void Command::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)
     {
         impl_->drawIndexed(indexCount, startIndex, baseVertex);

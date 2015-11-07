@@ -55,7 +55,7 @@ void Test01::initialize(Takoyaki::Framework* framework)
     layout->addInput("POSITION", Takoyaki::EFormat::R32G32B32_FLOAT, 0, 0);
     layout->addInput("COLOR", Takoyaki::EFormat::R32G32B32_FLOAT, 12, 0);
 
-    // create root signature that will be using the input assembler 
+    // create root signature that will be using the input assembler
     // and only allow the constant buffer to be accessed from the vertex shader
     auto rs = renderer->createRootSignature("SimpleSignature");
     auto rsFlags =
@@ -128,7 +128,7 @@ void Test01::initialize(Takoyaki::Framework* framework)
     scissor_ = { 0, 0, static_cast<uint_fast32_t>(size.x), static_cast<uint_fast32_t>(size.y) };
 }
 
-void Test01::render(Takoyaki::Renderer* renderer, uint_fast32_t rt)
+void Test01::render(Takoyaki::Renderer* renderer, uint_fast32_t tex)
 {
     // Work sent to GPU actually hTest01ens here
     auto cmd = renderer->createCommand("SimpleState");
@@ -139,15 +139,13 @@ void Test01::render(Takoyaki::Renderer* renderer, uint_fast32_t rt)
     cmd->setViewport(viewport_);
     cmd->setScissor(scissor_);
 
-    cmd->setRenderTarget(rt);
     cmd->clearRenderTarget(glm::vec4{ 0.f, 0.f, 1.f, 1.f });
-
     cmd->setTopology(Takoyaki::ETopology::TRIANGLELIST);
     cmd->setVertexBuffer(vertexBuffer_->getHandle());
     cmd->setIndexBuffer(indexBuffer_->getHandle());
-
-    // command to gpu will actually be created here
     cmd->drawIndexed(36, 0, 0);
+
+    cmd->copyRenderTargetToTexture(tex);
 }
 
 void Test01::update(Takoyaki::Renderer* renderer)

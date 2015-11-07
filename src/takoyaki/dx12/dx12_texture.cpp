@@ -38,9 +38,9 @@ namespace Takoyaki
 
     DX12Texture::DX12Texture(DX12Context* owner, const TextureDesc& desc, D3D12_RESOURCE_STATES initialState) noexcept
         : owner_{ owner }
+        , intermediate_{ std::make_unique<Intermediate>() }
         , initialState_{ initialState }
     {
-        intermediate_.reset(new Intermediate{});
         intermediate_->desc = desc;
     }
 

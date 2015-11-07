@@ -41,6 +41,9 @@ namespace Takoyaki
 
         void setPriority(uint_fast32_t priority);
 
+        // copy
+        void copyRenderTargetToTexture(uint_fast32_t destTex);
+
         // draw commands
         void drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex);
 

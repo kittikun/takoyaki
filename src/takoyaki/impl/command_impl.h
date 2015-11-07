@@ -35,14 +35,15 @@ namespace Takoyaki
     enum class ECommandType
     {
         CLEAR_COLOR,
+        COPY_RENDERTARGET,
         DRAW_INDEXED,
-        INDEX_BUFFER,
-        ROOT_SIGNATURE,
-        ROOT_SIGNATURE_CONSTANT_BUFFER,
-        PRIMITIVE_TOPOLOGY,
-        SCISSOR,
-        VERTEX_BUFFER,
-        VIEWPORT
+        SET_INDEX_BUFFER,
+        SET_ROOT_SIGNATURE,
+        SET_ROOT_SIGNATURE_CONSTANT_BUFFER,
+        SET_PRIMITIVE_TOPOLOGY,
+        SET_SCISSOR,
+        SET_VERTEX_BUFFER,
+        SET_VIEWPORT
     };
 
     struct CommandDesc
@@ -65,9 +66,10 @@ namespace Takoyaki
 
     public:
         CommandImpl(const std::shared_ptr<RendererImpl>&, const std::string&) noexcept;
-        ~CommandImpl() = default;
+        ~CommandImpl();
 
         void clearRenderTarget(const glm::vec4&);
+        void copyRenderTargetToTexture(uint_fast32_t);
         void drawIndexed(uint_fast32_t, uint_fast32_t, int_fast32_t);
         void setIndexBuffer(uint_fast32_t);
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }

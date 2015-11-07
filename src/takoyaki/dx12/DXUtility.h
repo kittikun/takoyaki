@@ -26,6 +26,7 @@ namespace Takoyaki
 {
     float ConvertDipsToPixels(float dips, float dpi);
     void DXCheckThrow(HRESULT);
+    D3D12_RESOURCE_BARRIER TransitionBarrier(ID3D12Resource*, D3D12_RESOURCE_STATES, D3D12_RESOURCE_STATES);
 
     // enum conversions
     D3D12_BLEND BlendToDX(EBlend);

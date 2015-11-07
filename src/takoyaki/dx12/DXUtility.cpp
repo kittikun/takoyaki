@@ -42,6 +42,20 @@ namespace Takoyaki
         }
     }
 
+    D3D12_RESOURCE_BARRIER TransitionBarrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+    {
+        D3D12_RESOURCE_BARRIER res;
+
+        res.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        res.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        res.Transition.pResource = resource;
+        res.Transition.StateBefore = before;
+        res.Transition.StateAfter = after;
+        res.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+        return res;
+    }
+
     //////////////////////////////////////////////////////////////////////////
     // Enum conversions
     //////////////////////////////////////////////////////////////////////////

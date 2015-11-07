@@ -102,11 +102,6 @@ namespace Takoyaki
         device_->present();
     }
 
-    void FrameworkImpl::terminate()
-    {
-
-    }
-
     void FrameworkImpl::setWindowSize(const glm::vec2& size)
     {
         threadPool_->clear();

@@ -140,12 +140,9 @@ void App::render(Takoyaki::Renderer* renderer)
     cmd->setScissor(scissor_);
 
     cmd->clearRenderTarget(glm::vec4{ 0.f, 0.f, 1.f, 1.f });
-
     cmd->setTopology(Takoyaki::ETopology::TRIANGLELIST);
     cmd->setVertexBuffer(vertexBuffer_->getHandle());
     cmd->setIndexBuffer(indexBuffer_->getHandle());
-
-    // command to gpu will actually be created here
     cmd->drawIndexed(36, 0, 0);
 }
 

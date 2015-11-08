@@ -67,6 +67,7 @@ test_script:
         $testCmd = "$Env:APPVEYOR_BUILD_FOLDER\bin\x64\Release\UnitTest.exe"
     }
     & $testCmd
+    Write-Host -foregroundcolor "Yellow" "sfssts.."
     [xml]$xml = Get-Content "./tests.xml"
     $xml.tests.test | foreach { "Add-AppveyorTest -Name" + $_.name + " -Outcome " + $_.outcome + " -Duration " + $_.duration }
 notifications:

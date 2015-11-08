@@ -27,11 +27,12 @@
 
 namespace Takoyaki
 {
-    DX12Worker::DX12Worker(const DX12WorkerDesc& desc)
-        : context_(desc.context)
+    DX12Worker::DX12Worker(const DX12WorkerDesc& desc, boost::latch& latch, std::condition_variable& cv)
+        : threadPool_{ desc.threadPool }
+        , context_(desc.context)
         , device_(desc.device)
-        , threadPool_{ desc.threadPool }
-        , idle_{ false }
+        , latch_{ latch }
+        , cond_{ cv }
     {
         commandAllocators_.resize(desc.numFrames);
 
@@ -59,7 +60,7 @@ namespace Takoyaki
 
         auto prevFrame = device_->getCurrentFrame();
 
-        while (!threadPool_->isDone()) {
+        while (threadPool_->getStatus() != ThreadPool::TP_DONE) {
             auto frame = device_->getCurrentFrame();
 
             if (frame != prevFrame) {
@@ -69,8 +70,6 @@ namespace Takoyaki
             }
 
             if (threadPool_->tryPopGPUTask(gpuCmd)) {
-                idle_.store(false);
-
                 TaskCommand cmd;
 
                 cmd.priority = 0;
@@ -95,11 +94,16 @@ namespace Takoyaki
                     cmd.commands->Close();
                 }
             } else if (threadPool_->tryPopGenericTask(genericCmd)) {
-                idle_.store(false);
                 genericCmd();
             } else {
-                idle_.store(true);
-                std::this_thread::yield();
+                if (threadPool_->getStatus() == ThreadPool::TP_BARRIER) {
+                    latch_.count_down_and_wait();
+
+                    std::unique_lock<std::mutex> lck(mutex_);
+                    cond_.wait(lck, [this] { return threadPool_->getStatus() != ThreadPool::TP_BARRIER; });
+                } else {
+                    std::this_thread::yield();
+                }
             }
         }
     }

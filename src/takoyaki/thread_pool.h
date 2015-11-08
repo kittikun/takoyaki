@@ -24,8 +24,7 @@
 #pragma warning(disable : 4521)
 
 #include <atomic>
-#include <future>
-#include <boost/any.hpp>
+#include <boost/thread/latch.hpp>
 
 #include "thread_safe_queue.h"
 #include "utility/MoveOnlyFunc.h"
@@ -67,31 +66,38 @@ namespace Takoyaki
         public:
             virtual ~IWorker() = default;
             virtual void clear() = 0;
-            virtual bool isIdle() = 0;
             virtual void main() = 0;
             virtual void submitCommandList() = 0;
+        };
+
+        enum Status
+        {
+            TP_DONE,
+            TP_NONE,
+            TP_BARRIER,
+            TP_RUNNING,
         };
 
         using GPUDrawFunc = std::pair<std::string, MoveOnlyFuncParamTwoReturn>;
         using CreateWorkerFunc = std::function<std::unique_ptr<IWorker>()>;
 
-        ThreadPool() noexcept;
+        ThreadPool(uint_fast32_t) noexcept;
         ~ThreadPool() noexcept;
 
         // clear all pending tasks and also clear workers gpu command queue
         void clear();
 
         template<typename WorkerType, typename DescType>
-        void initialize(uint_fast32_t threadCount, const DescType& desc)
+        void initialize(const DescType& desc)
         {
-            auto fmt = boost::format{ "Initializing thread pool with %1% threads" } % threadCount;
+            auto fmt = boost::format{ "Initializing thread pool with %1% threads" } % numWorkers_;
             LOGC << boost::str(fmt);
 
-            workers_.reserve(threadCount);
+            workers_.reserve(numWorkers_);
 
             try {
-                for (unsigned i = 0; i < threadCount; ++i) {
-                    workers_.push_back(std::make_unique<WorkerType>(desc));
+                for (unsigned i = 0; i < numWorkers_; ++i) {
+                    workers_.push_back(std::make_unique<WorkerType>(desc, latch_, cond_));
 
                     auto thread = std::thread{ &IWorker::main, workers_.back().get() };
 
@@ -100,13 +106,14 @@ namespace Takoyaki
                     setThreadName(thread.native_handle(), boost::str(fmt));
                     threads_.push_back(std::move(thread));
                 }
+                status_.store(TP_RUNNING);
             } catch (...) {
-                done_ = true;
+                status_.store(TP_DONE);
                 throw new std::runtime_error{ "Could not create ThreadPool" };
             }
         }
 
-        inline bool isDone() const { return done_.load(); }
+        inline uint_fast32_t getStatus() const { return status_.load(); }
 
         template<typename Func>
         void submitGeneric(Func f, uint_fast32_t target)
@@ -132,12 +139,18 @@ namespace Takoyaki
         void workerMain();
 
     private:
-        std::atomic<bool> done_;
+        std::atomic<uint_fast32_t> status_;
+        uint_fast32_t numWorkers_;
         std::vector<std::unique_ptr<IWorker>> workers_;
         std::array<ThreadSafeQueue<MoveOnlyFunc>, 3> genericWorkQueues_;
         std::array<ThreadSafeQueue<GPUDrawFunc>, 3> gpuQueues_;
         std::vector<std::thread> threads_;
         JoinThreads joiner;
+
+        // latch is to wait for workers to finish executing jobs
+        // condition_variable is to tell them to resume work
+        boost::latch latch_;
+        std::condition_variable cond_;
     };
 } // namespace Takoyaki
 

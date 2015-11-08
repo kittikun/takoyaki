@@ -54,7 +54,7 @@ int main(int ac, char** av)
 
     Takoyaki::FrameworkDesc desc;
 
-    desc.type = Takoyaki::EDeviceType::DX12_WIN_32;
+    desc.type = Takoyaki::EDeviceType::DX12_WARP;
     desc.windowHandle = hWnd;
     desc.windowSize.x = (float)ret.second.width;
     desc.windowSize.y = (float)ret.second.height;

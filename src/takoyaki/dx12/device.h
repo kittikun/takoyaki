@@ -69,7 +69,7 @@ namespace Takoyaki
         void setWindowDpi(float);
 
     private:
-        void createDevice(uint_fast32_t);
+        void createDevice(const FrameworkDesc&);
         DXGI_MODE_ROTATION getDXGIOrientation() const;
         void waitForGpu();
 
@@ -109,6 +109,6 @@ namespace Takoyaki
 
         // misc
         std::atomic<uint_fast32_t> currentFrame_;
-        glm::mat4x4 matDeviceRotation_;        
+        glm::mat4x4 matDeviceRotation_;
     };
 } // namespace Takoyaki

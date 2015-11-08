@@ -25,39 +25,26 @@
 
 namespace Takoyaki
 {
-    ThreadPool::ThreadPool() noexcept
-        : done_{ false }
+    ThreadPool::ThreadPool(uint_fast32_t numWorkers) noexcept
+        : status_{ TP_NONE }
+        , numWorkers_{ numWorkers }
         , joiner{ threads_ }
+        , latch_{ numWorkers }
     {
     }
 
     ThreadPool::~ThreadPool() noexcept
     {
         barrier();
-        done_ = true;
+        status_ = TP_DONE;
+        cond_.notify_all();
     }
 
     void ThreadPool::barrier()
     {
-        bool done = false;
-
-        while (!done) {
-            bool queueDone = genericWorkQueues_[0].empty() && gpuQueues_[0].empty();
-            bool workerDone = false;
-
-            if (queueDone) {
-                workerDone = true;
-
-                for (auto& worker : workers_)
-                    workerDone &= worker->isIdle();
-            }
-
-            done = queueDone & workerDone;
-
-            // yield while we wait for the workers to finish working
-            if (!done)
-                std::this_thread::yield();
-        }
+        status_.store(TP_BARRIER);
+        latch_.wait();
+        latch_.reset(numWorkers_);
     }
 
     void ThreadPool::clear()
@@ -88,5 +75,7 @@ namespace Takoyaki
         genericWorkQueues_[1].swap(genericWorkQueues_[2]);
         gpuQueues_[0].swap(gpuQueues_[1]);
         gpuQueues_[1].swap(gpuQueues_[2]);
+        status_.store(TP_RUNNING);
+        cond_.notify_all();
     }
 } // namespace Takoyaki

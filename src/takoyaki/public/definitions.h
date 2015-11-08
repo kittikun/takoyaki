@@ -92,6 +92,7 @@ namespace Takoyaki
     enum class EDeviceType
     {
         UNKNOWN,
+        DX12_WARP,
         DX12_WIN_RT,
         DX12_WIN_32,
     };

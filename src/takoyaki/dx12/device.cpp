@@ -47,21 +47,36 @@ namespace Takoyaki
         dpi_ = desc.windowDpi;
         windowSize_ = desc.windowSize;
 
-        if (desc.type == EDeviceType::DX12_WIN_RT) {
-            LOGI << "Device type: DX12 WinRT";
-            window_ = reinterpret_cast<IUnknown*>(desc.windowHandle);
-        } else if (desc.type == EDeviceType::DX12_WIN_32) {
-            LOGI << "Device type: DX12 Win32";
-            window_ = reinterpret_cast<HWND>(desc.windowHandle);
+        switch (desc.type) {
+            case EDeviceType::DX12_WARP:
+            {
+                LOGI << "Device type: DX12 WARP";
+                window_ = reinterpret_cast<HWND>(desc.windowHandle);
+            }
+            break;
+
+            case EDeviceType::DX12_WIN_32:
+            {
+                LOGI << "Device type: DX12 Win32";
+                window_ = reinterpret_cast<HWND>(desc.windowHandle);
+            }
+            break;
+
+            case EDeviceType::DX12_WIN_RT:
+            {
+                LOGI << "Device type: DX12 WinRT";
+                window_ = reinterpret_cast<IUnknown*>(desc.windowHandle);
+            }
+            break;
         }
 
         LOGI << "Swap chain buffers: " << bufferCount_;
         LOGI << "Window size: " << glm::to_string(windowSize_);
 
-        createDevice(bufferCount_);
+        createDevice(desc);
     }
 
-    void DX12Device::createDevice(uint_fast32_t bufferCount)
+    void DX12Device::createDevice(const FrameworkDesc& desc)
     {
         LOGC << "Creating D3D device...";
 
@@ -75,16 +90,20 @@ namespace Takoyaki
 
         DXCheckThrow(CreateDXGIFactory1(IID_PPV_ARGS(&DXGIFactory_)));
 
+        HRESULT hr;
+
         // Create the Direct3D 12 API device object
-        HRESULT hr = D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&D3DDevice_));
-
-        if (FAILED(hr)) {
-            LOGW << "ID3D12Device initialization fails, falling back to the WARP device.";
-
+        if (desc.type == EDeviceType::DX12_WARP) {
             Microsoft::WRL::ComPtr<IDXGIAdapter> warpAdapter;
 
             DXGIFactory_->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter));
-            DXCheckThrow(D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&D3DDevice_)));
+            hr = D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&D3DDevice_));
+        } else {
+            hr = D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&D3DDevice_));
+        }
+
+        if (FAILED(hr)) {
+            throw new std::runtime_error("ID3D12Device initialization fails");
         }
 
         // Create the command queue.
@@ -95,12 +114,12 @@ namespace Takoyaki
         DXCheckThrow(D3DDevice_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
 
         // Create command lists
-        commandLists_.resize(bufferCount);
-        dxCommandLists_.resize(bufferCount);
-        commandListMutexes_.resize(bufferCount);
+        commandLists_.resize(bufferCount_);
+        dxCommandLists_.resize(bufferCount_);
+        commandListMutexes_.resize(bufferCount_);
 
         // Create synchronization objects.
-        fenceValues_.resize(bufferCount);
+        fenceValues_.resize(bufferCount_);
         std::fill(fenceValues_.begin(), fenceValues_.end(), 0);
         DXCheckThrow(D3DDevice_->CreateFence(fenceValues_[currentFrame_], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));
         fenceValues_[currentFrame_]++;
@@ -175,7 +194,6 @@ namespace Takoyaki
 
             Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
 
-            // winRT or win32
             if (window_.type() == typeid(HWND))
                 DXCheckThrow(DXGIFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), boost::any_cast<HWND>(window_), &swapChainDesc, nullptr, nullptr, &swapChain));
             else

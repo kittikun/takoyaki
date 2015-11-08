@@ -35,8 +35,6 @@
 namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
-        : threadPool_{ std::make_shared<ThreadPool>() }
-        , resetDevice_{ false }
     {
     }
 
@@ -54,7 +52,9 @@ namespace Takoyaki
         LOG_IDENTIFY_THREAD;
         LOGC_INDENT_START << "Initializing Takoyaki Framework..";
 
-        if ((desc.type == EDeviceType::DX12_WIN_32) || (desc.type == EDeviceType::DX12_WIN_RT)) {
+        threadPool_.reset(new ThreadPool(desc.numWorkerThreads));
+
+        if ((desc.type == EDeviceType::DX12_WIN_32) || (desc.type == EDeviceType::DX12_WIN_RT) || (desc.type == EDeviceType::DX12_WARP)) {
             device_.reset(new DX12Device());
             context_ = std::make_shared<DX12Context>(device_, threadPool_);
 
@@ -68,7 +68,7 @@ namespace Takoyaki
             workerDesc.threadPool = threadPool_.get();
             workerDesc.numFrames = desc.bufferCount;
 
-            threadPool_->initialize<DX12Worker, DX12WorkerDesc>(desc.numWorkerThreads, workerDesc);
+            threadPool_->initialize<DX12Worker, DX12WorkerDesc>(workerDesc);
         }
 
         if (!desc.loadAsyncFunc)

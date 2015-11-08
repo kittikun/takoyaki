@@ -47,11 +47,10 @@ namespace Takoyaki
         DX12Worker& operator=(DX12Worker&&) = delete;
 
     public:
-        DX12Worker(const DX12WorkerDesc&);
+        DX12Worker(const DX12WorkerDesc&, boost::latch&, std::condition_variable&);
         ~DX12Worker() = default;
 
         void clear() override;
-        inline bool isIdle() override { return idle_.load(); }
         void main() override;
         void submitCommandList() override;
 
@@ -61,6 +60,11 @@ namespace Takoyaki
         DX12Device* device_;
         std::vector<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> commandAllocators_;
         std::vector<TaskCommand> commandList_;
-        std::atomic<bool> idle_;
+
+        // latch is to wait for workers to finish executing jobs
+        // condition_variable is to tell them to resume work
+        std::mutex mutex_;
+        boost::latch& latch_;
+        std::condition_variable& cond_;
     };
 } // namespace Takoyaki

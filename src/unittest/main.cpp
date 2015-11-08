@@ -45,8 +45,8 @@ int main(int ac, char** av)
     auto hWnd = MakeWindow(ret.second);
 
     TestFramework framework;
-    std::vector<std::shared_ptr<Test>> tests {
-        std::make_shared<Test01>()
+    std::vector<TestFramework::TestDesc> tests{
+        std::make_tuple(std::make_shared<Test01>(), 0x7c52fe2b)
     };
 
     // we need to add tests before we initialize the framework since they will be initialized at the same time
@@ -59,13 +59,14 @@ int main(int ac, char** av)
     desc.windowSize.x = (float)ret.second.width;
     desc.windowSize.y = (float)ret.second.height;
     desc.numWorkerThreads = ret.second.numThreads;
-    
+
     framework.initialize(desc);
 
     // main loop
     MSG msg;
+    bool process = true;
 
-    while (true) {
+    while (process) {
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -74,8 +75,10 @@ int main(int ac, char** av)
         if (msg.message == WM_QUIT)
             break;
 
-        framework.process();
+        process = framework.process();
     }
+
+    framework.save("tests.xml");
 
     return 0;
 }
@@ -100,9 +103,9 @@ HWND MakeWindow(const Options& options)
 
     RegisterClassEx(&wcex);
 
-    auto hWnd = CreateWindowEx( NULL, "CUnitTests", "Takoyaki Unit Tests", WS_OVERLAPPEDWINDOW,
-                                CW_USEDEFAULT, CW_USEDEFAULT, options.width, options.height,
-                                NULL, NULL, hInst, NULL);
+    auto hWnd = CreateWindowEx(NULL, "CUnitTests", "Takoyaki Unit Tests", WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, options.width, options.height,
+        NULL, NULL, hInst, NULL);
 
     if (hWnd == nullptr)
         throw new std::runtime_error("Could not create window");
@@ -110,11 +113,6 @@ HWND MakeWindow(const Options& options)
     ShowWindow(hWnd, SW_SHOWDEFAULT);
 
     return hWnd;
-}
-
-void LoadAsync(const std::wstring& filename)
-{
-
 }
 
 std::pair<bool, Options> ParseOptions(int ac, char** av)

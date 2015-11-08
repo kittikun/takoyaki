@@ -24,6 +24,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <boost/property_tree/ptree.hpp>
 
 #include "test.h"
 
@@ -38,15 +39,18 @@ public:
 
     void loadAsync(const std::wstring&);
     void initialize(Takoyaki::FrameworkDesc&);
-    void process();
+    bool process();
+    void save(const std::string&);
 
-    inline void setTests(std::vector<std::shared_ptr<Test>>& tests) { std::swap(tests_, tests); }
+    using TestDesc = std::tuple<std::shared_ptr<Test>, uint_fast32_t>;
+    inline void setTests(std::vector<TestDesc>& descs) { std::swap(descs_, descs); }
 
 private:
     std::unique_ptr<Takoyaki::Framework> takoyaki_;
     std::unique_ptr<Takoyaki::Renderer> renderer_;
-    std::vector<std::shared_ptr<Test>> tests_;
-
-    std::vector<uint8_t> texCopy_;
     std::unique_ptr<Takoyaki::Texture> tex_;
+    boost::property_tree::ptree pt_;
+    std::vector<TestDesc> descs_;
+    std::vector<uint8_t> texCopy_;
+    size_t current_;
 };

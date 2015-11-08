@@ -93,7 +93,6 @@ namespace Takoyaki
                 } else {
                     // something went wrong, cancel current command creation
                     cmd.commands->Close();
-                    cmd.commands->Reset(commandAllocators_[frame].Get(), nullptr);
                 }
             } else if (threadPool_->tryPopGenericTask(genericCmd)) {
                 idle_.store(false);

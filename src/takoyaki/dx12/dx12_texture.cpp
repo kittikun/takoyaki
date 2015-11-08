@@ -163,6 +163,6 @@ namespace Takoyaki
         pDevice->GetCopyableFootprints(&desc, 0, 1, 0, nullptr, nullptr, &rowSize, nullptr);
         pDevice->Release();
 
-        resource_->ReadFromSubresource(dest, rowSize, size, 0, nullptr);
+        resource_->ReadFromSubresource(dest, (uint_fast32_t)rowSize, size, 0, nullptr);
     }
 } // namespace Takoyaki

@@ -20,10 +20,12 @@
 
 #include "test_framework.h"
 
+#include <chrono>
 #include <takoyaki.h>
 #include <boost/crc.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 #define BOOST_THREAD_PROVIDES_FUTURE
 #define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
@@ -31,6 +33,7 @@
 
 TestFramework::TestFramework() noexcept
     : takoyaki_{ std::make_unique<Takoyaki::Framework>() }
+    , current_{ 0 }
 {
 }
 
@@ -51,20 +54,19 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
     texDesc.usage = Takoyaki::EUsageType::CPU_READ;
 
     tex_ = renderer_->createTexture(texDesc);
-
     texCopy_.resize(tex_->getSizeByte());
 
     // test need to load various resources so better start tasks before main loop
-    for (auto& test : tests_)
-        test->initialize(takoyaki_.get());
+    for (auto& desc : descs_)
+        std::get<0>(desc)->initialize(takoyaki_.get());
 
-    // make sure initialization commands are done
+    // wait for gpu to finish any tasks created by initialization
     takoyaki_->present();
 }
 
 void TestFramework::loadAsync(const std::wstring& filename)
 {
-    // async read file using c++17 N3634 improvements to std::future via boost
+    // async read file using c++17 improvements to std::future via boost
 
     // the actual reading happens here
     boost::future<std::vector<uint8_t>> f1 = boost::async([&filename]()
@@ -107,17 +109,51 @@ void TestFramework::loadAsync(const std::wstring& filename)
     f2.get();
 }
 
-void TestFramework::process()
+bool TestFramework::process()
 {
-    tests_[0]->update(renderer_.get());
-    tests_[0]->render(renderer_.get(), tex_->getHandle());
+    auto test = std::get<0>(descs_[current_]);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    test->update(renderer_.get());
+    test->render(renderer_.get(), tex_->getHandle());
     takoyaki_->present();
 
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // compare checksums
     tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
 
-    boost::crc_32_type result;
-    result.process_bytes(&texCopy_.front(), texCopy_.size());
-    auto res = result.checksum();
+    boost::crc_32_type crc;
+    crc.process_bytes(&texCopy_.front(), texCopy_.size());
 
-    int i = 0;
+    boost::property_tree::ptree res;
+
+    res.add("test.name", test->getName());
+
+    std::string outcome;
+
+    if (crc.checksum() == std::get<1>(descs_[current_]))
+        outcome = "Passed";
+    else
+        outcome = "Failed";
+
+    res.add("test.outcome", outcome);
+    res.add("test.duration", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    pt_.add_child("tests", res);
+
+    ++current_;
+
+    return current_ < descs_.size();
+}
+
+void TestFramework::save(const std::string& filename)
+{
+    auto basePath(boost::filesystem::current_path());
+
+    if (IsDebuggerPresent())
+        basePath = boost::filesystem::system_complete("..");
+
+    auto path = basePath / filename;
+
+    boost::property_tree::write_xml(path.generic_string(), pt_);
 }

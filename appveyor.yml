@@ -35,14 +35,13 @@ before_build:
     Write-Host -foregroundcolor "Yellow" "Generating boost headers.."
     .\b2 headers -d0
     
-    Write-Host -foregroundcolor "Yellow" "Building required boost libraries.."
     if ($Env:CONFIGURATION -eq "Debug") {
-        # for app
+        Write-Host -foregroundcolor "Yellow" "Building boost for WinRT app.."
         ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --stagedir=winrt --with-log
-        # for unit tests
+        Write-Host -foregroundcolor "Yellow" "Building boost for Win32 unit tests.."
         ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared --stagedir=win --with-log --with-program_options --with-filesystem
     } elseif ($Env:CONFIGURATION -eq "Release") {
-        # only required for unit tests
+        Write-Host -foregroundcolor "Yellow" "Building boost for Win32 unit tests.."
         ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=shared --stagedir=win --with-program_options --with-filesystem --with-thread --with-date_time
     }
 build_script:
@@ -57,7 +56,19 @@ build_script:
           "/verbosity:minimal")
 
     & $buildCmd $buildArgs
-test: off
+test_script:
+- ps: |
+    Write-Host -foregroundcolor "Yellow" "Running tests.."
+    Set-Location $Env:APPVEYOR_BUILD_FOLDER
+    $resultXml = "$Env:APPVEYOR_BUILD_FOLDER\tests.xml"
+    if ($Env:CONFIGURATION -eq "Debug") {
+        $testCmd = "$Env:APPVEYOR_BUILD_FOLDER\bin\x64\Debug\UnitTest.exe"
+    } elseif ($Env:CONFIGURATION -eq "Release") {
+        $testCmd = "$Env:APPVEYOR_BUILD_FOLDER\bin\x64\Release\UnitTest.exe"
+    }
+    & $testCmd
+    [xml]$xml = Get-Content "./tests.xml"
+    $xml.tests.test | foreach { "Add-AppveyorTest -Name" + $_.name + " -Outcome " + $_.outcome + " -Duration " + $_.duration }
 notifications:
 - provider: Slack
   auth_token:

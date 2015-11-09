@@ -16,6 +16,8 @@ environment:
     secure: OfUyk9tr3AlhoCMaSc9VGWvjDUXS1UDIkmtXN8gAuFA=
   CoverityMail:
     secure: fsImKF76tplc9AeyOQTMYA==    
+init:
+- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 install:
 - ps: |
     $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n" + $env:Github.Replace(' ', "`n") + "`n-----END RSA PRIVATE KEY-----`n"

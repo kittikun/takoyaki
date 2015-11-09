@@ -78,6 +78,11 @@ namespace Takoyaki
         impl_->setWindowSize(size);
     }
 
+    void Framework::terminate()
+    {
+        impl_->terminate();
+    }
+
     void Framework::validateDevice() const
     {
         impl_->validateDevice();

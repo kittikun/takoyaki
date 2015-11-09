@@ -28,21 +28,21 @@ namespace Takoyaki
     ThreadPool::ThreadPool(uint_fast32_t numWorkers) noexcept
         : status_{ TP_NONE }
         , numWorkers_{ numWorkers }
-        , joiner{ threads_ }
         , latch_{ numWorkers }
     {
     }
 
     ThreadPool::~ThreadPool() noexcept
     {
-        barrier();
         status_ = TP_DONE;
         cond_.notify_all();
+        for (auto& thread : threads_)
+            thread.join();
     }
 
     void ThreadPool::barrier()
     {
-        status_.store(TP_BARRIER);
+        status_ = TP_BARRIER;
         latch_.wait();
         latch_.reset(numWorkers_);
     }
@@ -59,6 +59,9 @@ namespace Takoyaki
 
         for (auto& worker : workers_)
             worker->clear();
+
+        //status_ = TP_RUNNING;
+        //cond_.notify_all();
     }
 
     void ThreadPool::submitGPUCommandLists()
@@ -75,7 +78,7 @@ namespace Takoyaki
         genericWorkQueues_[1].swap(genericWorkQueues_[2]);
         gpuQueues_[0].swap(gpuQueues_[1]);
         gpuQueues_[1].swap(gpuQueues_[2]);
-        status_.store(TP_RUNNING);
+        status_ = TP_RUNNING;
         cond_.notify_all();
     }
 } // namespace Takoyaki

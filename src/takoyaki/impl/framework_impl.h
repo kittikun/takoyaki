@@ -46,6 +46,7 @@ namespace Takoyaki
 
         void initialize(const FrameworkDesc&);
         void present();
+        void terminate();
         void validateDevice() const;
 
         void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);

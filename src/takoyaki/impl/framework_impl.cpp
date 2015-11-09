@@ -109,6 +109,12 @@ namespace Takoyaki
         device_->createSwapChain();
     }
 
+    void FrameworkImpl::terminate()
+    {
+        threadPool_->clear();
+        int i = 0;
+    }
+
     void FrameworkImpl::validateDevice() const
     {
         device_->validate();

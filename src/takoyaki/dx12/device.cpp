@@ -335,7 +335,7 @@ namespace Takoyaki
             DXCheckThrow(commandQueue_->Signal(fence_.Get(), current));
 
             // Advance the frame index.
-            currentFrame_.store((currentFrame_ + 1) % bufferCount_);
+            currentFrame_ = (currentFrame_ + 1) % bufferCount_;
 
             // Check to see if the next frame is ready to start.
             if (fence_->GetCompletedValue() < fenceValues_[currentFrame_]) {

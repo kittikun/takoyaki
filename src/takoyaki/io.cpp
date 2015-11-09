@@ -45,7 +45,7 @@ namespace Takoyaki
         {
             // copy data or it will expire after this scope
             buffer = std::string(data.begin(), data.end()).c_str();
-            flag.store(1);
+            flag = 1;
         });
 
         // we can afford to block this thread

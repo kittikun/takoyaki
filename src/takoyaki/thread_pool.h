@@ -34,25 +34,6 @@ namespace Takoyaki
 {
     struct FrameworkDesc;
 
-    // Allows the threads to be properly joined even if an exception occurred with the thread pool
-    class JoinThreads
-    {
-        std::vector<std::thread>& threads;
-    public:
-        explicit JoinThreads(std::vector<std::thread>& threads_)
-            : threads{ threads_ }
-        {
-        }
-
-        ~JoinThreads()
-        {
-            for (unsigned long i = 0; i < threads.size(); ++i) {
-                if (threads[i].joinable())
-                    threads[i].join();
-            }
-        }
-    };
-
     class ThreadPool
     {
         ThreadPool(const ThreadPool&) = delete;
@@ -106,14 +87,14 @@ namespace Takoyaki
                     setThreadName(thread.native_handle(), boost::str(fmt));
                     threads_.push_back(std::move(thread));
                 }
-                status_.store(TP_RUNNING);
+                status_ = TP_RUNNING;
             } catch (...) {
-                status_.store(TP_DONE);
+                status_ = TP_DONE;
                 throw new std::runtime_error{ "Could not create ThreadPool" };
             }
         }
 
-        inline uint_fast32_t getStatus() const { return status_.load(); }
+        inline uint_fast32_t getStatus() const { return status_; }
 
         template<typename Func>
         void submitGeneric(Func f, uint_fast32_t target)
@@ -145,7 +126,6 @@ namespace Takoyaki
         std::array<ThreadSafeQueue<MoveOnlyFunc>, 3> genericWorkQueues_;
         std::array<ThreadSafeQueue<GPUDrawFunc>, 3> gpuQueues_;
         std::vector<std::thread> threads_;
-        JoinThreads joiner;
 
         // latch is to wait for workers to finish executing jobs
         // condition_variable is to tell them to resume work

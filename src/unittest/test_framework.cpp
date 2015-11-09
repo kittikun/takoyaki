@@ -37,6 +37,11 @@ TestFramework::TestFramework() noexcept
 {
 }
 
+TestFramework::~TestFramework()
+{
+    takoyaki_->terminate();
+}
+
 void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
 {
     desc.loadAsyncFunc = std::bind(&TestFramework::loadAsync, this, std::placeholders::_1);
@@ -44,6 +49,17 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
     takoyaki_->initialize(desc);
 
     renderer_ = takoyaki_->getRenderer();
+
+    // render target for off-line rendering
+    Takoyaki::TextureDesc rtDesc;
+
+    rtDesc.format = Takoyaki::EFormat::B8G8R8A8_UNORM;
+    rtDesc.width = (uint_fast32_t)desc.windowSize.x;
+    rtDesc.height = (uint_fast32_t)desc.windowSize.y;
+    rtDesc.usage = Takoyaki::EUsageType::GPU_ONLY;
+    rtDesc.flags = Takoyaki::RF_RENDERTARGET;
+
+    rt_ = renderer_->createTexture(rtDesc);
 
     // texture used to copy the render target to make a checksum
     Takoyaki::TextureDesc texDesc;
@@ -54,9 +70,11 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
     texDesc.usage = Takoyaki::EUsageType::CPU_READ;
 
     tex_ = renderer_->createTexture(texDesc);
+
+    // cpu buffer to copy the texture into so we can checksum it
     texCopy_.resize(tex_->getSizeByte());
 
-    // test need to load various resources so better start tasks before main loop
+    // tests need to load various resources so better start tasks before main loop
     for (auto& desc : descs_)
         std::get<0>(desc)->initialize(takoyaki_.get());
 
@@ -114,14 +132,26 @@ bool TestFramework::process()
     auto test = std::get<0>(descs_[current_]);
     auto start = std::chrono::high_resolution_clock::now();
 
+    // render the test
     test->update(renderer_.get());
-    test->render(renderer_.get(), tex_->getHandle());
+    test->render(renderer_.get(), rt_->getHandle());
     takoyaki_->present();
+
+    // copy the render target
+    {
+        auto cmd = renderer_->createCommand(std::string());
+
+        cmd->setPriority(2);
+        cmd->copyRenderTargetToTexture(tex_->getHandle());
+    }
+
+    takoyaki_->present();
+
+    tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
 
     auto end = std::chrono::high_resolution_clock::now();
 
     // compare checksums
-    tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
 
     boost::crc_32_type crc;
     crc.process_bytes(&texCopy_.front(), texCopy_.size());

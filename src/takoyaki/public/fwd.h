@@ -21,6 +21,7 @@
 
 namespace Takoyaki
 {
+    class Command;
     class Framework;
     class IndexBuffer;
     class Renderer;

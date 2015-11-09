@@ -40,7 +40,6 @@ namespace Takoyaki
         , size_{ sizeByte }
         , ready_{ false }
     {
-
     }
 
     DX12ConstantBuffer::DX12ConstantBuffer(DX12ConstantBuffer&& other) noexcept
@@ -116,7 +115,7 @@ namespace Takoyaki
         DXCheckThrow(res->Map(0, nullptr, reinterpret_cast<void**>(&mappedAddr_)));
         ZeroMemory(mappedAddr_, size_ * bufCount);
 
-        ready_.store(true);
+        ready_ = true;
     }
 
     void DX12ConstantBuffer::setMatrix4x4(const std::string& name, const glm::mat4x4& value, uint_fast32_t frame)

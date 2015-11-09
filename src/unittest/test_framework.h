@@ -36,6 +36,7 @@ class TestFramework
     TestFramework& operator=(TestFramework&&) = delete;
 public:
     TestFramework() noexcept;
+    ~TestFramework();
 
     void loadAsync(const std::wstring&);
     void initialize(Takoyaki::FrameworkDesc&);
@@ -48,6 +49,7 @@ public:
 private:
     std::unique_ptr<Takoyaki::Framework> takoyaki_;
     std::unique_ptr<Takoyaki::Renderer> renderer_;
+    std::unique_ptr<Takoyaki::Texture> rt_;
     std::unique_ptr<Takoyaki::Texture> tex_;
     boost::property_tree::ptree pt_;
     std::vector<TestDesc> descs_;

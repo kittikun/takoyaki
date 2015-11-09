@@ -110,7 +110,7 @@ HWND MakeWindow(const Options& options)
     if (hWnd == nullptr)
         throw new std::runtime_error("Could not create window");
 
-    ShowWindow(hWnd, SW_SHOWDEFAULT);
+    //ShowWindow(hWnd, SW_SHOWDEFAULT);
 
     return hWnd;
 }

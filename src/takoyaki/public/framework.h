@@ -46,6 +46,7 @@ namespace Takoyaki
         void initialize(const FrameworkDesc& desc);
         void present();
         void validateDevice() const;
+        void terminate();
         void loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& result);
 
         void compileShader(const ShaderDesc& desc);

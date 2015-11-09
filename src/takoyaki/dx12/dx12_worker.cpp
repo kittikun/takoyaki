@@ -71,7 +71,6 @@ namespace Takoyaki
 
             if (threadPool_->tryPopGPUTask(gpuCmd)) {
                 TaskCommand cmd;
-
                 cmd.priority = 0;
                 {
                     ID3D12PipelineState* ps = nullptr;
@@ -83,7 +82,6 @@ namespace Takoyaki
                     }
 
                     auto lock = device_->getDeviceLock();
-
                     DXCheckThrow(device_->getDXDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frame].Get(), ps, IID_PPV_ARGS(&cmd.commands)));
                 }
 

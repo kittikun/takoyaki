@@ -10,8 +10,6 @@ configuration:
 - Debug
 platform: x64
 environment:
-  Github:
-    secure: 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
   CoverityToken:
     secure: OfUyk9tr3AlhoCMaSc9VGWvjDUXS1UDIkmtXN8gAuFA=
   CoverityMail:
@@ -20,34 +18,10 @@ init:
 - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 install:
 - ps: |
-    $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n" + $env:Github.Replace(' ', "`n") + "`n-----END RSA PRIVATE KEY-----`n"
-    Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
     Write-Host -foregroundcolor "Yellow" "Updating submodules.."
     git submodule update --init --recursive --quiet
 before_build:
-- ps: |
-    $path = $Env:APPVEYOR_BUILD_FOLDER
-    Write-Host -foregroundcolor "Yellow" "CONFIGURATION ="$Env:CONFIGURATION
-    Write-Host -foregroundcolor "Yellow" "APPVEYOR_BUILD_FOLDER ="$path
-
-    Write-Host -foregroundcolor "Yellow" "Bootstrapping boost.."
-    Set-Location "$Env:APPVEYOR_BUILD_FOLDER\src\external\boost"
-    .\bootstrap.bat
-
-    Write-Host -foregroundcolor "Yellow" "Generating boost headers.."
-    .\b2 headers -d0
-    
-    if ($Env:CONFIGURATION -eq "Debug") {
-        Write-Host -foregroundcolor "Yellow" "Building boost for WinRT app.."
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared windows-api=desktop --stagedir=winrt --with-log
-        Write-Host -foregroundcolor "Yellow" "Building boost for Win32 unit tests.."
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=debug link=static threading=multi runtime-link=shared --stagedir=win --with-log --with-program_options --with-filesystem
-    } elseif ($Env:CONFIGURATION -eq "Release") {
-        Write-Host -foregroundcolor "Yellow" "Building boost for WinRT app.."
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=shared windows-api=desktop --stagedir=winrt --with-thread --with-date_time
-        Write-Host -foregroundcolor "Yellow" "Building boost for Win32 unit tests.."
-        ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=shared --stagedir=win --with-program_options --with-filesystem --with-thread --with-date_time
-    }
+- ps: & "$Env:APPVEYOR_BUILD_FOLDER\build\prebuild.ps1" $Env:CONFIGURATION
 build_script:
 - ps: |
     Write-Host -foregroundcolor "Yellow" "Build step starting.."
@@ -60,20 +34,21 @@ build_script:
           "/verbosity:minimal")
 
     & $buildCmd $buildArgs
-test_script:
-- ps: |
-    Write-Host -foregroundcolor "Yellow" "Running tests.."
-    Set-Location $Env:APPVEYOR_BUILD_FOLDER
-    $resultXml = "$Env:APPVEYOR_BUILD_FOLDER\tests.xml"
-    if ($Env:CONFIGURATION -eq "Debug") {
-        $testCmd = "$Env:APPVEYOR_BUILD_FOLDER\bin\x64\Debug\UnitTest.exe"
-    } elseif ($Env:CONFIGURATION -eq "Release") {
-        $testCmd = "$Env:APPVEYOR_BUILD_FOLDER\bin\x64\Release\UnitTest.exe"
-    }
-    & $testCmd
-    Write-Host -foregroundcolor "Yellow" "sfssts.."
-    [xml]$xml = Get-Content "./tests.xml"
-    $xml.tests.test | foreach { "Add-AppveyorTest -Name" + $_.name + " -Outcome " + $_.outcome + " -Duration " + $_.duration }
+# Disable tests until appveyor upgrades to Windows Server 2016
+#test_script:
+#- ps: |
+#    Write-Host -foregroundcolor "Yellow" "Running tests.."
+#    Set-Location $Env:APPVEYOR_BUILD_FOLDER
+#    $resultXml = "$Env:APPVEYOR_BUILD_FOLDER\tests.xml"
+#    if ($Env:CONFIGURATION -eq "Debug") {
+#        $testCmd = "$Env:APPVEYOR_BUILD_FOLDER\bin\x64\Debug\UnitTest.exe"
+#    } elseif ($Env:CONFIGURATION -eq "Release") {
+#        $testCmd = "$Env:APPVEYOR_BUILD_FOLDER\bin\x64\Release\UnitTest.exe"
+#    }
+#    & $testCmd
+#    Write-Host -foregroundcolor "Yellow" "sfssts.."
+#    [xml]$xml = Get-Content "./tests.xml"
+#    $xml.tests.test | foreach { "Add-AppveyorTest -Name" + $_.name + " -Outcome " + $_.outcome + " -Duration " + $_.duration }
 notifications:
 - provider: Slack
   auth_token:

@@ -4,8 +4,6 @@ param(
 
 $root = "$PSScriptRoot\..\"
 
-Write-Host $root
-
 Set-Location "$root\src\external\boost"
 
 Write-Host -foregroundcolor "Yellow" "Bootstrapping boost.."

@@ -38,6 +38,7 @@ build_script:
 
     & $buildCmd $buildArgs
 # Disable tests until appveyor upgrades to Windows Server 2016
+test: off
 #test_script:
 #- ps: |
 #    Write-Host -foregroundcolor "Yellow" "Running tests.."

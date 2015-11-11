@@ -104,15 +104,18 @@ namespace Takoyaki
 
     void FrameworkImpl::setWindowSize(const glm::vec2& size)
     {
+        // we need to lock the renderer and threadpool while we recreate the swap chain
+        auto lock = renderer_->getLock();
         threadPool_->clear();
         device_->setWindowSize(size);
         device_->createSwapChain();
+        threadPool_->resume();
     }
 
     void FrameworkImpl::terminate()
     {
+        // clear any remaining jobs
         threadPool_->clear();
-        int i = 0;
     }
 
     void FrameworkImpl::validateDevice() const

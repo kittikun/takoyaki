@@ -59,9 +59,12 @@ namespace Takoyaki
 
         for (auto& worker : workers_)
             worker->clear();
+    }
 
-        //status_ = TP_RUNNING;
-        //cond_.notify_all();
+    void ThreadPool::resume()
+    {
+        status_ = TP_RUNNING;
+        cond_.notify_all();
     }
 
     void ThreadPool::submitGPUCommandLists()

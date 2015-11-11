@@ -39,7 +39,7 @@ public:
     ~TestFramework();
 
     void loadAsync(const std::wstring&);
-    void initialize(Takoyaki::FrameworkDesc&);
+    void initialize(Takoyaki::FrameworkDesc&, bool);
     bool process();
     void save(const std::string&);
 
@@ -55,4 +55,5 @@ private:
     std::vector<TestDesc> descs_;
     std::vector<uint8_t> texCopy_;
     size_t current_;
+    bool ciMode_;
 };

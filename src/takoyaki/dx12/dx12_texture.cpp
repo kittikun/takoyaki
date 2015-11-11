@@ -41,6 +41,7 @@ namespace Takoyaki
         , intermediate_{ std::make_unique<Intermediate>() }
         , initialState_{ initialState }
     {
+        cpuHandle_.ptr = ULONG_PTR_MAX;
         intermediate_->desc = desc;
     }
 
@@ -135,6 +136,11 @@ namespace Takoyaki
             auto tuple = owner_->getRTVDescHeapCollection().createOne();
 
             cpuHandle_ = std::get<0>(tuple);
+
+            ID3D12Device* pDevice;
+
+            resource_->GetDevice(__uuidof(*pDevice), reinterpret_cast<void**>(&pDevice));
+            pDevice->CreateRenderTargetView(resource_.Get(), nullptr, cpuHandle_);
         }
 
         return cpuHandle_;

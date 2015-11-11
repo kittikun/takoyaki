@@ -86,6 +86,7 @@ namespace Takoyaki
         D3D12_RESOURCE_BARRIER beforeBarrier = TransitionBarrier(rt->getResource(), rt->getInitialState(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 
         cmd->commands->ResourceBarrier(1, &beforeBarrier);
+        cmd->commands->OMSetRenderTargets(1, &rt->getRenderTargetView(), false, nullptr);
         rtState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
         for (auto descCmd : desc.commands) {
@@ -93,9 +94,7 @@ namespace Takoyaki
                 case ECommandType::CLEAR_COLOR:
                 {
                     auto color = boost::any_cast<glm::vec4>(descCmd.second);
-
                     cmd->commands->ClearRenderTargetView(device_->getRenderTarget(frame)->getRenderTargetView(), glm::value_ptr(color), 0, nullptr);
-                    cmd->commands->OMSetRenderTargets(1, &device_->getRenderTarget(frame)->getRenderTargetView(), false, nullptr);
                 }
                 break;
 

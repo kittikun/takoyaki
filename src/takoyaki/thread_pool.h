@@ -109,6 +109,7 @@ namespace Takoyaki
             gpuQueues_[target].push(std::make_pair(pipelineState, std::move(f)));
         }
 
+        void resume();
         void submitGPUCommandLists();
         void swapQueues();
 

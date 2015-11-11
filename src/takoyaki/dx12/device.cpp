@@ -227,7 +227,7 @@ namespace Takoyaki
             auto& com = tex.getCOM();
 
             DXCheckThrow(swapChain_->GetBuffer(i, IID_PPV_ARGS(&com)));
-            D3DDevice_->CreateRenderTargetView(tex.getResource(), nullptr, tex.getRenderTargetView());
+            tex.getRenderTargetView();
 
             auto fmt = boost::wformat(L"Swap chain Render Target %1%") % i;
 

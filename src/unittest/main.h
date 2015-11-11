@@ -29,6 +29,7 @@ struct Options
     uint_fast32_t width;
     uint_fast32_t height;
     uint_fast32_t numThreads;
+    bool ciMode;
 };
 
 HWND MakeWindow(const Options& options);

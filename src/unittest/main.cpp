@@ -54,13 +54,18 @@ int main(int ac, char** av)
 
     Takoyaki::FrameworkDesc desc;
 
-    desc.type = Takoyaki::EDeviceType::DX12_WARP;
+    if (ret.second.ciMode) {
+        desc.type = Takoyaki::EDeviceType::DX12_WARP;
+    } else {
+        desc.type = Takoyaki::EDeviceType::DX12_WIN_32;
+    }
+
     desc.windowHandle = hWnd;
     desc.windowSize.x = (float)ret.second.width;
     desc.windowSize.y = (float)ret.second.height;
     desc.numWorkerThreads = ret.second.numThreads;
 
-    framework.initialize(desc);
+    framework.initialize(desc, ret.second.ciMode);
 
     // main loop
     MSG msg;
@@ -110,7 +115,8 @@ HWND MakeWindow(const Options& options)
     if (hWnd == nullptr)
         throw new std::runtime_error("Could not create window");
 
-    //ShowWindow(hWnd, SW_SHOWDEFAULT);
+    if (!options.ciMode)
+        ShowWindow(hWnd, SW_SHOWDEFAULT);
 
     return hWnd;
 }
@@ -123,7 +129,8 @@ std::pair<bool, Options> ParseOptions(int ac, char** av)
     boost::program_options::options_description takoyaki("Takoyaki options");
 
     generic.add_options()
-        ("help", "produce help message");
+        ("help", "produce help message")
+        ("ci", boost::program_options::value<bool>()->default_value(true), "CI mode (windowless, WARP device)");
 
     window.add_options()
         ("width,w", boost::program_options::value<uint_fast32_t>()->default_value(1280), "Width of the window")
@@ -152,6 +159,7 @@ std::pair<bool, Options> ParseOptions(int ac, char** av)
     res.width = vm["width"].as<uint_fast32_t>();
     res.height = vm["height"].as<uint_fast32_t>();
     res.numThreads = vm["numThreads"].as<uint_fast32_t>();
+    res.ciMode = vm["ci"].as<bool>();
 
     return std::make_pair(true, res);
 }

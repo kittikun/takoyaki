@@ -34,6 +34,7 @@
 TestFramework::TestFramework() noexcept
     : takoyaki_{ std::make_unique<Takoyaki::Framework>() }
     , current_{ 0 }
+    , ciMode_{ false }
 {
 }
 
@@ -42,8 +43,9 @@ TestFramework::~TestFramework()
     takoyaki_->terminate();
 }
 
-void TestFramework::initialize(Takoyaki::FrameworkDesc& desc)
+void TestFramework::initialize(Takoyaki::FrameworkDesc& desc, bool ciMode)
 {
+    ciMode_ = ciMode;
     desc.loadAsyncFunc = std::bind(&TestFramework::loadAsync, this, std::placeholders::_1);
 
     takoyaki_->initialize(desc);
@@ -134,17 +136,7 @@ bool TestFramework::process()
 
     // render the test
     test->update(renderer_.get());
-    test->render(renderer_.get(), rt_->getHandle());
-    takoyaki_->present();
-
-    // copy the render target
-    {
-        auto cmd = renderer_->createCommand(std::string());
-
-        cmd->setPriority(2);
-        cmd->copyRenderTargetToTexture(tex_->getHandle());
-    }
-
+    test->render(renderer_.get(), rt_->getHandle(), tex_->getHandle());
     takoyaki_->present();
 
     tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
@@ -167,13 +159,16 @@ bool TestFramework::process()
     else
         outcome = "Failed";
 
+    std::cout << outcome << std::endl;
+
     res.add("test.outcome", outcome);
     res.add("test.duration", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
     pt_.add_child("tests", res);
 
-    ++current_;
+    //++current_;
 
-    return current_ < descs_.size();
+    return true;
+    //return current_ < descs_.size();
 }
 
 void TestFramework::save(const std::string& filename)

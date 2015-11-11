@@ -1,5 +1,5 @@
 param(
-[string]$conf = $(throw "conf is required."),
+[string]$conf = $(throw "conf is required.")
 )
 
 $root = "$PSScriptRoot\..\"

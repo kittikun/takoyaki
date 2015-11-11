@@ -1,6 +1,6 @@
 [submodule "src/external/glm"]
 	path = src/external/glm
-url=git@github.com:g-truc/glm.git
+url=https://github.com/g-truc/glm.git
 [submodule "src/external/boost"]
 	path = src/external/boost
-url=git@github.com:boostorg/boost.git
+url=https://github.com/boostorg/boost.git

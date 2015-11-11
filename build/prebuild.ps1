@@ -1,5 +1,5 @@
 param(
-[string]$conf
+[string]$conf = $(throw "conf is required."),
 )
 
 $root = "$PSScriptRoot\..\"
@@ -23,6 +23,3 @@ if ($conf -eq "Debug") {
     Write-Host -foregroundcolor "Yellow" "Building boost for Win32 unit tests.."
     ./b2 -d0 address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=shared --stagedir=win --with-program_options --with-filesystem --with-thread --with-date_time
 }
-
-
-Set-Location $PSScriptRoot

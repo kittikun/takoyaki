@@ -1,6 +1,6 @@
 param (
-    [string]$src = $(throw "-src is required."),
-    [string]$dst = $(throw "-dst is required.")
+    [string]$src = $(throw "src is required."),
+    [string]$dst = $(throw "dst is required.")
 )
 
 Write-Host "Running post-build..."

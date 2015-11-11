@@ -21,7 +21,10 @@ install:
     Write-Host -foregroundcolor "Yellow" "Updating submodules.."
     git submodule update --init --recursive --quiet
 before_build:
-- ps: & "$Env:APPVEYOR_BUILD_FOLDER\build\prebuild.ps1" $Env:CONFIGURATION
+- ps: |
+	$script = "$Env:APPVEYOR_BUILD_FOLDER\build\prebuild.ps1"
+	
+	& $script $Env:CONFIGURATION
 build_script:
 - ps: |
     Write-Host -foregroundcolor "Yellow" "Build step starting.."

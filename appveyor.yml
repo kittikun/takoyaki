@@ -23,7 +23,7 @@ install:
 before_build:
 - ps: |
     $script = "$Env:APPVEYOR_BUILD_FOLDER\build\prebuild.ps1"
-	
+
     & $script $Env:CONFIGURATION
 build_script:
 - ps: |

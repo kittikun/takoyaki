@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <fwd.h>
 #include <memory>
 #include <string>
@@ -47,9 +48,11 @@ public:
     inline void setTests(std::vector<TestDesc>& descs) { std::swap(descs_, descs); }
 
 private:
+    void updateTestResult(Test*, bool, std::chrono::milliseconds);
+
+private:
     std::unique_ptr<Takoyaki::Framework> takoyaki_;
     std::unique_ptr<Takoyaki::Renderer> renderer_;
-    std::unique_ptr<Takoyaki::Texture> rt_;
     std::unique_ptr<Takoyaki::Texture> tex_;
     boost::property_tree::ptree pt_;
     std::vector<TestDesc> descs_;

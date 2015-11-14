@@ -30,6 +30,6 @@ public:
     virtual ~Test() = default;
     virtual std::string getName() = 0;
     virtual void initialize(Takoyaki::Framework*) = 0;
-    virtual void render(Takoyaki::Renderer*, uint_fast32_t, uint_fast32_t) = 0;
+    virtual void render(Takoyaki::Renderer*, uint_fast32_t) = 0;
     virtual void update(Takoyaki::Renderer*) = 0;
 };

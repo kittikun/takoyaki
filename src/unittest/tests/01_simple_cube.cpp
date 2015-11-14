@@ -128,15 +128,13 @@ void Test01::initialize(Takoyaki::Framework* framework)
     scissor_ = { 0, 0, static_cast<uint_fast32_t>(size.x), static_cast<uint_fast32_t>(size.y) };
 }
 
-void Test01::render(Takoyaki::Renderer* renderer, uint_fast32_t rt, uint_fast32_t tex)
+void Test01::render(Takoyaki::Renderer* renderer, uint_fast32_t tex)
 {
-    // Work sent to GPU actually hTest01ens here
     auto cmd = renderer->createCommand("SimpleState");
 
     cmd->setRootSignature("SimpleSignature");
     cmd->setRootSignatureConstantBuffer(rsCBIndex_, "ModelViewProjectionConstantBuffer");
 
-    cmd->setRenderTarget(rt);
     cmd->setViewport(viewport_);
     cmd->setScissor(scissor_);
     cmd->clearRenderTarget(glm::vec4{ 0.f, 0.f, 1.f, 1.f });

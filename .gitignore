@@ -31,3 +31,4 @@ build/out/
 build/ipch/
 *.opensdf
 bin/
+*.xml

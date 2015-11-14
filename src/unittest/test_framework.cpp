@@ -20,11 +20,11 @@
 
 #include "test_framework.h"
 
-#include <chrono>
 #include <takoyaki.h>
 #include <boost/crc.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/format.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
 #define BOOST_THREAD_PROVIDES_FUTURE
@@ -61,8 +61,6 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc, bool ciMode)
     rtDesc.usage = Takoyaki::EUsageType::GPU_ONLY;
     rtDesc.flags = Takoyaki::RF_RENDERTARGET;
 
-    rt_ = renderer_->createTexture(rtDesc);
-
     // texture used to copy the render target to make a checksum
     Takoyaki::TextureDesc texDesc;
 
@@ -75,6 +73,10 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc, bool ciMode)
 
     // cpu buffer to copy the texture into so we can checksum it
     texCopy_.resize(tex_->getSizeByte());
+
+    auto fmt = boost::format("Processing %1% tests..") % descs_.size();
+
+    std::cout << boost::str(fmt) << std::endl;
 
     // tests need to load various resources so better start tasks before main loop
     for (auto& desc : descs_)
@@ -136,7 +138,7 @@ bool TestFramework::process()
 
     // render the test
     test->update(renderer_.get());
-    test->render(renderer_.get(), rt_->getHandle(), tex_->getHandle());
+    test->render(renderer_.get(), tex_->getHandle());
     takoyaki_->present();
 
     tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
@@ -144,31 +146,19 @@ bool TestFramework::process()
     auto end = std::chrono::high_resolution_clock::now();
 
     // compare checksums
-
     boost::crc_32_type crc;
+
     crc.process_bytes(&texCopy_.front(), texCopy_.size());
 
-    boost::property_tree::ptree res;
+    // update results
+    auto outcome = crc.checksum() == std::get<1>(descs_[current_]);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    res.add("test.name", test->getName());
+    updateTestResult(test.get(), outcome, duration);
 
-    std::string outcome;
+    ++current_;
 
-    if (crc.checksum() == std::get<1>(descs_[current_]))
-        outcome = "Passed";
-    else
-        outcome = "Failed";
-
-    std::cout << outcome << std::endl;
-
-    res.add("test.outcome", outcome);
-    res.add("test.duration", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
-    pt_.add_child("tests", res);
-
-    //++current_;
-
-    return true;
-    //return current_ < descs_.size();
+    return current_ < descs_.size();
 }
 
 void TestFramework::save(const std::string& filename)
@@ -181,4 +171,27 @@ void TestFramework::save(const std::string& filename)
     auto path = basePath / filename;
 
     boost::property_tree::write_xml(path.generic_string(), pt_);
+}
+
+void TestFramework::updateTestResult(Test* test, bool result, std::chrono::milliseconds duration)
+{
+    boost::property_tree::ptree res;
+
+    res.add("test.name", test->getName());
+
+    std::string outcome;
+
+    if (result)
+        outcome = "Passed";
+    else
+        outcome = "Failed";
+
+    res.add("test.outcome", outcome);
+    res.add("test.duration", duration.count());
+    pt_.add_child("tests", res);
+
+    // also output some text to the console
+    auto fmt = boost::format("[%1%] %2%, %3%") % current_ % test->getName() % ((result) ? "Passed" : "Failed");
+
+    std::cout << boost::str(fmt) << std::endl;
 }

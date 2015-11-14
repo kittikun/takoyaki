@@ -126,6 +126,7 @@ void Main::Run()
             app_->render(renderer.get());
             framework_->present();
         } else {
+            // somehome pressing the close button takes us here..
             CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
         }
     }
@@ -156,9 +157,9 @@ void Main::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
 
     create_task([this, deferral]()
     {
-        // WinRT doesn't call destructor upon quitting but will call suspend 
+        // WinRT doesn't call destructor upon quitting but will call suspend
         // Since this is probably a bad habit for other platforms, use suspend to simulate resource
-        framework_.reset();
+        framework_->terminate();
         deferral->Complete();
     });
 }
@@ -189,6 +190,7 @@ void Main::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ a
 
 void Main::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
 {
+    // somehow the application never reaches here
     mWindowClosed = true;
 }
 

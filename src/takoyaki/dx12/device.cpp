@@ -48,9 +48,9 @@ namespace Takoyaki
         windowSize_ = desc.windowSize;
 
         switch (desc.type) {
-            case EDeviceType::DX12_WARP:
+            case EDeviceType::WARP_WIN_32:
             {
-                LOGI << "Device type: DX12 WARP";
+                LOGI << "Device type: DX12 WARP Win32";
                 window_ = reinterpret_cast<HWND>(desc.windowHandle);
             }
             break;
@@ -93,7 +93,7 @@ namespace Takoyaki
         HRESULT hr;
 
         // Create the Direct3D 12 API device object
-        if (desc.type == EDeviceType::DX12_WARP) {
+        if (desc.type == EDeviceType::WARP_WIN_32) {
             Microsoft::WRL::ComPtr<IDXGIAdapter> warpAdapter;
 
             DXGIFactory_->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter));

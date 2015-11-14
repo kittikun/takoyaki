@@ -54,12 +54,7 @@ int main(int ac, char** av)
 
     Takoyaki::FrameworkDesc desc;
 
-    if (ret.second.ciMode) {
-        desc.type = Takoyaki::EDeviceType::DX12_WARP;
-    } else {
-        desc.type = Takoyaki::EDeviceType::DX12_WIN_32;
-    }
-
+    desc.type = Takoyaki::EDeviceType::DX12_WIN_32;
     desc.windowHandle = hWnd;
     desc.windowSize.x = (float)ret.second.width;
     desc.windowSize.y = (float)ret.second.height;
@@ -83,7 +78,8 @@ int main(int ac, char** av)
         process = framework.process();
     }
 
-    framework.save("tests.xml");
+    if (!ret.second.outFile.empty())
+        framework.save(ret.second.outFile);
 
     return 0;
 }
@@ -130,7 +126,8 @@ std::pair<bool, Options> ParseOptions(int ac, char** av)
 
     generic.add_options()
         ("help", "produce help message")
-        ("ci", boost::program_options::value<bool>()->default_value(true), "CI mode (windowless, WARP device)");
+        ("ci", boost::program_options::value<bool>()->default_value(true), "CI mode (windowless)")
+        ("output,o", boost::program_options::value<std::string>(), "Output results into a file as XML");
 
     window.add_options()
         ("width,w", boost::program_options::value<uint_fast32_t>()->default_value(1280), "Width of the window")
@@ -160,6 +157,10 @@ std::pair<bool, Options> ParseOptions(int ac, char** av)
     res.height = vm["height"].as<uint_fast32_t>();
     res.numThreads = vm["numThreads"].as<uint_fast32_t>();
     res.ciMode = vm["ci"].as<bool>();
+
+    if (vm.count("output")) {
+        res.outFile = vm["output"].as<std::string>();
+    }
 
     return std::make_pair(true, res);
 }

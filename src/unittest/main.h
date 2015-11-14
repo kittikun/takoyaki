@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <windows.h>
 #include <utility>
+#include <string>
 
 struct Options
 {
@@ -30,6 +31,7 @@ struct Options
     uint_fast32_t height;
     uint_fast32_t numThreads;
     bool ciMode;
+    std::string outFile;
 };
 
 HWND MakeWindow(const Options& options);

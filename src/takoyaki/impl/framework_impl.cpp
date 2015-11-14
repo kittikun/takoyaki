@@ -54,7 +54,7 @@ namespace Takoyaki
 
         threadPool_.reset(new ThreadPool(desc.numWorkerThreads));
 
-        if ((desc.type == EDeviceType::DX12_WIN_32) || (desc.type == EDeviceType::DX12_WIN_RT) || (desc.type == EDeviceType::DX12_WARP)) {
+        if ((desc.type == EDeviceType::DX12_WIN_32) || (desc.type == EDeviceType::DX12_WIN_RT) || (desc.type == EDeviceType::WARP_WIN_32)) {
             device_.reset(new DX12Device());
             context_ = std::make_shared<DX12Context>(device_, threadPool_);
 
@@ -114,6 +114,7 @@ namespace Takoyaki
 
     void FrameworkImpl::terminate()
     {
+        LOGC << "Terminating Takoyaki Framework..";
         // clear any remaining jobs
         threadPool_->clear();
     }

@@ -72,7 +72,7 @@ namespace Takoyaki
         }
 
         if (!desc.loadAsyncFunc)
-            throw new std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
+            throw std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
 
         io_.initialize(desc.loadAsyncFunc);
         renderer_.reset(new RendererImpl{ device_, context_, threadPool_ });

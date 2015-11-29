@@ -84,7 +84,7 @@ namespace Takoyaki
         // TODO: more checks are obviously needed
 
         if ((desc.arraySize > 1) && (desc.depth > 1))
-            throw new std::runtime_error("TextureDesc arraySize and depth cannot both be > 1");
+            throw std::runtime_error("TextureDesc arraySize and depth cannot both be > 1");
 
         return std::make_unique<Texture>(impl_->createTexture(desc));
     }

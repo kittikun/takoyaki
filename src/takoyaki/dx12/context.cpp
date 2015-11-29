@@ -74,7 +74,7 @@ namespace Takoyaki
             if (found == textures_.end()) {
                 auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find rendertarget \"%1%\"" } % desc.renderTarget;
 
-                throw new std::runtime_error{ boost::str(fmt) };
+                throw std::runtime_error{ boost::str(fmt) };
             }
 
             rt = &found->second;
@@ -106,7 +106,7 @@ namespace Takoyaki
                     if (found == textures_.end()) {
                         auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find destination texture \"%1%\" for copy operation" } % handle;
 
-                        throw new std::runtime_error{ boost::str(fmt) };
+                        throw std::runtime_error{ boost::str(fmt) };
                     }
 
                     D3D12_RESOURCE_BARRIER sourceBefore = TransitionBarrier(rt->getResource(), rtState, D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -134,7 +134,7 @@ namespace Takoyaki
                     if (found == indexBuffers_.end()) {
                         auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find index buffer \"%1%\"" } % handle;
 
-                        throw new std::runtime_error{ boost::str(fmt) };
+                        throw std::runtime_error{ boost::str(fmt) };
                     }
 
                     cmd->commands->IASetIndexBuffer(&found->second.getView());
@@ -157,7 +157,7 @@ namespace Takoyaki
                     if (found == rootSignatures_.end()) {
                         auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find root signature \"%1%\"" } % name;
 
-                        throw new std::runtime_error{ boost::str(fmt) };
+                        throw std::runtime_error{ boost::str(fmt) };
                     }
 
                     cmd->commands->SetGraphicsRootSignature(found->second.getRootSignature());
@@ -208,7 +208,7 @@ namespace Takoyaki
                     if (found == vertexBuffers_.end()) {
                         auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find vertex buffer \"%1%\"" } % handle;
 
-                        throw new std::runtime_error{ boost::str(fmt) };
+                        throw std::runtime_error{ boost::str(fmt) };
                     }
 
                     cmd->commands->IASetVertexBuffers(0, 1, &found->second.getView());
@@ -311,7 +311,7 @@ namespace Takoyaki
         auto found = constantBuffers_.find(name);
 
         if (found != constantBuffers_.end())
-            throw new std::runtime_error{ "Constant buffers names must be unique" };
+            throw std::runtime_error{ "Constant buffers names must be unique" };
 
         // Constant buffers must be 256-byte aligned.
         size = (size + 255) & ~255;
@@ -403,7 +403,7 @@ namespace Takoyaki
                 break;
             }
         } else {
-            throw new std::runtime_error{ "DX12Context::onDestroyDone called but queue empty" };
+            throw std::runtime_error{ "DX12Context::onDestroyDone called but queue empty" };
         }
     }
 
@@ -488,7 +488,7 @@ namespace Takoyaki
         if (found == indexBuffers_.end()) {
             auto fmt = boost::format{ "DX12DeviceContext::getIndexBuffer, cannot find key \"%1%\"" } % id;
 
-            throw new std::runtime_error{ boost::str(fmt) };
+            throw std::runtime_error{ boost::str(fmt) };
         }
 
         return found->second;
@@ -502,7 +502,7 @@ namespace Takoyaki
         if (found == inputLayouts_.end()) {
             auto fmt = boost::format{ "DX12DeviceContext::getInputLayout, cannot find key \"%1%\"" } % name;
 
-            throw new std::runtime_error{ boost::str(fmt) };
+            throw std::runtime_error{ boost::str(fmt) };
         }
 
         return InputLayoutReturn(found->second, std::move(lock));
@@ -516,7 +516,7 @@ namespace Takoyaki
         if (found == pipelineStates_.end()) {
             auto fmt = boost::format("DX12DeviceContext::getPipelineState, cannot find key \"%1%\"") % name;
 
-            throw new std::runtime_error{ boost::str(fmt) };
+            throw std::runtime_error{ boost::str(fmt) };
         }
 
         return PipelineStateReturn(found->second, std::move(lock));
@@ -530,7 +530,7 @@ namespace Takoyaki
         if (found == rootSignatures_.end()) {
             auto fmt = boost::format{ "DX12DeviceContext::getRootSignature, cannot find key \"%1%\"" } % name;
 
-            throw new std::runtime_error{ boost::str(fmt) };
+            throw std::runtime_error{ boost::str(fmt) };
         }
 
         return RootSignatureReturn(found->second, std::move(lock));
@@ -560,7 +560,7 @@ namespace Takoyaki
         if (found == textures_.end()) {
             auto fmt = boost::format{ "DX12DeviceContext::getTexture, cannot find key \"%1%\"" } % id;
 
-            throw new std::runtime_error{ boost::str(fmt) };
+            throw std::runtime_error{ boost::str(fmt) };
         }
 
         return found->second;
@@ -574,7 +574,7 @@ namespace Takoyaki
         if (found == vertexBuffers_.end()) {
             auto fmt = boost::format{ "DX12DeviceContext::getVertexBuffer, cannot find key \"%1%\"" } % id;
 
-            throw new std::runtime_error{ boost::str(fmt) };
+            throw std::runtime_error{ boost::str(fmt) };
         }
 
         return found->second;

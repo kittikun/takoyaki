@@ -62,7 +62,7 @@ namespace Takoyaki
         desc.SampleDesc.Quality = 0;
 
         if (intermediate_->size == 0)
-            throw new std::runtime_error{ "Buffer size must at least 1" };
+            throw std::runtime_error{ "Buffer size must at least 1" };
 
         desc.Width = intermediate_->size;
 

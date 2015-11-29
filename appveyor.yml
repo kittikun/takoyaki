@@ -8,14 +8,15 @@ configuration:
 #- Coverity
 - Release
 - Debug
-platform: x64
+platform:
+- x64
 environment:
   CoverityToken:
     secure: OfUyk9tr3AlhoCMaSc9VGWvjDUXS1UDIkmtXN8gAuFA=
   CoverityMail:
     secure: fsImKF76tplc9AeyOQTMYA==    
-init:
-- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+#init:
+#- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 install:
 - ps: |
     Write-Host -foregroundcolor "Yellow" "Updating submodules.."

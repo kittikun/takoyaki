@@ -45,16 +45,16 @@ namespace Takoyaki
 
         // some quick checks
         if (intermediateDesc.Dimension != D3D12_RESOURCE_DIMENSION_BUFFER || intermediateDesc.Width < requiredSize + layouts[0].Offset)
-            throw new std::runtime_error{ "UpdateSubresources, intermediate description invalid" };
+            throw std::runtime_error{ "UpdateSubresources, intermediate description invalid" };
 
         if (destinationDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER && (params.firstSubResource != 0 || params.numSubResource != 1))
-            throw new std::runtime_error{ "UpdateSubresources, destination description invalid" };
+            throw std::runtime_error{ "UpdateSubresources, destination description invalid" };
 
         uint8_t* data;
         HRESULT hr = params.intermediate->Map(0, nullptr, reinterpret_cast<void**>(&data));
 
         if (FAILED(hr))
-            throw new std::runtime_error{ "Failed to map intermediate resource" };
+            throw std::runtime_error{ "Failed to map intermediate resource" };
 
         for (uint_fast32_t i = 0; i < params.numSubResource; ++i) {
             D3D12_MEMCPY_DEST dstData;
@@ -94,16 +94,16 @@ namespace Takoyaki
     {
         // check parameters
         if (params.firstSubResource > D3D12_REQ_SUBRESOURCES)
-            throw new std::runtime_error{ "UpdateSubresourcesHeapAlloc firstSubResource too big" };
+            throw std::runtime_error{ "UpdateSubresourcesHeapAlloc firstSubResource too big" };
 
         if (params.numSubResource > (D3D12_REQ_SUBRESOURCES - params.firstSubResource))
-            throw new std::runtime_error{ "UpdateSubresourcesHeapAlloc numSubResource too big" };
+            throw std::runtime_error{ "UpdateSubresourcesHeapAlloc numSubResource too big" };
 
         uint_fast64_t requiredSize = 0;
         uint_fast64_t memToAlloc = static_cast<uint_fast64_t>(sizeof(D3D12_PLACED_SUBRESOURCE_FOOTPRINT) + sizeof(uint_fast32_t) + sizeof(uint_fast64_t)) * params.numSubResource;
 
         if (memToAlloc > UINTPTR_MAX) {
-            throw new std::runtime_error{ "UpdateSubresourcesHeapAlloc memToAlloc too big" };
+            throw std::runtime_error{ "UpdateSubresourcesHeapAlloc memToAlloc too big" };
         }
 
         std::vector<uint8_t> mem;

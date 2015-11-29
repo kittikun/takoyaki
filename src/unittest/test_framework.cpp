@@ -115,7 +115,7 @@ void TestFramework::loadAsync(const std::wstring& filename)
             stream.read(reinterpret_cast<char*>(&res.front()), length);
             stream.close();
         } else {
-            throw new std::runtime_error("Could not open file");
+            throw std::runtime_error("Could not open file");
         }
 
         return res;

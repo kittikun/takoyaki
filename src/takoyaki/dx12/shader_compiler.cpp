@@ -57,7 +57,7 @@ namespace Takoyaki
                 break;
 
             default:
-                throw new std::runtime_error{ "ShaderCompiler::getDXShaderType, unknown type" };
+                throw std::runtime_error{ "ShaderCompiler::getDXShaderType, unknown type" };
         }
 
         return res;
@@ -175,7 +175,7 @@ namespace Takoyaki
                     break;
 
                 default:
-                    throw new std::runtime_error{ "Unknown D3D_SHADER_INPUT_TYPE" };
+                    throw std::runtime_error{ "Unknown D3D_SHADER_INPUT_TYPE" };
                     break;
             }
         }
@@ -217,7 +217,7 @@ namespace Takoyaki
 
             fmt = boost::format{ "Shader compilation failed: %1%, %2%" } % desc.path % GetDXError(hr);
             auto test = boost::str(fmt);
-            throw new std::runtime_error{ boost::str(fmt) };
+            throw std::runtime_error{ boost::str(fmt) };
         }
 
         D3D12_SHADER_BYTECODE bc;

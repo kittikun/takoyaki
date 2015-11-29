@@ -90,7 +90,7 @@ namespace Takoyaki
                 status_ = TP_RUNNING;
             } catch (...) {
                 status_ = TP_DONE;
-                throw new std::runtime_error{ "Could not create ThreadPool" };
+                throw std::runtime_error{ "Could not create ThreadPool" };
             }
         }
 

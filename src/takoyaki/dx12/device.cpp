@@ -103,7 +103,7 @@ namespace Takoyaki
         }
 
         if (FAILED(hr)) {
-            throw new std::runtime_error("ID3D12Device initialization fails");
+            throw std::runtime_error("ID3D12Device initialization fails");
         }
 
         // Create the command queue.
@@ -326,7 +326,7 @@ namespace Takoyaki
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
             D3DDevice_.Reset();
-            throw new std::runtime_error{ "Device removal not implemented" };
+            throw std::runtime_error{ "Device removal not implemented" };
         } else {
             DXCheckThrow(res);
 
@@ -398,7 +398,7 @@ namespace Takoyaki
             // TODO: Apparently this can only happen for on mobile devices
             // when the application is killed by the OS. Add proper support
             D3DDevice_.Reset();
-            throw new std::runtime_error{ "Device removal not implemented" };
+            throw std::runtime_error{ "Device removal not implemented" };
         }
     }
 

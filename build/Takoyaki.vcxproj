@@ -310,7 +310,8 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)..\src\external\boost\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d12.lib</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command>
@@ -333,7 +334,8 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)..\src\external\boost\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d12.lib</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command>

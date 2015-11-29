@@ -126,7 +126,7 @@ namespace Takoyaki
             auto fmt = boost::format{ "DX12ConstantBuffer, could not find constant %1%" } % name;
 
             LOGW << boost::str(fmt);
-            //throw new std::runtime_error(boost::str(fmt));
+            //throw std::runtime_error(boost::str(fmt));
         } else {
             // TODO: doing this for each upload is potentially slow, maybe write in a temporary buffer first?
             // https://developer.nvidia.com/content/constant-buffers-without-constant-pain-0

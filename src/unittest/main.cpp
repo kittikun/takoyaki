@@ -109,7 +109,7 @@ HWND MakeWindow(const Options& options)
         NULL, NULL, hInst, NULL);
 
     if (hWnd == nullptr)
-        throw new std::runtime_error("Could not create window");
+        throw std::runtime_error("Could not create window");
 
     if (!options.ciMode)
         ShowWindow(hWnd, SW_SHOWDEFAULT);

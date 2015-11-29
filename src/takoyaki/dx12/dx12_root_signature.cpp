@@ -135,7 +135,7 @@ namespace Takoyaki
     {
         if ((intermediate_) && (intermediate_->params.size() > 0)) {
             if (intermediate_->size > 64) {
-                throw new std::runtime_error{ "Root signature cannot be larger than 64 DWORD" };
+                throw std::runtime_error{ "Root signature cannot be larger than 64 DWORD" };
             }
 
             // the descriptors tables should be fully defined by now

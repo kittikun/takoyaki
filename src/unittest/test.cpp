@@ -1,5 +1,3 @@
-// Copyright(c) 2015 Kitti Vongsay
-//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -18,21 +16,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "test.h"
 
-#include <d3dcompiler.h>
+#include "test_framework.h"
 
-#include "../public/definitions.h"
-
-namespace Takoyaki
+Test::Test(TestFramework* owner) noexcept
+    : owner_{ owner }
 {
-    class DX12Context;
-    class IO;
-    class ThreadPool;
-    struct ShaderDesc;
+}
 
-    struct ShaderCompiler
-    {
-        static void compileShader(IO*, const ShaderDesc&, const std::shared_ptr<DX12Context>&);
-    };
-} // namespace Takoyaki
+std::vector<uint8_t> Test::loadFile(const std::wstring& filename)
+{
+    return owner_->loadFile(filename);
+}

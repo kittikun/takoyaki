@@ -1,6 +1,6 @@
 ﻿#include "main.h"
 
-#include <functional>
+#include <future>
 #include <ppltasks.h>
 #include <wrl.h>
 
@@ -99,18 +99,28 @@ void Main::Load(Platform::String^ entryPoint)
     desc.windowSize.y = window->Bounds.Height;
     desc.windowDpi = disp->LogicalDpi;
 
-    desc.loadAsyncFunc = std::bind<void>([this](const std::wstring& filename)
-    {
-        auto createVSTask = loadFileAsync(filename).then([=, this](std::vector<byte>& data)
-        {
-            framework_->loadAsyncFileResult(filename, data);
-        });
-    }, std::placeholders::_1);
-
     framework_->initialize(desc);
 
     // initialize app
-    app_->initialize(framework_.get());
+    auto loadFunc = [this](const std::wstring& filename, std::vector<uint8_t>& dest)
+    {
+        std::promise<std::vector<byte>> prom;
+        auto fut = prom.get_future();
+        auto path = filename;
+
+        std::replace(path.begin(), path.end(), '/', '\\');
+
+        auto createVSTask = loadFileAsync(path).then([&](std::vector<byte>& data)
+        {
+            prom.set_value(data);
+        });
+
+        auto res = fut.get();
+
+        dest.swap(res);
+    };
+
+    app_->initialize(framework_.get(), loadFunc);
 }
 
 // This method is called after the window becomes active.
@@ -216,7 +226,7 @@ Concurrency::task<std::vector<byte>> Main::loadFileAsync(const std::wstring& fil
 
     auto folder = Windows::ApplicationModel::Package::Current->InstalledLocation;
 
-    return create_task(folder->GetFileAsync(Platform::StringReference(filename.c_str()))).then([](StorageFile^ file)
+    return create_task(folder->GetFileAsync(Platform::StringReference(filename.c_str()))).then([=](StorageFile^ file)
     {
         return FileIO::ReadBufferAsync(file);
     }).then([](Streams::IBuffer^ fileBuffer) -> std::vector<byte>

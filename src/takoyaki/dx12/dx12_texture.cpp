@@ -76,6 +76,7 @@ namespace Takoyaki
             //layout = D3D12_TEXTURE_LAYOUT_64KB_STANDARD_SWIZZLE;
         }
 
+        // texture can only be default type
         prop.Type = UsageTypeToDX(texDesc.usage);
         prop.CPUPageProperty = cpu;
         prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
@@ -115,7 +116,7 @@ namespace Takoyaki
         }
 
         // multi-thread safe, no need to lock
-        device->getDXDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_NONE, &desc, initialState_, nullptr, IID_PPV_ARGS(&resource_));
+        DXCheckThrow(device->getDXDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_NONE, &desc, initialState_, nullptr, IID_PPV_ARGS(&resource_)));
 
         intermediate_.reset();
     }

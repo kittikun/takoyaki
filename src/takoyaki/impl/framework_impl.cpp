@@ -22,7 +22,6 @@
 #include "framework_impl.h"
 
 #include "../dx12/context.h"
-#include "../dx12/shader_compiler.h"
 #include "../dx12/dx12_texture.h"
 #include "../dx12/dx12_worker.h"
 #include "../impl/renderer_impl.h"
@@ -36,11 +35,6 @@ namespace Takoyaki
 {
     FrameworkImpl::FrameworkImpl()
     {
-    }
-
-    void FrameworkImpl::compileShader(const ShaderDesc& desc)
-    {
-        threadPool_->submitGeneric(std::bind(&ShaderCompiler::compileShader, &io_, desc, context_), 0);
     }
 
     void FrameworkImpl::initialize(const FrameworkDesc& desc)
@@ -71,18 +65,9 @@ namespace Takoyaki
             threadPool_->initialize<DX12Worker, DX12WorkerDesc>(workerDesc);
         }
 
-        if (!desc.loadAsyncFunc)
-            throw std::runtime_error{ "FrameworkDesc missing LoadFileAsyncFunc" };
-
-        io_.initialize(desc.loadAsyncFunc);
         renderer_.reset(new RendererImpl{ device_, context_, threadPool_ });
 
         LOGC_INDENT_END << "Initialization complete.";
-    }
-
-    void FrameworkImpl::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
-    {
-        io_.loadAsyncFileResult(makeUnixPath(filename), res);
     }
 
     void FrameworkImpl::present()

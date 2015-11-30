@@ -33,11 +33,6 @@ namespace Takoyaki
 
     Framework::~Framework() = default;
 
-    void Framework::compileShader(const ShaderDesc& desc)
-    {
-        impl_->compileShader(desc);
-    }
-
     std::unique_ptr<Renderer> Framework::getRenderer()
     {
         return std::make_unique<Renderer>(impl_->getRenderer());
@@ -51,11 +46,6 @@ namespace Takoyaki
     void Framework::initialize(const FrameworkDesc& desc)
     {
         impl_->initialize(desc);
-    }
-
-    void Framework::loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& res)
-    {
-        impl_->loadAsyncFileResult(filename, res);
     }
 
     void Framework::present()

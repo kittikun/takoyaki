@@ -23,13 +23,23 @@
 #include <fwd.h>
 #include <stdint.h>
 #include <string>
+#include <vector>
+
+class TestFramework;
 
 class Test
 {
 public:
+    Test(TestFramework*) noexcept;
     virtual ~Test() = default;
     virtual std::string getName() = 0;
     virtual void initialize(Takoyaki::Framework*) = 0;
     virtual void render(Takoyaki::Renderer*, uint_fast32_t) = 0;
     virtual void update(Takoyaki::Renderer*) = 0;
+
+protected:
+    std::vector<uint8_t> loadFile(const std::wstring&);
+
+private:
+    TestFramework* owner_;
 };

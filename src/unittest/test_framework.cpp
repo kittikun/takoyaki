@@ -20,16 +20,13 @@
 
 #include "test_framework.h"
 
+#include <iostream>
 #include <takoyaki.h>
 #include <boost/crc.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/format.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-
-#define BOOST_THREAD_PROVIDES_FUTURE
-#define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
-#include <boost/thread/future.hpp>
 
 TestFramework::TestFramework() noexcept
     : takoyaki_{ std::make_unique<Takoyaki::Framework>() }
@@ -46,7 +43,6 @@ TestFramework::~TestFramework()
 void TestFramework::initialize(Takoyaki::FrameworkDesc& desc, bool ciMode)
 {
     ciMode_ = ciMode;
-    desc.loadAsyncFunc = std::bind(&TestFramework::loadAsync, this, std::placeholders::_1);
 
     takoyaki_->initialize(desc);
 
@@ -86,49 +82,34 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc, bool ciMode)
     takoyaki_->present();
 }
 
-void TestFramework::loadAsync(const std::wstring& filename)
+std::vector<uint8_t> TestFramework::loadFile(const std::wstring& filename)
 {
-    // async read file using c++17 improvements to std::future via boost
+    std::vector<uint8_t> res;
+    auto basePath(boost::filesystem::current_path());
 
-    // the actual reading happens here
-    boost::future<std::vector<uint8_t>> f1 = boost::async([&filename]()
-    {
-        std::vector<uint8_t> res;
-        auto basePath(boost::filesystem::current_path());
+    if (IsDebuggerPresent())
+        basePath = boost::filesystem::system_complete("..");
 
-        if (IsDebuggerPresent())
-            basePath = boost::filesystem::system_complete("..");
+    auto path = basePath / filename;
+    boost::filesystem::ifstream stream;
 
-        auto path = basePath / filename;
-        boost::filesystem::ifstream stream;
+    stream.open(path);
 
-        stream.open(path);
+    if (stream) {
+        // get length of file
+        stream.seekg(0, stream.end);
 
-        if (stream) {
-            // get length of file
-            stream.seekg(0, stream.end);
+        int length = (int)stream.tellg();
 
-            int length = (int)stream.tellg();
+        stream.seekg(0, stream.beg);
+        res.resize(length);
+        stream.read(reinterpret_cast<char*>(&res.front()), length);
+        stream.close();
+    } else {
+        throw std::runtime_error("Could not open file");
+    }
 
-            stream.seekg(0, stream.beg);
-            res.resize(length);
-            stream.read(reinterpret_cast<char*>(&res.front()), length);
-            stream.close();
-        } else {
-            throw std::runtime_error("Could not open file");
-        }
-
-        return res;
-    });
-
-    // once the reading is finished, notify framework
-    // the two get below won't block anymore thank to .then
-    boost::future<void> f2 = f1.then([this, &filename](boost::future<std::vector<uint8_t>> f)
-    {
-        takoyaki_->loadAsyncFileResult(filename, f.get());
-    });
-
-    f2.get();
+    return res;
 }
 
 bool TestFramework::process()

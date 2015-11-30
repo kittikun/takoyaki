@@ -22,6 +22,7 @@
 #include "dx12_buffer.h"
 
 #include "device.h"
+#include "dxutility.h"
 
 namespace Takoyaki
 {
@@ -67,7 +68,7 @@ namespace Takoyaki
         desc.Width = intermediate_->size;
 
         // multi-thread safe, no need to lock
-        device->getDXDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_NONE, &desc, intermediate_->initialState, nullptr, IID_PPV_ARGS(&resource_));
+        DXCheckThrow(device->getDXDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_NONE, &desc, intermediate_->initialState, nullptr, IID_PPV_ARGS(&resource_)));
 
         intermediate_.reset();
     }

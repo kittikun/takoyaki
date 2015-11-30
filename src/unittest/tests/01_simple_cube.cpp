@@ -22,6 +22,8 @@
 
 #include "01_simple_cube.h"
 
+#include <dx12_shader_compiler.h>
+#include <dx12_shader_parser.h>
 #include <array>
 #include <takoyaki.h>
 
@@ -31,24 +33,43 @@ struct Vertex
     glm::vec3 color;
 };
 
+Test01::Test01(TestFramework* owner) noexcept
+    :Test{ owner }
+{
+}
+
 void Test01::initialize(Takoyaki::Framework* framework)
 {
     auto renderer = framework->getRenderer();
 
-    // first compile shaders for this sample
-    std::array<Takoyaki::ShaderDesc, 2> shDescs;
+    Okonomi::DX12ShaderCompiler sc;
 
-    shDescs[0].name = "SimpleVS";
-    shDescs[0].path = "data/SimpleVS.hlsl";
-    shDescs[0].type = Takoyaki::EShaderType::VERTEX;
-    shDescs[0].entry = "main";
-    shDescs[1].name = "SimplePS";
-    shDescs[1].path = "data/SimplePS.hlsl";
-    shDescs[1].type = Takoyaki::EShaderType::PIXEL;
-    shDescs[1].entry = "main";
+    // compile shaders
+    auto raw = loadFile(L"data/SimpleVS.hlsl");
+    std::string src{ raw.begin(), raw.end() };
+    Okonomi::ShaderDesc desc;
 
-    for (auto& shDesc : shDescs)
-        framework->compileShader(shDesc);
+    desc.name = "SimpleVS";
+    desc.path = "data/SimpleVS.hlsl";
+    desc.type = Okonomi::EShaderType::VERTEX;
+    desc.entry = "main";
+    vs_ = sc.compileShader(src, desc);
+
+    raw = loadFile(L"data/SimplePS.hlsl");
+    src = std::string(raw.begin(), raw.end());
+    desc.name = "SimplePS";
+    desc.path = "data/SimplePS.hlsl";
+    desc.type = Okonomi::EShaderType::PIXEL;
+    desc.entry = "main";
+    ps_ = sc.compileShader(src, desc);
+
+    // generate constant tables
+    Okonomi::DX12ShaderParser sp;
+
+    auto spRes = sp.ParseShader(vs_);
+
+    // in this sample there is only one constant buffer
+    cbuffer_ = std::move(spRes.cbuffers[0]);
 
     // create vertex layout
     auto layout = renderer->createInputLayout("SimpleVertex");
@@ -74,8 +95,8 @@ void Test01::initialize(Takoyaki::Framework* framework)
 
     psDesc.inputLayout = "SimpleVertex";
     psDesc.rootSignature = "SimpleSignature";
-    psDesc.shaders[Takoyaki::EShaderType::VERTEX] = shDescs[0].name;
-    psDesc.shaders[Takoyaki::EShaderType::PIXEL] = shDescs[1].name;
+    psDesc.shaders[Takoyaki::EShaderType::VERTEX] = &vs_;
+    psDesc.shaders[Takoyaki::EShaderType::PIXEL] = &ps_;
     psDesc.depthStencilState.depthEnable = false;
     psDesc.formatRenderTarget[0] = Takoyaki::EFormat::B8G8R8A8_UNORM;
     psDesc.numRenderTargets = 1;
@@ -161,10 +182,7 @@ void Test01::update(Takoyaki::Renderer* renderer)
     // update constant buffer
     auto mvp = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
 
-    // constant buffer might by empty if shader hasn't been loaded yet
-    if (mvp) {
-        mvp->setMatrix4x4("model", glm::mat4(1.0f));
-        mvp->setMatrix4x4("projection", perspective);
-        mvp->setMatrix4x4("view", lookAt);
-    }
+    cbuffer_.setValue<glm::mat4>("model", glm::mat4(1.0f));
+    cbuffer_.setValue<glm::mat4>("projection", perspective);
+    cbuffer_.setValue<glm::mat4>("view", lookAt);
 }

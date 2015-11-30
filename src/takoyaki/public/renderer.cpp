@@ -33,7 +33,6 @@
 #include "../impl/constant_buffer_impl.h"
 #include "../impl/index_buffer_impl.h"
 #include "../impl/input_layout_impl.h"
-#include "../impl/pipeline_state_impl.h"
 #include "../impl/renderer_impl.h"
 #include "../impl/root_signature_impl.h"
 #include "../impl/texture_impl.h"

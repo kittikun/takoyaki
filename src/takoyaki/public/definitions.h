@@ -28,8 +28,6 @@
 
 namespace Takoyaki
 {
-    using LoadFileAsyncFunc = std::function<void(const std::wstring&)>;
-
     enum class EBlend
     {
         ZERO,
@@ -271,7 +269,6 @@ namespace Takoyaki
         void*                   windowHandle;
         glm::vec2               windowSize;
         float                   windowDpi;
-        LoadFileAsyncFunc       loadAsyncFunc;
     };
 
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770387(v=vs.85).aspx
@@ -316,19 +313,8 @@ namespace Takoyaki
         std::string rootSignature;
         MultiSampleDesc multiSampleState;
         uint_fast32_t sampleMask;
-        std::unordered_map<EShaderType, std::string> shaders;
+        std::unordered_map<EShaderType, void*> shaders;
         ETopologyType topology;
-    };
-
-    struct ShaderDesc
-    {
-        ShaderDesc() noexcept;
-
-        std::string name;
-        EShaderType type;
-        std::string path;
-        std::string entry;
-        bool debug;
     };
 
     struct TextureDesc

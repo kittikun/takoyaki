@@ -24,6 +24,9 @@
 #include <fwd.h>
 #include <glm/glm.hpp>
 
+#include <functional>
+#include <vector>
+
 class App
 {
     App(const App&) = delete;
@@ -35,7 +38,9 @@ public:
     App() = default;
     ~App() = default;
 
-    void initialize(Takoyaki::Framework*);
+    using LoadFunc = std::function<void(const std::wstring&, std::vector<uint8_t>&)>;
+
+    void initialize(Takoyaki::Framework*, LoadFunc);
     void render(Takoyaki::Renderer*);
     void update(Takoyaki::Renderer*, Takoyaki::Framework*);
 
@@ -45,4 +50,5 @@ private:
     uint_fast32_t rsCBIndex_;
     glm::vec4 viewport_;
     glm::uvec4 scissor_;
+    LoadFunc loadFunc_;
 };

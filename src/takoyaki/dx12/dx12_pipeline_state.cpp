@@ -31,14 +31,12 @@ namespace Takoyaki
     DX12PipelineState::DX12PipelineState(const PipelineStateDesc& desc) noexcept
         : intermediate_{ std::make_unique<PipelineStateDesc>(desc) }
     {
-
     }
 
     DX12PipelineState::DX12PipelineState(DX12PipelineState&& other) noexcept
-        : state_{std::move(other.state_)}
+        : state_{ std::move(other.state_) }
         , intermediate_{ std::move(other.intermediate_) }
     {
-
     }
 
     // device has already been locked from context
@@ -58,31 +56,31 @@ namespace Takoyaki
             auto found = intermediate_->shaders.find(EShaderType::DOMAIN);
 
             if (found != intermediate_->shaders.end()) {
-                desc.DS = context->getShader(found->first, found->second);
+                desc.DS = *(static_cast<D3D12_SHADER_BYTECODE*>(found->second));
             }
 
             found = intermediate_->shaders.find(EShaderType::GEOMETRY);
 
             if (found != intermediate_->shaders.end()) {
-                desc.GS = context->getShader(found->first, found->second);
+                desc.GS = *(static_cast<D3D12_SHADER_BYTECODE*>(found->second));
             }
 
             found = intermediate_->shaders.find(EShaderType::HULL);
 
             if (found != intermediate_->shaders.end()) {
-                desc.HS = context->getShader(found->first, found->second);
+                desc.HS = *(static_cast<D3D12_SHADER_BYTECODE*>(found->second));
             }
 
             found = intermediate_->shaders.find(EShaderType::PIXEL);
 
             if (found != intermediate_->shaders.end()) {
-                desc.PS = context->getShader(found->first, found->second);
+                desc.PS = *(static_cast<D3D12_SHADER_BYTECODE*>(found->second));
             }
 
             found = intermediate_->shaders.find(EShaderType::VERTEX);
 
             if (found != intermediate_->shaders.end()) {
-                desc.VS = context->getShader(found->first, found->second);
+                desc.VS = *(static_cast<D3D12_SHADER_BYTECODE*>(found->second));
             }
 
             // input layouts
@@ -99,7 +97,7 @@ namespace Takoyaki
             desc.PrimitiveTopologyType = TopologyTypeToDX(intermediate_->topology);
             desc.NumRenderTargets = intermediate_->numRenderTargets;
             desc.SampleDesc = MultiSampleDescToDX(intermediate_->multiSampleState);
-            
+
             for (size_t i = 0; i < intermediate_->formatRenderTarget.size(); ++i)
                 desc.RTVFormats[i] = FormatToDX(intermediate_->formatRenderTarget[i]);
 
@@ -107,5 +105,4 @@ namespace Takoyaki
             intermediate_.reset();
         }
     }
-
 } // namespace Takoyaki

@@ -46,7 +46,7 @@ int main(int ac, char** av)
 
     TestFramework framework;
     std::vector<TestFramework::TestDesc> tests{
-        std::make_tuple(std::make_shared<Test01>(), 0x7c52fe2b)
+        std::make_tuple(std::make_shared<Test01>(&framework), 0x7c52fe2b)
     };
 
     // we need to add tests before we initialize the framework since they will be initialized at the same time
@@ -126,7 +126,7 @@ std::pair<bool, Options> ParseOptions(int ac, char** av)
 
     generic.add_options()
         ("help", "produce help message")
-        ("ci", boost::program_options::value<bool>()->default_value(true), "CI mode (windowless)")
+        ("ci", boost::program_options::value<bool>()->default_value(false), "CI mode (windowless)")
         ("output,o", boost::program_options::value<std::string>(), "Output results into a file as XML");
 
     window.add_options()

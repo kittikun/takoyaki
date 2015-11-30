@@ -81,9 +81,6 @@ namespace Takoyaki
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
         inline DescriptorHeapSRV& getSRVDescHeapCollection() { return descHeapSRV_; }
 
-        // WARNING: will yield until shader is created
-        inline D3D12_SHADER_BYTECODE getShader(EShaderType type, const std::string& name) { return getShaderImpl(shaders_[type], name); }
-
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
 
@@ -97,17 +94,17 @@ namespace Takoyaki
         void destroyResource(EResourceType, uint_fast32_t);
 
         const DX12IndexBuffer& getIndexBuffer(uint_fast32_t);
-        auto getInputLayout(const std::string&) -> InputLayoutReturn;
-        auto getPipelineState(const std::string&) -> PipelineStateReturn;
-        auto getRootSignature(const std::string&) -> RootSignatureReturn;
+        auto getInputLayout(const std::string&)->InputLayoutReturn;
+        auto getPipelineState(const std::string&)->PipelineStateReturn;
+        auto getRootSignature(const std::string&)->RootSignatureReturn;
         DX12Texture& getTexture(uint_fast32_t);
         const DX12VertexBuffer& getVertexBuffer(uint_fast32_t);
 
         //////////////////////////////////////////////////////////////////////////
-        // External usage: 
+        // External usage:
 
         void compilePipelineStateObjects();
-        auto getConstantBuffer(const std::string&) -> ConstantBufferReturn;
+        auto getConstantBuffer(const std::string&)->ConstantBufferReturn;
 
     private:
         D3D12_SHADER_BYTECODE getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>&, const std::string&);

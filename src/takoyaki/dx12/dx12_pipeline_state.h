@@ -46,13 +46,6 @@ namespace Takoyaki
         inline ID3D12PipelineState* getPipelineState() { return state_.Get(); }
         inline bool isReady() const { return state_.Get() != nullptr; }
 
-        //////////////////////////////////////////////////////////////////////////
-        // Internal & External
-
-        void setRootSignature(const std::string& name) { intermediate_->rootSignature = name; }
-        void setInputLayout(const std::string& name) { intermediate_->inputLayout = name; }
-        void setShader(EShaderType type, std::string& name) { intermediate_->shaders[type] = name; }
-
     private:
         Microsoft::WRL::ComPtr<ID3D12PipelineState>	state_;
         std::unique_ptr<PipelineStateDesc> intermediate_;

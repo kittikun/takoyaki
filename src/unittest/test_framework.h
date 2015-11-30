@@ -39,7 +39,7 @@ public:
     TestFramework() noexcept;
     ~TestFramework();
 
-    void loadAsync(const std::wstring&);
+    std::vector<uint8_t> loadFile(const std::wstring&);
     void initialize(Takoyaki::FrameworkDesc&, bool);
     bool process();
     void save(const std::string&);

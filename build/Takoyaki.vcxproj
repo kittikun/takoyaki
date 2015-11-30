@@ -42,19 +42,16 @@
     <ClCompile Include="..\src\takoyaki\dx12\dxutility.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_input_layout.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_texture.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\shader_compiler.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_worker.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\command_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\constant_buffer_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\index_buffer_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\input_layout_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\pipeline_state_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\renderer_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\root_signature_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\texture_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\impl\vertex_buffer_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\io.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -66,7 +63,6 @@
     <ClCompile Include="..\src\takoyaki\public\index_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\public\input_layout.cpp" />
     <ClCompile Include="..\src\takoyaki\public\math_utils.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\pipeline_state.cpp" />
     <ClCompile Include="..\src\takoyaki\public\renderer.cpp" />
     <ClCompile Include="..\src\takoyaki\public\root_signature.cpp" />
     <ClCompile Include="..\src\takoyaki\public\texture.cpp" />
@@ -91,19 +87,16 @@
     <ClInclude Include="..\src\takoyaki\dx12\dx12_input_layout.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_texture.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_pipeline_state.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\shader_compiler.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_worker.h" />
     <ClInclude Include="..\src\takoyaki\impl\command_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\constant_buffer_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\index_buffer_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\input_layout_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\pipeline_state_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\renderer_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\root_signature_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\texture_impl.h" />
     <ClInclude Include="..\src\takoyaki\impl\vertex_buffer_impl.h" />
-    <ClInclude Include="..\src\takoyaki\io.h" />
     <ClInclude Include="..\src\takoyaki\pch.h" />
     <ClInclude Include="..\src\takoyaki\public\command.h" />
     <ClInclude Include="..\src\takoyaki\public\constant_buffer.h" />
@@ -113,7 +106,6 @@
     <ClInclude Include="..\src\takoyaki\public\index_buffer.h" />
     <ClInclude Include="..\src\takoyaki\public\input_layout.h" />
     <ClInclude Include="..\src\takoyaki\public\math_utils.h" />
-    <ClInclude Include="..\src\takoyaki\public\pipeline_state.h" />
     <ClInclude Include="..\src\takoyaki\public\renderer.h" />
     <ClInclude Include="..\src\takoyaki\public\root_signature.h" />
     <ClInclude Include="..\src\takoyaki\public\takoyaki.h" />

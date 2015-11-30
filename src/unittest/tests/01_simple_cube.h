@@ -24,6 +24,9 @@
 
 #include <memory>
 #include <glm/glm.hpp>
+#include <d3d12.h>
+
+#include <dx12_constant_table.h>
 
 class Test01 : public Test
 {
@@ -33,7 +36,7 @@ class Test01 : public Test
     Test01& operator=(Test01&&) = delete;
 
 public:
-    Test01() = default;
+    Test01(TestFramework*) noexcept;
     ~Test01() override = default;
 
     std::string getName() override { return "01_simple_cube"; };
@@ -47,4 +50,9 @@ private:
     uint_fast32_t rsCBIndex_;
     glm::vec4 viewport_;
     glm::uvec4 scissor_;
+
+    // will abstract once vulkan abstration is added
+    Okonomi::DX12ConstantTable cbuffer_;
+    D3D12_SHADER_BYTECODE vs_;
+    D3D12_SHADER_BYTECODE ps_;
 };

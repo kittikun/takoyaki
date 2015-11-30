@@ -31,24 +31,32 @@ struct Vertex
     glm::vec3 color;
 };
 
-void App::initialize(Takoyaki::Framework* framework)
+void App::initialize(Takoyaki::Framework* framework, LoadFunc func)
 {
+    loadFunc_ = func;
+
     auto renderer = framework->getRenderer();
 
+    std::vector<uint8_t> src;
+
+    loadFunc_(L"data/SimpleVS.hlsl", src);
+
+    int i = 0;
+
     // first compile shaders for this sample
-    std::array<Takoyaki::ShaderDesc, 2> shDescs;
+    //std::array<Takoyaki::ShaderDesc, 2> shDescs;
 
-    shDescs[0].name = "SimpleVS";
-    shDescs[0].path = "data/SimpleVS.hlsl";
-    shDescs[0].type = Takoyaki::EShaderType::VERTEX;
-    shDescs[0].entry = "main";
-    shDescs[1].name = "SimplePS";
-    shDescs[1].path = "data/SimplePS.hlsl";
-    shDescs[1].type = Takoyaki::EShaderType::PIXEL;
-    shDescs[1].entry = "main";
+    //shDescs[0].name = "SimpleVS";
+    //shDescs[0].path = "data/SimpleVS.hlsl";
+    //shDescs[0].type = Takoyaki::EShaderType::VERTEX;
+    //shDescs[0].entry = "main";
+    //shDescs[1].name = "SimplePS";
+    //shDescs[1].path = "data/SimplePS.hlsl";
+    //shDescs[1].type = Takoyaki::EShaderType::PIXEL;
+    //shDescs[1].entry = "main";
 
-    for (auto& shDesc : shDescs)
-        framework->compileShader(shDesc);
+    //for (auto& shDesc : shDescs)
+    //    framework->compileShader(shDesc);
 
     // create vertex layout
     auto layout = renderer->createInputLayout("SimpleVertex");
@@ -74,8 +82,8 @@ void App::initialize(Takoyaki::Framework* framework)
 
     psDesc.inputLayout = "SimpleVertex";
     psDesc.rootSignature = "SimpleSignature";
-    psDesc.shaders[Takoyaki::EShaderType::VERTEX] = shDescs[0].name;
-    psDesc.shaders[Takoyaki::EShaderType::PIXEL] = shDescs[1].name;
+    //psDesc.shaders[Takoyaki::EShaderType::VERTEX] = shDescs[0].name;
+    //psDesc.shaders[Takoyaki::EShaderType::PIXEL] = shDescs[1].name;
     psDesc.depthStencilState.depthEnable = false;
     psDesc.formatRenderTarget[0] = Takoyaki::EFormat::B8G8R8A8_UNORM;
     psDesc.numRenderTargets = 1;

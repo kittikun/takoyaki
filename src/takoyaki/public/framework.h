@@ -47,9 +47,6 @@ namespace Takoyaki
         void present();
         void validateDevice() const;
         void terminate();
-        void loadAsyncFileResult(const std::wstring& filename, const std::vector<uint8_t>& result);
-
-        void compileShader(const ShaderDesc& desc);
 
         std::unique_ptr<Renderer> getRenderer();
 

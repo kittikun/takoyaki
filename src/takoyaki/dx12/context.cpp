@@ -536,22 +536,6 @@ namespace Takoyaki
         return RootSignatureReturn(found->second, std::move(lock));
     }
 
-    D3D12_SHADER_BYTECODE DX12Context::getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>& map, const std::string& name)
-    {
-        // called when trying to create a PSO so if needed, wait until shader is compiled
-        auto lock = map.getReadLock();
-        auto found = map.find(name);
-
-        while (found == map.end()) {
-            lock.unlock();
-            std::this_thread::yield();
-            lock.lock();
-            found = map.find(name);
-        }
-
-        return found->second;
-    }
-
     DX12Texture& DX12Context::getTexture(uint_fast32_t id)
     {
         auto lock = textures_.getReadLock();

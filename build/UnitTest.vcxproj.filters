@@ -18,6 +18,9 @@
     <ClCompile Include="..\src\unittest\test_framework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\unittest\test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\unittest\tests\01_simple_cube.h">

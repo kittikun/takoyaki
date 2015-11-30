@@ -7,5 +7,5 @@
 
 Low level abstraction API, currently DX12 and later on Vulkan. No metal support planned yet.
 
-Extensions are available via Okoniyaki
+Extensions are available via Okonomiyaki
 - [Shader compiler](https://github.com/kittikun/okonomi-shadercompiler)

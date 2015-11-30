@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "../io.h"
 #include "../dx12/device.h"
 #include "../public/definitions.h"
 
@@ -49,10 +48,7 @@ namespace Takoyaki
         void terminate();
         void validateDevice() const;
 
-        void loadAsyncFileResult(const std::wstring&, const std::vector<uint8_t>&);
         inline std::shared_ptr<RendererImpl>& getRenderer() { return renderer_; }
-
-        void compileShader(const ShaderDesc&);
 
         inline const glm::vec2& getWindowSize() const { return device_->getWindowSize(); }
 
@@ -61,7 +57,6 @@ namespace Takoyaki
         inline void setWindowDpi(float value) { device_->setWindowDpi(value); }
 
     private:
-        IO io_;
         std::shared_ptr<ThreadPool> threadPool_;
         std::shared_ptr<DX12Context> context_;
         std::shared_ptr<RendererImpl> renderer_;

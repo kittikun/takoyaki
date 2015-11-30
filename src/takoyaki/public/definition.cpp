@@ -26,10 +26,9 @@
 namespace Takoyaki
 {
     BlendDesc::BlendDesc() noexcept
-        : alphaToCoverageEnable{false}
-        , independentBlendEnable{false}
+        : alphaToCoverageEnable{ false }
+        , independentBlendEnable{ false }
     {
-
     }
 
     DepthStencilDesc::DepthStencilDesc() noexcept
@@ -42,7 +41,6 @@ namespace Takoyaki
         , frontFace{}
         , backFace{}
     {
-
     }
 
     FrameworkDesc::FrameworkDesc() noexcept
@@ -59,7 +57,6 @@ namespace Takoyaki
         : count{ 1 }
         , quality{ 0 }
     {
-
     }
 
     PipelineStateDesc::PipelineStateDesc() noexcept
@@ -96,13 +93,6 @@ namespace Takoyaki
         , logicOp{ ELogicOp::NOOP }
         , renderTargetWriteMask{ EColorMask::ALL }
     {
-
-    }
-
-    ShaderDesc::ShaderDesc() noexcept
-        : debug{ false }
-    {
-
     }
 
     StencilOpDesc::StencilOpDesc() noexcept
@@ -111,7 +101,6 @@ namespace Takoyaki
         , pass{ EStencilOp::KEEP }
         , func{ ECompFunc::ALWAYS }
     {
-
     }
 
     TextureDesc::TextureDesc() noexcept
@@ -120,6 +109,5 @@ namespace Takoyaki
         , depth{ 1 }
         , mipmaps{ 1 }
     {
-
     }
 } // namespace Takoyaki

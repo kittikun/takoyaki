@@ -83,9 +83,10 @@ namespace Takoyaki
 #if defined(_DEBUG)
         Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
 
-        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
-            debugController->EnableDebugLayer();
-        }
+        // if an exception if thrown here, you might need to install the graphics tools
+        // https://msdn.microsoft.com/en-us/library/mt125501.aspx
+        DXCheckThrow(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
+        debugController->EnableDebugLayer();
 #endif
 
         DXCheckThrow(CreateDXGIFactory1(IID_PPV_ARGS(&DXGIFactory_)));

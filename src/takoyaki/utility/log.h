@@ -22,14 +22,16 @@
 
 #ifdef _DEBUG
 
+#pragma comment(lib, "kernel32.lib")
+
 #include "../public/definitions.h"
 
 #define LOG_IDENTIFY_THREAD BOOST_LOG_SCOPED_THREAD_TAG("ThreadID", std::this_thread::get_id());
 
-#define LOGC BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Core) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Core) 
+#define LOGC BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Core) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Core)
 #define LOGE BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Error)
 #define LOGI BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Info)
-#define LOGS BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Shader) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Shader) 
+#define LOGS BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Shader) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Shader)
 #define LOGW BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Warning)
 
 #define LOGC_INDENT_START Takoyaki::Log::StartIndent(Takoyaki::Log::Log_Core); ## LOGC
@@ -70,8 +72,8 @@ namespace Takoyaki
 #define LOGI std::cout
 #define LOGS std::cout
 #define LOGW std::cout
-#define LOGC_INDENT_START std::cout 
-#define LOGS_INDENT_START std::cout 
+#define LOGC_INDENT_START std::cout
+#define LOGS_INDENT_START std::cout
 #define LOGC_INDENT_END std::cout
 #define LOGS_INDENT_END std::cout
 

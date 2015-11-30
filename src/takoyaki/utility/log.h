@@ -22,8 +22,6 @@
 
 #ifdef _DEBUG
 
-#pragma comment(lib, "kernel32.lib")
-
 #include "../public/definitions.h"
 
 #define LOG_IDENTIFY_THREAD BOOST_LOG_SCOPED_THREAD_TAG("ThreadID", std::this_thread::get_id());

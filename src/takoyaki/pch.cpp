@@ -19,3 +19,7 @@
 // THE SOFTWARE.
 
 #include "pch.h"
+
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "kernel32.lib")

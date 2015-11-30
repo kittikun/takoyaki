@@ -20,8 +20,6 @@
 #pragma once
 
 #pragma comment(lib, "Takoyaki.lib")
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
 
 #include <command.h>
 #include <constant_buffer.h>

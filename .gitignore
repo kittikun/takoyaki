@@ -32,3 +32,4 @@ build/ipch/
 *.opensdf
 bin/
 *.xml
+*.opendb

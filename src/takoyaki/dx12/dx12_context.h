@@ -20,9 +20,10 @@
 
 #pragma once
 
-#include "device.h"
+#include "dx12_device.h"
 #include "descriptor_heap.h"
 #include "dx12_buffer.h"
+#include "dx12_command_builder.h"
 #include "dx12_constant_buffer.h"
 #include "dx12_index_buffer.h"
 #include "dx12_input_layout.h"
@@ -80,6 +81,11 @@ namespace Takoyaki
         // Get
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
         inline DescriptorHeapSRV& getSRVDescHeapCollection() { return descHeapSRV_; }
+        inline RWLockMap<std::string, DX12ConstantBuffer>& getConstantBuffers() { return constantBuffers_; }
+        inline RWLockMap<uint_fast32_t, DX12IndexBuffer>& getIndexBuffers() { return indexBuffers_; }
+        inline RWLockMap<std::string, DX12RootSignature>& getRootSignatures() { return rootSignatures_; }
+        inline RWLockMap<uint_fast32_t, DX12Texture>& getTextures() { return textures_; }
+        inline RWLockMap<uint_fast32_t, DX12VertexBuffer>& getVertexBuffers() { return vertexBuffers_; }
 
         //////////////////////////////////////////////////////////////////////////
         // Internal & External
@@ -107,12 +113,12 @@ namespace Takoyaki
         auto getConstantBuffer(const std::string&)->ConstantBufferReturn;
 
     private:
-        D3D12_SHADER_BYTECODE getShaderImpl(RWLockMap<std::string, D3D12_SHADER_BYTECODE>&, const std::string&);
         void compileMain(const std::string& name);
 
     private:
         std::shared_ptr<DX12Device> device_;
         std::weak_ptr<ThreadPool> threadPool_;
+        DX12CommandBuilder cmdBuilder_;
 
         DescriptorHeapRTV descHeapRTV_;
         DescriptorHeapSRV descHeapSRV_;

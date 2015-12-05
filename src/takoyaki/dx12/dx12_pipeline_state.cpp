@@ -21,9 +21,9 @@
 #include "pch.h"
 #include "dx12_pipeline_state.h"
 
-#include "device.h"
+#include "dx12_device.h"
 #include "dxutility.h"
-#include "context.h"
+#include "dx12_context.h"
 #include "dx12_root_signature.h"
 
 namespace Takoyaki

@@ -19,11 +19,11 @@
 // THE SOFTWARE.
 
 #include "pch.h"
-#include "device.h"
+#include "dx12_device.h"
 
 #include <thread>
 
-#include "context.h"
+#include "dx12_context.h"
 #include "descriptor_heap.h"
 #include "dxutility.h"
 #include "../utility/log.h"

@@ -36,6 +36,7 @@ namespace Takoyaki
     {
         CLEAR_COLOR,
         COPY_RENDERTARGET,
+        COPY_REGION_TEXTURE2D,
         DRAW_INDEXED,
         SET_INDEX_BUFFER,
         SET_ROOT_SIGNATURE,
@@ -70,6 +71,7 @@ namespace Takoyaki
 
         void clearRenderTarget(const glm::vec4&);
         void copyRenderTargetToTexture(uint_fast32_t);
+        void copyRegion(uint_fast32_t, const glm::i16vec2&, uint_fast32_t, const glm::ivec4&);
         void drawIndexed(uint_fast32_t, uint_fast32_t, int_fast32_t);
         void setIndexBuffer(uint_fast32_t);
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }

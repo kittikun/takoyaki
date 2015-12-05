@@ -20,7 +20,7 @@
 #include "pch.h"
 #include "texture_impl.h"
 
-#include "../dx12/context.h"
+#include "../dx12/dx12_context.h"
 
 namespace Takoyaki
 {

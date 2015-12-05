@@ -44,6 +44,10 @@ namespace Takoyaki
         // copy
         void copyRenderTargetToTexture(uint_fast32_t destTex);
 
+        // 2D Texture
+        // srcRect: xy are top-left, zw are size
+        void copyRegion(uint_fast32_t dstTex, const glm::i16vec2& dstTopLeft, uint_fast32_t srcTex, const glm::ivec4& srcRect);
+
         // draw commands
         void drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex);
 

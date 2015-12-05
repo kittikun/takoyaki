@@ -26,8 +26,8 @@
 #include <boost/format.hpp>
 
 #include "dx12_buffer.h"
-#include "context.h"
-#include "device.h"
+#include "dx12_context.h"
+#include "dx12_device.h"
 #include "../utility/log.h"
 
 namespace Takoyaki

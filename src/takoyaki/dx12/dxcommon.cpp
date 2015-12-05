@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "dxcommon.h"
 
-#include "device.h"
+#include "dx12_device.h"
 
 namespace Takoyaki
 {

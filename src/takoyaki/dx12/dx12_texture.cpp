@@ -23,7 +23,7 @@
 
 #include <intsafe.h>
 
-#include "context.h"
+#include "dx12_context.h"
 #include "../public/definitions.h"
 
 namespace Takoyaki

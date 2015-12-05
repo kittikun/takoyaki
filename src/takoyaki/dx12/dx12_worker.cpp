@@ -21,8 +21,8 @@
 #include "pch.h"
 #include "dx12_worker.h"
 
-#include "context.h"
-#include "device.h"
+#include "dx12_context.h"
+#include "dx12_device.h"
 #include "dxutility.h"
 
 namespace Takoyaki

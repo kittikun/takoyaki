@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "index_buffer_impl.h"
 
-#include "../dx12/context.h"
+#include "../dx12/dx12_context.h"
 #include "../dx12/dx12_index_buffer.h"
 
 namespace Takoyaki

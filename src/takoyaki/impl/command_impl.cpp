@@ -55,6 +55,10 @@ namespace Takoyaki
         desc_.commands.push_back(std::make_pair(ECommandType::COPY_RENDERTARGET, destTex));
     }
 
+    void CommandImpl::copyRegion(uint_fast32_t destTex, const glm::i16vec2& dstTopLeft, uint_fast32_t srcTex, const glm::ivec4& srcRect)
+    {
+    }
+
     void CommandImpl::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)
     {
         desc_.commands.push_back(std::make_pair(ECommandType::DRAW_INDEXED, std::make_tuple(indexCount, startIndex, baseVertex)));

@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "dx12_vertex_buffer.h"
 
-#include "device.h"
+#include "dx12_device.h"
 #include "dx12_buffer.h"
 #include "dx12_worker.h"
 #include "dxsystem.h"

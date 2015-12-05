@@ -28,8 +28,8 @@
 #include "texture_impl.h"
 #include "vertex_buffer_impl.h"
 #include "../thread_pool.h"
-#include "../dx12/context.h"
-#include "../dx12/device.h"
+#include "../dx12/dx12_context.h"
+#include "../dx12/dx12_device.h"
 
 namespace Takoyaki
 {
@@ -39,7 +39,6 @@ namespace Takoyaki
         , threadPool_{ threadPool }
         , uidGenerator_{ device->getFrameCount() } // the first numbers are always reserved for the swap chain
     {
-
     }
 
     void RendererImpl::buildCommand(const CommandDesc& desc, const std::string& pipelineState) const
@@ -70,7 +69,7 @@ namespace Takoyaki
     std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, EFormat format, uint_fast32_t sizeByte)
     {
         auto id = uidGenerator_.fetch_add(1);
-        std::shared_lock<std::shared_timed_mutex> readLock{rwMutex_};
+        std::shared_lock<std::shared_timed_mutex> readLock{ rwMutex_ };
 
         context_->createBuffer(DX12Context::EResourceType::INDEX_BUFFER, id, data, format, 0, sizeByte);
 

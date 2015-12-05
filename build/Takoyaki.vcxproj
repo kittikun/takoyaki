@@ -27,11 +27,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_command_builder.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_constant_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\descriptor_heap.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\descriptor_ranges.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\device.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\context.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_device.cpp" />
+    <ClCompile Include="..\src\takoyaki\dx12\dx12_context.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_index_buffer.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_pipeline_state.cpp" />
     <ClCompile Include="..\src\takoyaki\dx12\dx12_buffer.cpp" />
@@ -72,11 +73,12 @@
     <ClCompile Include="..\src\takoyaki\utility\win_utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_command_builder.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_constant_buffer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\descriptor_heap.h" />
     <ClInclude Include="..\src\takoyaki\dx12\descriptor_ranges.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\device.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\context.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_device.h" />
+    <ClInclude Include="..\src\takoyaki\dx12\dx12_context.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_buffer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_index_buffer.h" />
     <ClInclude Include="..\src\takoyaki\dx12\dx12_root_signature.h" />

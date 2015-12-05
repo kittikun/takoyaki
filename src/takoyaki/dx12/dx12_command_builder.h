@@ -18,27 +18,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pch.h"
-#include "vertex_buffer_impl.h"
-
-#include "../dx12/dx12_context.h"
-#include "../dx12/dx12_vertex_buffer.h"
+#pragma once
 
 namespace Takoyaki
 {
-    VertexBufferImpl::VertexBufferImpl(const std::shared_ptr<DX12Context>& context, const DX12VertexBuffer& buffer, uint_fast32_t handle) noexcept
-        : context_{ context }
-        , buffer_{ buffer }
-        , handle_{ handle }
+    struct CommandDesc;
+    class DX12Context;
+    class DX12Device;
+    struct TaskCommand;
+
+    class DX12CommandBuilder
     {
+        DX12CommandBuilder(const DX12CommandBuilder&) = delete;
+        DX12CommandBuilder& operator=(const DX12CommandBuilder&) = delete;
+        DX12CommandBuilder(DX12CommandBuilder&&) = delete;
+        DX12CommandBuilder& operator=(DX12CommandBuilder&&) = delete;
 
-    }
+    public:
+        DX12CommandBuilder(DX12Context*, DX12Device*);
+        ~DX12CommandBuilder() = default;
 
-    VertexBufferImpl::~VertexBufferImpl()
-    {
-        auto context = context_.lock();
+        bool buildCommand(const CommandDesc&, TaskCommand*);
 
-        context->destroyResource(DX12Context::EResourceType::VERTEX_BUFFER, handle_);
-    }
+    private:
+        DX12Context* context_;
+
+        // context will own a shared_ptr so we don't need to worry about it here
+        DX12Device* device_;
+    };
 }
-// namespace Takoyaki

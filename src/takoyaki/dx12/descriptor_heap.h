@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "device.h"
+#include "dx12_device.h"
 #include "dxutility.h"
 
 namespace Takoyaki

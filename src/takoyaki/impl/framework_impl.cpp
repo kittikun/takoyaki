@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "framework_impl.h"
 
-#include "../dx12/context.h"
+#include "../dx12/dx12_context.h"
 #include "../dx12/dx12_texture.h"
 #include "../dx12/dx12_worker.h"
 #include "../impl/renderer_impl.h"

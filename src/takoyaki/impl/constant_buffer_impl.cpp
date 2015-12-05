@@ -21,7 +21,7 @@
 #include "pch.h"
 #include "constant_buffer_impl.h"
 
-#include "../dx12/context.h"
+#include "../dx12/dx12_context.h"
 
 namespace Takoyaki
 {
@@ -30,7 +30,6 @@ namespace Takoyaki
         , cbuffer_(cbuffer)
         , bufferLock_(std::move(lock))
     {
-
     }
 
     void ConstantBufferImpl::setMatrix4x4(const std::string& name, const glm::mat4x4& value)

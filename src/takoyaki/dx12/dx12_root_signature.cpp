@@ -22,7 +22,7 @@
 #include "dx12_root_signature.h"
 
 #include "descriptor_ranges.h"
-#include "device.h"
+#include "dx12_device.h"
 #include "dxutility.h"
 
 namespace Takoyaki

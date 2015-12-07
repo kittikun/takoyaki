@@ -53,12 +53,13 @@ namespace Takoyaki
         ~RendererImpl() = default;
 
         //////////////////////////////////////////////////////////////////////////
-        // Internal usage: 
+        // Internal usage:
         inline std::unique_lock<std::shared_timed_mutex> getLock() { return std::unique_lock<std::shared_timed_mutex>{rwMutex_}; }
         void buildCommand(const CommandDesc&, const std::string&) const;
 
         //////////////////////////////////////////////////////////////////////////
-        // External usage: 
+        // External usage:
+        std::unique_ptr<CommandImpl> createCommand();
         std::unique_ptr<CommandImpl> createCommand(const std::string&);
         std::unique_ptr<IndexBufferImpl> createIndexBuffer(uint8_t*, EFormat, uint_fast32_t);
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
@@ -70,7 +71,7 @@ namespace Takoyaki
 
         void compilePipelineStateObjects();
 
-        std::unique_ptr<ConstantBufferImpl> getConstantBuffer(const std::string&);
+        uint_fast32_t getDefaultRenderTargetHandle() const;
 
     private:
         std::shared_ptr<DX12Context> context_;

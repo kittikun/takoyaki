@@ -77,29 +77,73 @@ namespace Takoyaki
                 }
                 break;
 
-                case ECommandType::COPY_RENDERTARGET:
-                {
-                    auto& textures = context_->getTextures();
-                    auto handle = boost::any_cast<uint_fast32_t>(descCmd.second);
-                    auto found = textures.find(handle);
+                //case ECommandType::COPY_RENDERTARGET:
+                //{
+                //    auto& textures = context_->getTextures();
+                //    auto handle = boost::any_cast<uint_fast32_t>(descCmd.second);
+                //    auto found = textures.find(handle);
 
-                    if (found == textures.end()) {
-                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find destination texture \"%1%\" for copy operation" } % handle;
+                //    if (found == textures.end()) {
+                //        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find destination texture \"%1%\" for copy operation" } % handle;
+
+                //        throw std::runtime_error{ boost::str(fmt) };
+                //    }
+
+                //    D3D12_RESOURCE_BARRIER sourceBefore = TransitionBarrier(rt->getResource(), rtState, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+                //    cmd->commands->ResourceBarrier(1, &sourceBefore);
+                //    rtState = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+                //    cmd->commands->CopyResource(found->second.getResource(), rt->getResource());
+                //}
+                //break;
+
+                case ECommandType::COPY_REGION_TEXTURE2D:
+                {
+                    // dstTex, dstSubresource, dstOffset, srcTex, srcAreaMin, srcAreaMax
+                    auto params = boost::any_cast<CopyTexRegionParams>(descCmd.second);
+                    auto& textures = context_->getTextures();
+
+                    auto dstFound = textures.find(params.dstHandle);
+
+                    if (dstFound == textures.end()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find destination texture \"%1%\" for copy operation" } % params.dstHandle;
 
                         throw std::runtime_error{ boost::str(fmt) };
                     }
 
-                    D3D12_RESOURCE_BARRIER sourceBefore = TransitionBarrier(rt->getResource(), rtState, D3D12_RESOURCE_STATE_COPY_SOURCE);
+                    auto srcFound = textures.find(params.srcHandle);
 
-                    cmd->commands->ResourceBarrier(1, &sourceBefore);
-                    rtState = D3D12_RESOURCE_STATE_COPY_SOURCE;
+                    if (srcFound == textures.end()) {
+                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find source texture \"%1%\" for copy operation" } % params.srcHandle;
 
-                    cmd->commands->CopyResource(found->second.getResource(), rt->getResource());
-                }
-                break;
+                        throw std::runtime_error{ boost::str(fmt) };
+                    }
 
-                case ECommandType::COPY_REGION_TEXTURE2D:
-                {
+                    D3D12_TEXTURE_COPY_LOCATION dstLoc, srcLoc;
+
+                    dstLoc.pResource = dstFound->second.getResource();
+                    dstLoc.SubresourceIndex = params.dstSubresource;
+                    srcLoc.pResource = srcFound->second.getResource();
+                    srcLoc.SubresourceIndex = params.srcSubresource;
+
+                    // check if empty
+                    if (glm::all(glm::equal(params.srcAreaMin, glm::ivec3())) && glm::all(glm::equal(params.srcAreaMax, glm::ivec3()))) {
+                        cmd->commands->CopyTextureRegion(&dstLoc, params.dstOffset.x, params.dstOffset.y, params.dstOffset.z, &srcLoc, nullptr);
+                    } else {
+                        D3D12_BOX srcBox;
+
+                        // srcRect xy are top - left, zw are size
+                        srcBox.left = params.srcAreaMin.x;
+                        srcBox.bottom = params.srcAreaMin.y;
+                        srcBox.back = params.srcAreaMin.z;
+
+                        srcBox.right = params.srcAreaMax.x;
+                        srcBox.top = params.srcAreaMax.y;
+                        srcBox.front = params.srcAreaMax.z;
+
+                        cmd->commands->CopyTextureRegion(&dstLoc, params.dstOffset.x, params.dstOffset.y, params.dstOffset.z, &srcLoc, &srcBox);
+                    }
                 }
                 break;
 

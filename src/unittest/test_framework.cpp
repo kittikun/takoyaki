@@ -119,12 +119,24 @@ bool TestFramework::process()
 
     // render the test
     test->update(renderer_.get());
-    test->render(renderer_.get(), tex_->getHandle());
+    test->render(renderer_.get());
     takoyaki_->present();
 
-    tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
-
     auto end = std::chrono::high_resolution_clock::now();
+
+    // copy rendertarget into texCopy
+    {
+        auto cmd = renderer_->createCommand();
+
+        Takoyaki::CopyTexRegionParams params;
+
+        params.dstHandle = tex_->getHandle();
+        params.srcHandle = renderer_->getDefaultRenderTarget();
+
+        cmd->copyTextureRegion(params);
+    }
+
+    tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
 
     // compare checksums
     boost::crc_32_type crc;

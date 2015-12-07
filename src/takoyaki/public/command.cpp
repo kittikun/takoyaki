@@ -37,14 +37,14 @@ namespace Takoyaki
         impl_->clearRenderTarget(color);
     }
 
-    void Command::copyRenderTargetToTexture(uint_fast32_t destTex)
-    {
-        impl_->copyRenderTargetToTexture(destTex);
-    }
+    //void Command::copyRenderTargetToTexture(uint_fast32_t dstTex)
+    //{
+    //    impl_->copyRenderTargetToTexture(dstTex);
+    //}
 
-    void Command::copyRegion(uint_fast32_t dstTex, const glm::i16vec2& dstTopLeft, uint_fast32_t srcTex, const glm::ivec4& srcRect)
+    void Command::copyTextureRegion(const CopyTexRegionParams& params)
     {
-        impl_->copyRegion(dstTex, dstTopLeft, srcTex, srcRect);
+        impl_->copyTextureRegion(params);
     }
 
     void Command::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)

@@ -204,6 +204,8 @@ namespace Takoyaki
         CPU_READ    // Optimized for repeated reads from the cpu
     };
 
+    //////////////////////////////////////////////////////////////////////////
+
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dn770338(v=vs.85).aspx
     struct RenderTargetBlendDesc
     {
@@ -329,5 +331,21 @@ namespace Takoyaki
         uint_fast32_t height;
         uint_fast32_t mipmaps;
         uint_fast32_t width;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    // Command param desc
+
+    struct CopyTexRegionParams
+    {
+        CopyTexRegionParams() noexcept;
+
+        uint_fast32_t dstHandle;
+        uint_fast32_t dstSubresource;
+        glm::ivec3 dstOffset;
+        uint_fast32_t srcHandle;
+        uint_fast32_t srcSubresource;
+        glm::ivec3 srcAreaMin;
+        glm::ivec3 srcAreaMax;
     };
 } // namespace Takoyaki

@@ -61,6 +61,11 @@ namespace Takoyaki
         context_->compilePipelineStateObjects();
     }
 
+    std::unique_ptr<CommandImpl>  RendererImpl::createCommand()
+    {
+        return std::make_unique<CommandImpl>(shared_from_this());
+    }
+
     std::unique_ptr<CommandImpl> RendererImpl::createCommand(const std::string& pipelineState)
     {
         return std::make_unique<CommandImpl>(shared_from_this(), pipelineState);
@@ -119,16 +124,21 @@ namespace Takoyaki
         return std::make_unique<VertexBufferImpl>(context_, context_->getVertexBuffer(id), id);
     }
 
-    std::unique_ptr<ConstantBufferImpl> RendererImpl::getConstantBuffer(const std::string& name)
-    {
-        auto pair = context_->getConstantBuffer(name);
+    //std::unique_ptr<ConstantBufferImpl> RendererImpl::getConstantBuffer(const std::string& name)
+    //{
+    //    auto pair = context_->getConstantBuffer(name);
 
-        // is it possible that the constant haven't been added yet if the corresponding shader
-        // hasn't been compiled yet
-        if (pair)
-            return std::make_unique<ConstantBufferImpl>(pair->first, std::move(pair->second), device_->getCurrentFrame());
-        else
-            return nullptr;
+    //    // is it possible that the constant haven't been added yet if the corresponding shader
+    //    // hasn't been compiled yet
+    //    if (pair)
+    //        return std::make_unique<ConstantBufferImpl>(pair->first, std::move(pair->second), device_->getCurrentFrame());
+    //    else
+    //        return nullptr;
+    //}
+
+    uint_fast32_t RendererImpl::getDefaultRenderTargetHandle() const
+    {
+        return device_->getCurrentFrame();
     }
 }
 // namespace Takoyaki

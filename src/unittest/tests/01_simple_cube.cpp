@@ -149,7 +149,7 @@ void Test01::initialize(Takoyaki::Framework* framework)
     scissor_ = { 0, 0, static_cast<uint_fast32_t>(size.x), static_cast<uint_fast32_t>(size.y) };
 }
 
-void Test01::render(Takoyaki::Renderer* renderer, uint_fast32_t tex)
+void Test01::render(Takoyaki::Renderer* renderer)
 {
     auto cmd = renderer->createCommand("SimpleState");
 
@@ -163,8 +163,6 @@ void Test01::render(Takoyaki::Renderer* renderer, uint_fast32_t tex)
     cmd->setVertexBuffer(vertexBuffer_->getHandle());
     cmd->setIndexBuffer(indexBuffer_->getHandle());
     cmd->drawIndexed(36, 0, 0);
-
-    cmd->copyRenderTargetToTexture(tex);
 }
 
 void Test01::update(Takoyaki::Renderer* renderer)
@@ -178,9 +176,6 @@ void Test01::update(Takoyaki::Renderer* renderer)
     const auto at = glm::vec3{ 0.0f, -0.1f, 0.0f };
     const auto up = glm::vec3{ 0.0f, 1.0f, 0.0f };
     const auto lookAt = Takoyaki::lookAtLH(eye, at, up);
-
-    // update constant buffer
-    auto mvp = renderer->getConstantBuffer("ModelViewProjectionConstantBuffer");
 
     cbuffer_.setValue<glm::mat4>("model", glm::mat4(1.0f));
     cbuffer_.setValue<glm::mat4>("projection", perspective);

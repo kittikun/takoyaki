@@ -52,6 +52,11 @@ namespace Takoyaki
         impl_->compilePipelineStateObjects();
     }
 
+    std::unique_ptr<Command> Renderer::createCommand()
+    {
+        return std::make_unique<Command>(impl_->createCommand());
+    }
+
     std::unique_ptr<Command> Renderer::createCommand(const std::string& pipelineState)
     {
         return std::make_unique<Command>(impl_->createCommand(pipelineState));
@@ -93,9 +98,9 @@ namespace Takoyaki
         return std::make_unique<VertexBuffer>(impl_->createVertexBuffer(vertices, stride, sizeByte));
     }
 
-    std::unique_ptr<ConstantBuffer> Renderer::getConstantBuffer(const std::string& name)
+    uint_fast32_t Renderer::getDefaultRenderTarget() const
     {
-        return std::make_unique<ConstantBuffer>(std::move(impl_->getConstantBuffer(name)));
+        return impl_->getDefaultRenderTargetHandle();
     }
 }
 // namespace Takoyaki

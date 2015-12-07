@@ -35,7 +35,7 @@ namespace Takoyaki
     enum class ECommandType
     {
         CLEAR_COLOR,
-        COPY_RENDERTARGET,
+        //COPY_RENDERTARGET,
         COPY_REGION_TEXTURE2D,
         DRAW_INDEXED,
         SET_INDEX_BUFFER,
@@ -49,7 +49,10 @@ namespace Takoyaki
 
     struct CommandDesc
     {
+        // index, name
         using RSCBParams = std::pair<uint_fast32_t, std::string>;
+
+        // indexCount, startIndex, baseVertex
         using DrawIndexedParams = std::tuple<uint_fast32_t, uint_fast32_t, int_fast32_t>;
 
         CommandDesc();
@@ -66,12 +69,13 @@ namespace Takoyaki
         CommandImpl& operator=(CommandImpl&&) = delete;
 
     public:
+        CommandImpl(const std::shared_ptr<RendererImpl>&) noexcept;
         CommandImpl(const std::shared_ptr<RendererImpl>&, const std::string&) noexcept;
         ~CommandImpl();
 
         void clearRenderTarget(const glm::vec4&);
-        void copyRenderTargetToTexture(uint_fast32_t);
-        void copyRegion(uint_fast32_t, const glm::i16vec2&, uint_fast32_t, const glm::ivec4&);
+        //void copyRenderTargetToTexture(uint_fast32_t);
+        void copyTextureRegion(const CopyTexRegionParams&);
         void drawIndexed(uint_fast32_t, uint_fast32_t, int_fast32_t);
         void setIndexBuffer(uint_fast32_t);
         inline void setPriority(uint_fast32_t priority) { desc_.priority = priority; }

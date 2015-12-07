@@ -32,6 +32,11 @@ namespace Takoyaki
         commands.reserve(16);
     }
 
+    CommandImpl::CommandImpl(const std::shared_ptr<RendererImpl>& renderer) noexcept
+        : CommandImpl{ renderer, std::string() }
+    {
+    }
+
     CommandImpl::CommandImpl(const std::shared_ptr<RendererImpl>& renderer, const std::string& pipelineState) noexcept
         : renderer_{ renderer }
         , pipelineState_{ pipelineState }
@@ -50,13 +55,14 @@ namespace Takoyaki
         desc_.commands.push_back(std::make_pair(ECommandType::CLEAR_COLOR, color));
     }
 
-    void CommandImpl::copyRenderTargetToTexture(uint_fast32_t destTex)
-    {
-        desc_.commands.push_back(std::make_pair(ECommandType::COPY_RENDERTARGET, destTex));
-    }
+    //void CommandImpl::copyRenderTargetToTexture(uint_fast32_t dstTex)
+    //{
+    //    desc_.commands.push_back(std::make_pair(ECommandType::COPY_RENDERTARGET, dstTex));
+    //}
 
-    void CommandImpl::copyRegion(uint_fast32_t destTex, const glm::i16vec2& dstTopLeft, uint_fast32_t srcTex, const glm::ivec4& srcRect)
+    void CommandImpl::copyTextureRegion(const CopyTexRegionParams& params)
     {
+        desc_.commands.push_back(std::make_pair(ECommandType::COPY_REGION_TEXTURE2D, params));
     }
 
     void CommandImpl::drawIndexed(uint_fast32_t indexCount, uint_fast32_t startIndex, int_fast32_t baseVertex)

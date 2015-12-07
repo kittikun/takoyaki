@@ -41,7 +41,7 @@ public:
 
     std::string getName() override { return "01_simple_cube"; };
     void initialize(Takoyaki::Framework*) override;
-    void render(Takoyaki::Renderer*, uint_fast32_t) override;
+    void render(Takoyaki::Renderer*) override;
     void update(Takoyaki::Renderer*) override;
 
 private:

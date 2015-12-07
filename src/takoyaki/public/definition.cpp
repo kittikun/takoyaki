@@ -31,6 +31,14 @@ namespace Takoyaki
     {
     }
 
+    CopyTexRegionParams::CopyTexRegionParams() noexcept
+        : dstHandle{ UINT_MAX }
+        , dstSubresource{ 0 }
+        , srcHandle{ UINT_MAX }
+        , srcSubresource{ 0 }
+    {
+    }
+
     DepthStencilDesc::DepthStencilDesc() noexcept
         : depthEnable{ true }
         , depthMaskEnable{ true }

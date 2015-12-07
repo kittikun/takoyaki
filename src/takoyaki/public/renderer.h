@@ -48,6 +48,7 @@ namespace Takoyaki
         Renderer(std::shared_ptr<RendererImpl>&) noexcept;
         ~Renderer() noexcept;
 
+        std::unique_ptr<Command> createCommand();
         std::unique_ptr<Command> createCommand(const std::string& pipelineState);
         std::unique_ptr<IndexBuffer> createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte);
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
@@ -62,7 +63,7 @@ namespace Takoyaki
         // commit should happen only once per application
         void compilePipelineStateObjects();
 
-        std::unique_ptr<ConstantBuffer> getConstantBuffer(const std::string&);
+        uint_fast32_t getDefaultRenderTarget() const;
 
     private:
         std::shared_ptr<RendererImpl> impl_;

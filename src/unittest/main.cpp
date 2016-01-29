@@ -1,4 +1,4 @@
-// Copyright(c) 2015 Kitti Vongsay
+// Copyright(c) 2015-2016 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -29,7 +29,7 @@
 
 int main(int ac, char** av)
 {
-    std::cout << "Takoyaki Unit Tests" << std::endl << "Copyright (C) 2015 Kitti Vongsay" << std::endl << std::endl;
+    std::cout << "Takoyaki Unit Tests" << std::endl << "Copyright (C) 2015-2016 Kitti Vongsay" << std::endl << std::endl;
     std::cout << "MIT License, <http://opensource.org/licenses/MIT>" << std::endl;
     std::cout << "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR" << std::endl << "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY," << std::endl;
     std::cout << "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE" << std::endl << "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER" << std::endl;

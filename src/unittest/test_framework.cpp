@@ -1,4 +1,4 @@
-// Copyright(c) 2015 Kitti Vongsay
+// Copyright(c) 2015-2016 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -63,7 +63,7 @@ void TestFramework::initialize(Takoyaki::FrameworkDesc& desc, bool ciMode)
     texDesc.format = Takoyaki::EFormat::B8G8R8A8_UNORM;
     texDesc.width = (uint_fast32_t)desc.windowSize.x;
     texDesc.height = (uint_fast32_t)desc.windowSize.y;
-    texDesc.usage = Takoyaki::EUsageType::CPU_READ;
+    texDesc.usage = Takoyaki::EUsageType::GPU_ONLY;
 
     tex_ = renderer_->createTexture(texDesc);
 
@@ -136,7 +136,7 @@ bool TestFramework::process()
         cmd->copyTextureRegion(params);
     }
 
-    tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
+    //tex_->read(&texCopy_.front(), (uint_fast32_t)texCopy_.size());
 
     // compare checksums
     boost::crc_32_type crc;

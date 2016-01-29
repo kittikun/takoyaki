@@ -1,4 +1,4 @@
-// Copyright(c) 2015 Kitti Vongsay
+// Copyright(c) 2015-2016 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -50,7 +50,7 @@ namespace Takoyaki
         inline bool isReady() const { return ready_.load(); }
 
         //////////////////////////////////////////////////////////////////////////
-        // External usage: 
+        // External usage:
 
         void setMatrix4x4(const std::string&, const glm::mat4x4&, uint_fast32_t);
 

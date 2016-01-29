@@ -1,4 +1,4 @@
-// Copyright(c) 2015 Kitti Vongsay
+// Copyright(c) 2015-2016 Kitti Vongsay
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -24,10 +24,10 @@ namespace Takoyaki
 {
     // Not thread-safe by itself, just provide a convenience RW mutex
     template<class Key,                                              // unordered_map::key_type
-             class T,                                                // unordered_map::mapped_type
-             class Hash = std::hash<Key>,                            // unordered_map::hasher
-             class Pred = std::equal_to<Key>,                        // unordered_map::key_equal
-             class Alloc = std::allocator<std::pair<const Key, T>>>  // unordered_map::allocator_type>
+    class T,                                                // unordered_map::mapped_type
+    class Hash = std::hash<Key>,                            // unordered_map::hasher
+    class Pred = std::equal_to<Key>,                        // unordered_map::key_equal
+    class Alloc = std::allocator<std::pair<const Key, T>>>  // unordered_map::allocator_type>
     class RWLockMap final : public std::unordered_map<Key, T, Hash, Pred, Alloc>
     {
     public:

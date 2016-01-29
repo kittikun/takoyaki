@@ -62,6 +62,11 @@ namespace Takoyaki
         return std::make_unique<Command>(impl_->createCommand(pipelineState));
     }
 
+    std::unique_ptr<ConstantBuffer> Renderer::createConstantBuffer(const std::string& name, uint_fast32_t size)
+    {
+        return std::make_unique<ConstantBuffer>(impl_->createConstantBuffer(name, size));
+    }
+
     std::unique_ptr<IndexBuffer> Renderer::createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte)
     {
         return std::make_unique<IndexBuffer>(impl_->createIndexBuffer(indexes, format, sizeByte));

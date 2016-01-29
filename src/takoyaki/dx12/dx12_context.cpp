@@ -130,7 +130,7 @@ namespace Takoyaki
         }
     }
 
-    DX12ConstantBuffer& DX12Context::createConstanBuffer(const std::string& name, uint_fast32_t size)
+    void DX12Context::createConstanBuffer(const std::string& name, uint_fast32_t size)
     {
         auto lock = constantBuffers_.getWriteLock();
         auto found = constantBuffers_.find(name);
@@ -143,12 +143,6 @@ namespace Takoyaki
 
         // we need a copy for each buffer in the swap chain
         auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ this, size, device_->getFrameCount() }));
-
-        lock.unlock();
-
-        res.first->second.create(name, device_.get());
-
-        return res.first->second;
     }
 
     void DX12Context::createInputLayout(const std::string& name)
@@ -296,7 +290,7 @@ namespace Takoyaki
             auto fmt = boost::format{ "DX12DeviceContext::getConstantBuffer, cannot find key \"%1%\"" } % name;
 
             LOGW << boost::str(fmt);
-            return ConstantBufferReturn();
+            return ConstantBufferReturn(found->second, std::move(lock));
         }
 
         // Transfer the lock to the ConstantTableImpl to avoid removal while in use

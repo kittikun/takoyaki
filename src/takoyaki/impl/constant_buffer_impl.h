@@ -22,7 +22,9 @@
 
 namespace Takoyaki
 {
+    class DX12Context;
     class DX12ConstantBuffer;
+    class DX12Device;
 
     class ConstantBufferImpl
     {
@@ -32,13 +34,14 @@ namespace Takoyaki
         ConstantBufferImpl& operator=(ConstantBufferImpl&&) = delete;
 
     public:
-        explicit ConstantBufferImpl(DX12ConstantBuffer&, std::shared_lock<std::shared_timed_mutex>, uint_fast32_t) noexcept;
+        ConstantBufferImpl(const std::shared_ptr<DX12Context>&, const std::shared_ptr<DX12Device>&, DX12ConstantBuffer&, std::shared_lock<std::shared_timed_mutex>) noexcept;
         ~ConstantBufferImpl() = default;
 
         void setMatrix4x4(const std::string&, const glm::mat4x4&);
 
     private:
-        uint_fast32_t frame_;
+        std::weak_ptr<DX12Context> context_;    // must own pointer to context for destruction
+        std::weak_ptr<DX12Device> device_;      // to update correct frame CB
         DX12ConstantBuffer& cbuffer_;
         std::shared_lock<std::shared_timed_mutex> bufferLock_;    // to avoid removal while user is still using it
     };

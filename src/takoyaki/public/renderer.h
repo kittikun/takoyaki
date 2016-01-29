@@ -50,6 +50,7 @@ namespace Takoyaki
 
         std::unique_ptr<Command> createCommand();
         std::unique_ptr<Command> createCommand(const std::string& pipelineState);
+        std::unique_ptr<ConstantBuffer> createConstantBuffer(const std::string& name, uint_fast32_t size);
         std::unique_ptr<IndexBuffer> createIndexBuffer(uint8_t* indexes, EFormat format, uint_fast32_t sizeByte);
         std::unique_ptr<InputLayout> createInputLayout(const std::string& name);
         std::unique_ptr<RootSignature> createRootSignature(const std::string& name);

@@ -124,8 +124,25 @@ namespace Takoyaki
 
                     dstLoc.pResource = dstFound->second.getResource();
                     dstLoc.SubresourceIndex = params.dstSubresource;
+                    dstLoc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
                     srcLoc.pResource = srcFound->second.getResource();
                     srcLoc.SubresourceIndex = params.srcSubresource;
+                    srcLoc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+
+                    // need to transition source to correct state
+                    D3D12_RESOURCE_STATES srcState;
+
+                    if (params.srcHandle < device_->getFrameCount()) {
+                        // default render target use rtState
+                        srcState = rtState;
+                    } else {
+                        // set source to correct state
+                        srcState = srcFound->second.getInitialState();
+                    }
+
+                    D3D12_RESOURCE_BARRIER sourceBefore = TransitionBarrier(srcLoc.pResource, srcState, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+                    cmd->commands->ResourceBarrier(1, &sourceBefore);
 
                     // check if empty
                     if (glm::all(glm::equal(params.srcAreaMin, glm::ivec3())) && glm::all(glm::equal(params.srcAreaMax, glm::ivec3()))) {
@@ -144,6 +161,10 @@ namespace Takoyaki
 
                         cmd->commands->CopyTextureRegion(&dstLoc, params.dstOffset.x, params.dstOffset.y, params.dstOffset.z, &srcLoc, &srcBox);
                     }
+
+                    D3D12_RESOURCE_BARRIER sourceAfter = TransitionBarrier(srcLoc.pResource, D3D12_RESOURCE_STATE_COPY_SOURCE, srcState);
+
+                    cmd->commands->ResourceBarrier(1, &sourceAfter);
                 }
                 break;
 
@@ -198,27 +219,19 @@ namespace Takoyaki
                 case ECommandType::SET_ROOT_SIGNATURE_CONSTANT_BUFFER:
                 {
                     auto pair = boost::any_cast<CommandDesc::RSCBParams>(descCmd.second);
-                    auto& constantBuffers = context_->getConstantBuffers();
-                    auto found = constantBuffers.find(pair.second);
+                    auto cbPair = context_->getConstantBuffer(pair.second);
 
-                    if (found == constantBuffers.end()) {
-                        auto fmt = boost::format{ "DX12DeviceContext::buildCommand, cannot find constant buffer \"%1%\"" } % pair.second;
-
-                        LOGW << boost::str(fmt);
-                        return false;
-                    }
-
-                    if (!found->second.isReady()) {
+                    if (!cbPair.first.isReady()) {
                         auto fmt = boost::format{ "DX12DeviceContext::buildCommand, constant buffer not ready \"%1%\"" } % pair.second;
 
                         LOGW << boost::str(fmt);
                         return false;
                     }
 
-                    ID3D12DescriptorHeap* temp[] = { found->second.getHeap(frame)->descriptor.Get() };
+                    ID3D12DescriptorHeap* temp[] = { cbPair.first.getHeap(frame)->descriptor.Get() };
 
                     cmd->commands->SetDescriptorHeaps(1, temp);
-                    cmd->commands->SetGraphicsRootDescriptorTable(pair.first, found->second.getGPUView(frame));
+                    cmd->commands->SetGraphicsRootDescriptorTable(pair.first, cbPair.first.getGPUView(frame));
                 }
                 break;
 

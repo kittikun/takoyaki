@@ -22,11 +22,13 @@
 #include "constant_buffer_impl.h"
 
 #include "../dx12/dx12_context.h"
+#include "../dx12/dx12_device.h"
 
 namespace Takoyaki
 {
-    ConstantBufferImpl::ConstantBufferImpl(DX12ConstantBuffer& cbuffer, std::shared_lock<std::shared_timed_mutex> lock, uint_fast32_t frame) noexcept
-        : frame_{ frame }
+    ConstantBufferImpl::ConstantBufferImpl(const std::shared_ptr<DX12Context>& context, const std::shared_ptr<DX12Device>& device, DX12ConstantBuffer& cbuffer, std::shared_lock<std::shared_timed_mutex> lock) noexcept
+        : context_{ context }
+        , device_{ device }
         , cbuffer_(cbuffer)
         , bufferLock_(std::move(lock))
     {
@@ -34,7 +36,10 @@ namespace Takoyaki
 
     void ConstantBufferImpl::setMatrix4x4(const std::string& name, const glm::mat4x4& value)
     {
-        cbuffer_.setMatrix4x4(name, value, frame_);
+        auto context = context_.lock();
+        auto device = device_.lock();
+
+        cbuffer_.setMatrix4x4(name, value, device->getCurrentFrame());
     }
 }
 // namespace Takoyaki

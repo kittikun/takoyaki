@@ -59,7 +59,7 @@ namespace Takoyaki
         using DescriptorHeapRTV = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_RTV>;
         using DescriptorHeapSRV = DX12DescriptorHeapCollection<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV>;
         using InputLayoutReturn = std::pair<DX12InputLayout&, std::shared_lock<std::shared_timed_mutex>>;
-        using ConstantBufferReturn = boost::optional<std::pair<DX12ConstantBuffer&, std::shared_lock<std::shared_timed_mutex>>>;
+        using ConstantBufferReturn = std::pair<DX12ConstantBuffer&, std::shared_lock<std::shared_timed_mutex>>;
         using PipelineStateReturn = std::pair<DX12PipelineState&, std::shared_lock<std::shared_timed_mutex>>;
         using RootSignatureReturn = std::pair<DX12RootSignature&, std::shared_lock<std::shared_timed_mutex>>;
 
@@ -74,14 +74,12 @@ namespace Takoyaki
 
         // resource creation
         void addShader(EShaderType, const std::string&, D3D12_SHADER_BYTECODE&&);
-        DX12ConstantBuffer& createConstanBuffer(const std::string&, uint_fast32_t);
         void createSwapchainTexture(uint_fast32_t);
         void createTexture(uint_fast32_t, const TextureDesc&);
 
         // Get
         inline DescriptorHeapRTV& getRTVDescHeapCollection() { return descHeapRTV_; }
         inline DescriptorHeapSRV& getSRVDescHeapCollection() { return descHeapSRV_; }
-        inline RWLockMap<std::string, DX12ConstantBuffer>& getConstantBuffers() { return constantBuffers_; }
         inline RWLockMap<uint_fast32_t, DX12IndexBuffer>& getIndexBuffers() { return indexBuffers_; }
         inline RWLockMap<std::string, DX12RootSignature>& getRootSignatures() { return rootSignatures_; }
         inline RWLockMap<uint_fast32_t, DX12Texture>& getTextures() { return textures_; }
@@ -91,6 +89,7 @@ namespace Takoyaki
         // Internal & External
 
         void createBuffer(EResourceType, uint_fast32_t, uint8_t*, EFormat, uint_fast32_t, uint_fast32_t);
+        void createConstanBuffer(const std::string&, uint_fast32_t);
         void createInputLayout(const std::string&);
         void createPipelineState(const std::string&, const PipelineStateDesc&);
         void createRootSignature(const std::string&);

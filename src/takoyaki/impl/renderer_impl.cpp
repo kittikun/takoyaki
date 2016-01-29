@@ -71,6 +71,15 @@ namespace Takoyaki
         return std::make_unique<CommandImpl>(shared_from_this(), pipelineState);
     }
 
+    std::unique_ptr<ConstantBufferImpl> RendererImpl::createConstantBuffer(const std::string& name, uint_fast32_t size)
+    {
+        context_->createConstanBuffer(name, size);
+
+        auto pair = context_->getConstantBuffer(name);
+
+        return std::make_unique<ConstantBufferImpl>(context_, device_, pair.first, std::move(pair.second));
+    }
+
     std::unique_ptr<IndexBufferImpl> RendererImpl::createIndexBuffer(uint8_t* data, EFormat format, uint_fast32_t sizeByte)
     {
         auto id = uidGenerator_.fetch_add(1);

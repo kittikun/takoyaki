@@ -61,6 +61,7 @@ namespace Takoyaki
         // External usage:
         std::unique_ptr<CommandImpl> createCommand();
         std::unique_ptr<CommandImpl> createCommand(const std::string&);
+        std::unique_ptr<ConstantBufferImpl> createConstantBuffer(const std::string&, uint_fast32_t);
         std::unique_ptr<IndexBufferImpl> createIndexBuffer(uint8_t*, EFormat, uint_fast32_t);
         std::unique_ptr<InputLayoutImpl> createInputLayout(const std::string&);
         std::unique_ptr<RootSignatureImpl> createRootSignature(const std::string&);

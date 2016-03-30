@@ -27,99 +27,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_command_builder.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_constant_buffer.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\descriptor_heap.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\descriptor_ranges.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_device.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_context.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_index_buffer.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_pipeline_state.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_buffer.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_root_signature.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_vertex_buffer.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dxcommon.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dxsystem.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dxutility.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_input_layout.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_texture.cpp" />
-    <ClCompile Include="..\src\takoyaki\dx12\dx12_worker.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\command_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\constant_buffer_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\framework_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\index_buffer_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\input_layout_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\renderer_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\root_signature_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\texture_impl.cpp" />
-    <ClCompile Include="..\src\takoyaki\impl\vertex_buffer_impl.cpp" />
     <ClCompile Include="..\src\takoyaki\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\src\takoyaki\public\command.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\constant_buffer.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\definition.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\framework.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\index_buffer.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\input_layout.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\math_utils.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\renderer.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\root_signature.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\texture.cpp" />
-    <ClCompile Include="..\src\takoyaki\public\vertex_buffer.cpp" />
-    <ClCompile Include="..\src\takoyaki\thread_pool.cpp" />
     <ClCompile Include="..\src\takoyaki\utility\log.cpp" />
-    <ClCompile Include="..\src\takoyaki\utility\win_utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_command_builder.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_constant_buffer.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\descriptor_heap.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\descriptor_ranges.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_device.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_context.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_buffer.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_index_buffer.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_root_signature.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_vertex_buffer.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dxcommon.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dxsystem.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dxutility.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_input_layout.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_texture.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_pipeline_state.h" />
-    <ClInclude Include="..\src\takoyaki\dx12\dx12_worker.h" />
-    <ClInclude Include="..\src\takoyaki\impl\command_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\constant_buffer_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\framework_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\index_buffer_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\input_layout_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\renderer_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\root_signature_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\texture_impl.h" />
-    <ClInclude Include="..\src\takoyaki\impl\vertex_buffer_impl.h" />
     <ClInclude Include="..\src\takoyaki\pch.h" />
-    <ClInclude Include="..\src\takoyaki\public\command.h" />
-    <ClInclude Include="..\src\takoyaki\public\constant_buffer.h" />
-    <ClInclude Include="..\src\takoyaki\public\definitions.h" />
-    <ClInclude Include="..\src\takoyaki\public\framework.h" />
-    <ClInclude Include="..\src\takoyaki\public\fwd.h" />
-    <ClInclude Include="..\src\takoyaki\public\index_buffer.h" />
-    <ClInclude Include="..\src\takoyaki\public\input_layout.h" />
-    <ClInclude Include="..\src\takoyaki\public\math_utils.h" />
-    <ClInclude Include="..\src\takoyaki\public\renderer.h" />
-    <ClInclude Include="..\src\takoyaki\public\root_signature.h" />
-    <ClInclude Include="..\src\takoyaki\public\takoyaki.h" />
-    <ClInclude Include="..\src\takoyaki\public\texture.h" />
-    <ClInclude Include="..\src\takoyaki\public\vertex_buffer.h" />
-    <ClInclude Include="..\src\takoyaki\rwlock_map.h" />
-    <ClInclude Include="..\src\takoyaki\thread_pool.h" />
-    <ClInclude Include="..\src\takoyaki\thread_safe_queue.h" />
-    <ClInclude Include="..\src\takoyaki\thread_safe_stack.h" />
     <ClInclude Include="..\src\takoyaki\utility\log.h" />
-    <ClInclude Include="..\src\takoyaki\utility\MoveOnlyFunc.h" />
-    <ClInclude Include="..\src\takoyaki\utility\win_utility.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{10a79e06-cadf-4496-aedc-063e4aaa0c6f}</ProjectGuid>

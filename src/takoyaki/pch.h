@@ -29,29 +29,19 @@
 
 #include <windows.h>
 
-// WinRT
-#include <wrl/client.h>
-
 // DirectX
 #include <d3d12.h>
 #include <dxgi1_4.h>
 
 // STL
-#include <atomic>
 #include <array>
 #include <exception>
 #include <memory>
-#include <mutex>
-#include <numeric>
-#include <thread>
-#include <queue>
-#include <shared_mutex>
 #include <unordered_map>
 #include <vector>
 
 // Boost
 #include <boost/format.hpp>
-#include <boost/optional.hpp>
 
 #ifdef _DEBUG
 #include <boost/log/attributes/scoped_attribute.hpp>
@@ -61,9 +51,3 @@
 #include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 #endif // _DEBUG
-
-// Maths
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/transform.hpp>

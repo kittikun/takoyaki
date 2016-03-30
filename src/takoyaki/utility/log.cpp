@@ -42,112 +42,54 @@ namespace sinks = boost::log::sinks;
 
 namespace Takoyaki
 {
-	namespace Log
-	{
-        class LogContext
+    namespace Log
+    {
+        BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", ELogLevel);
+
+        std::ostream& operator<<(std::ostream& strm, ELogLevel level)
         {
-            LogContext(const LogContext&) = delete;
-            LogContext& operator=(const LogContext&) = delete;
-            LogContext(LogContext&&) = delete;
-            LogContext& operator=(LogContext&&) = delete;
-
-        public:
-            LogContext()
-            {
-                count.fill(0);
-                isNew.fill(0);
-            }
-
-            ~LogContext()
-            {
-
-            }
-
-            // Public because of laziness
-            std::array<uint32_t, Log_Level_Count> count;
-            std::array<uint32_t, Log_Level_Count> isNew;
-        };
-
-        static std::unique_ptr<LogContext> sLogContext;
-
-		BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", ELogLevel);
-
-		std::ostream& operator<<(std::ostream& strm, ELogLevel level)
-		{
             constexpr const char* strings[] =
-			{
-				"Core",
+            {
+                "Core",
                 "ERROR",
                 "Info",
                 "Shader",
                 "WARNING",
-			};
+            };
 
-			if (static_cast<std::size_t>(level) < sizeof(strings) / sizeof(*strings))
-				strm << strings[level];
-			else
-				strm << static_cast<int>(level);
+            if (static_cast<std::size_t>(level) < sizeof(strings) / sizeof(*strings))
+                strm << strings[level];
+            else
+                strm << static_cast<int>(level);
 
-			return strm;
-		}
+            return strm;
+        }
 
-		void Initialize(const FrameworkDesc& desc)
-		{
+        void Initialize()
+        {
             // No console for windows app
-            if (desc.type == EDeviceType::DX12_WIN_32) {
-                logging::add_console_log(std::cout, keywords::format = expr::format("%1%: [%2%] %3%")
-                    % expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
-                    % severity
-                    % expr::message);
-            }
+            //if (desc.type == EDeviceType::DX12_WIN_32) {
+            //    logging::add_console_log(std::cout, keywords::format = expr::format("%1%: [%2%] %3%")
+            //        % expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
+            //        % severity
+            //        % expr::message);
+            //}
 
-			logging::add_common_attributes();
+            logging::add_common_attributes();
 
-			boost::shared_ptr<logging::core> core = logging::core::get();
-			boost::shared_ptr<sinks::synchronous_sink< sinks::debug_output_backend>> debugSink(new sinks::synchronous_sink<sinks::debug_output_backend>());
+            boost::shared_ptr<logging::core> core = logging::core::get();
+            boost::shared_ptr<sinks::synchronous_sink< sinks::debug_output_backend>> debugSink(new sinks::synchronous_sink<sinks::debug_output_backend>());
 
-			debugSink->set_filter(expr::is_debugger_present());
-			debugSink->set_formatter(expr::format("%1%: (%2%) [%3%] %4%\n")
-				% expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
+            debugSink->set_filter(expr::is_debugger_present());
+            debugSink->set_formatter(expr::format("%1%: (%2%) [%3%] %4%\n")
+                % expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S")
                 % expr::attr<std::thread::id>("ThreadID")
-				% severity
-				% expr::message);
+                % severity
+                % expr::message);
 
-			core->add_sink(debugSink);
-
-            sLogContext.reset(new LogContext());
-		}
-
-        void StartIndent(ELogLevel level)
-        {
-            ++sLogContext->count[level];
-            sLogContext->isNew[level] = true;
+            core->add_sink(debugSink);
         }
-
-        void EndIndent(ELogLevel level)
-        {
-            --sLogContext->count[level];
-        }
-
-        std::string GetIndent(ELogLevel level)
-        {
-            std::string res;
-
-            if (sLogContext->isNew[level] > 0) {
-                for (uint32_t i = 1; i < sLogContext->count[level]; ++i)
-                    res += " ";
-
-                res += "- ";
-                --sLogContext->isNew[level];
-            } else {
-                for (uint32_t i = 0; i < sLogContext->count[level]; ++i)
-                    res += "  ";
-            }
-
-            return res;
-        }
-
-	} // namespace Log
+    } // namespace Log
 } // namespace Takoyaki
 
 #endif // USE_LOG

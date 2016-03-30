@@ -22,8 +22,6 @@
 
 #ifdef _DEBUG
 
-#include "../public/definitions.h"
-
 #define LOG_IDENTIFY_THREAD BOOST_LOG_SCOPED_THREAD_TAG("ThreadID", std::this_thread::get_id());
 
 #define LOGC BOOST_LOG_SEV(Takoyaki::Log::boost_log::get(), Takoyaki::Log::Log_Core) << Takoyaki::Log::GetIndent(Takoyaki::Log::Log_Core)
@@ -54,10 +52,7 @@ namespace Takoyaki
 
         BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(boost_log, boost::log::sources::severity_logger_mt<ELogLevel>);
 
-        void Initialize(const FrameworkDesc&);
-        void StartIndent(ELogLevel);
-        void EndIndent(ELogLevel);
-        std::string GetIndent(ELogLevel);
+        void Initialize();
     } // namespace Log
 } // namespace Takoyaki
 

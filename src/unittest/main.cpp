@@ -44,13 +44,13 @@ int main(int ac, char** av)
     // create window
     auto hWnd = MakeWindow(ret.second);
 
-    TestFramework framework;
+    std::unique_ptr<TestFramework> framework = std::make_unique<TestFramework>();
     std::vector<TestFramework::TestDesc> tests{
-        std::make_tuple(std::make_shared<Test01>(&framework), 0x7c52fe2b)
+        std::make_tuple(std::make_shared<Test01>(framework.get()), 0x7c52fe2b)
     };
 
     // we need to add tests before we initialize the framework since they will be initialized at the same time
-    framework.setTests(tests);
+    framework->setTests(tests);
 
     Takoyaki::FrameworkDesc desc;
 
@@ -60,7 +60,7 @@ int main(int ac, char** av)
     desc.windowSize.y = (float)ret.second.height;
     desc.numWorkerThreads = ret.second.numThreads;
 
-    framework.initialize(desc, ret.second.ciMode);
+    framework->initialize(desc, ret.second.ciMode);
 
     // main loop
     MSG msg;
@@ -75,11 +75,13 @@ int main(int ac, char** av)
         if (msg.message == WM_QUIT)
             break;
 
-        process = framework.process();
+        process = framework->process();
     }
 
     if (!ret.second.outFile.empty())
-        framework.save(ret.second.outFile);
+        framework->save(ret.second.outFile);
+
+    framework.reset();
 
     return 0;
 }

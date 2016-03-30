@@ -143,6 +143,10 @@ namespace Takoyaki
 
         // we need a copy for each buffer in the swap chain
         auto res = constantBuffers_.insert(std::make_pair(name, DX12ConstantBuffer{ this, size, device_->getFrameCount() }));
+
+        lock.unlock();
+
+        res.first->second.create(name, device_.get());
     }
 
     void DX12Context::createInputLayout(const std::string& name)
@@ -289,8 +293,7 @@ namespace Takoyaki
         if (found == constantBuffers_.end()) {
             auto fmt = boost::format{ "DX12DeviceContext::getConstantBuffer, cannot find key \"%1%\"" } % name;
 
-            LOGW << boost::str(fmt);
-            return ConstantBufferReturn(found->second, std::move(lock));
+            throw std::runtime_error{ boost::str(fmt) };
         }
 
         // Transfer the lock to the ConstantTableImpl to avoid removal while in use

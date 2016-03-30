@@ -68,8 +68,10 @@ void Test01::initialize(Takoyaki::Framework* framework)
 
     auto spRes = sp.ParseShader(vs_);
 
-    // in this sample there is only one constant buffer
+    // in this sample there is only one constant buffer in the vertex buffer
     cbuffer_ = std::move(spRes.cbuffers[0]);
+
+    renderer->createConstantBuffer(cbuffer_.getName(), cbuffer_.getSize());
 
     // create vertex layout
     auto layout = renderer->createInputLayout("SimpleVertex");

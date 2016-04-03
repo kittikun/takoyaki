@@ -208,7 +208,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\src\external\boost;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\external\boost;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm144 %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>_DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
@@ -219,7 +219,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\src\external\boost\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\external\boost\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Lib>
@@ -233,7 +233,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\src\external\boost;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\external\boost;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm134 %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -243,7 +243,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\src\external\boost\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\external\boost\stage\lib;$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Lib>

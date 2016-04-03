@@ -34,3 +34,4 @@ bin/
 *.xml
 *.opendb
 src/external/VulkanSDK/
+external/
